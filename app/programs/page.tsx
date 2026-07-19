@@ -25,6 +25,7 @@ function countActive(f: ProgramFilters): number {
   if (f.programType && f.programType !== 'all') n++;
   if (f.minReward) n++;
   if (f.hasBounty) n++;
+  if (f.safeHarbor) n++;
   return n;
 }
 
@@ -40,6 +41,7 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
     assetType: parseArray(sp.assetType),
     programType: typeof sp.programType === 'string' ? sp.programType : 'all',
     hasBounty: sp.hasBounty === '1',
+    safeHarbor: sp.safeHarbor === '1',
     minReward: sp.minReward ? Number(sp.minReward) : undefined,
     sort: (sp.sort as ProgramFilters['sort']) ?? 'reward',
     page: sp.page ? Number(sp.page) : 1,

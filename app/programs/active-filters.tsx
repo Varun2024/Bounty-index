@@ -72,5 +72,6 @@ function buildActive(f: ProgramFilters): ActiveChip[] {
   if (f.programType && f.programType !== 'all') out.push({ key: 'programType', label: 'type', display: f.programType });
   if (f.minReward) out.push({ key: 'minReward', label: 'min', display: `$${f.minReward >= 1000 ? `${f.minReward / 1000}k` : f.minReward}+` });
   if (f.hasBounty) out.push({ key: 'hasBounty', label: 'has', display: 'bounty' });
+  if (f.safeHarbor) out.push({ key: 'safeHarbor', label: 'safety', display: 'safe harbor' });
   return out;
 }

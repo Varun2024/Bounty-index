@@ -1,5 +1,6 @@
 import { db, schema } from '@/lib/db/client';
-import { sql, eq } from 'drizzle-orm';
+import { sql, eq, desc } from 'drizzle-orm';
+import { createHash } from 'node:crypto';
 
 const BASE = 'https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/main/data';
 
@@ -26,6 +27,7 @@ interface NormalizedProgram {
   maxBounty: number | null;
   currency: string;
   submissionState: string | null;
+  safeHarbor: string | null;
   scopes: NormalizedScope[];
   raw: object;
 }
@@ -144,6 +146,7 @@ function normalizeHackerOne(r: HackerOneRecord): NormalizedProgram | null {
     maxBounty: null,
     currency: 'USD',
     submissionState: r.submission_state ?? null,
+    safeHarbor: null, // HackerOne data doesn't expose this structurally
     scopes: normalizeScopes(r.targets ?? {}, offersBounty),
     raw: r as unknown as object,
   };
@@ -163,6 +166,9 @@ function normalizeBugcrowd(r: BugcrowdRecord): NormalizedProgram | null {
   if (!r.name) return null;
   const slug = r.url ? r.url.replace(/^.*bugcrowd\.com\//, '').replace(/\/$/, '') : slugify(r.name);
   const offersBounty = (r.max_payout ?? 0) > 0;
+  const safeHarborRaw = (r.safe_harbor ?? '').toLowerCase().trim();
+  // Bugcrowd values seen: "full", "partial", "none", "". Normalize; leave unknown as null.
+  const safeHarbor = safeHarborRaw === 'full' || safeHarborRaw === 'partial' || safeHarborRaw === 'none' ? safeHarborRaw : null;
   return {
     slug,
     handle: slug,
@@ -175,6 +181,7 @@ function normalizeBugcrowd(r: BugcrowdRecord): NormalizedProgram | null {
     maxBounty: r.max_payout ?? null,
     currency: 'USD',
     submissionState: null,
+    safeHarbor,
     scopes: normalizeScopes(r.targets ?? {}, offersBounty),
     raw: r as unknown as object,
   };
@@ -212,6 +219,7 @@ function normalizeIntigriti(r: IntigritiRecord): NormalizedProgram | null {
     maxBounty: max,
     currency,
     submissionState: r.status ?? null,
+    safeHarbor: null,
     scopes: normalizeScopes(r.targets ?? {}, offersBounty),
     raw: r as unknown as object,
   };
@@ -246,6 +254,7 @@ function normalizeYesWeHack(r: YesWeHackRecord): NormalizedProgram | null {
     maxBounty: r.max_bounty ?? null,
     currency: 'EUR',
     submissionState: r.disabled ? 'closed' : 'open',
+    safeHarbor: null,
     scopes: normalizeScopes(r.targets ?? {}, offersBounty),
     raw: r as unknown as object,
   };
@@ -274,6 +283,7 @@ function normalizeFederacy(r: FederacyRecord): NormalizedProgram | null {
     maxBounty: null,
     currency: 'USD',
     submissionState: null,
+    safeHarbor: null,
     scopes: normalizeScopes(r.targets ?? {}, false),
     raw: r as unknown as object,
   };
@@ -305,6 +315,7 @@ function normalizeHackenProof(r: HackenProofRecord): NormalizedProgram | null {
     maxBounty: r.max_bounty ?? null,
     currency: 'USD',
     submissionState: null,
+    safeHarbor: null,
     scopes: normalizeScopes(r.targets ?? {}, offersBounty),
     raw: r as unknown as object,
   };
@@ -340,11 +351,74 @@ async function upsertSource(platform: Platform): Promise<number> {
   return row.id;
 }
 
+interface SnapshotPayload {
+  name: string;
+  url: string;
+  handle: string | null;
+  programType: string;
+  offersBounty: boolean;
+  offersSwag: boolean;
+  managed: boolean;
+  minBounty: number | null;
+  maxBounty: number | null;
+  currency: string;
+  submissionState: string | null;
+  safeHarbor: string | null;
+  scopeCount: number;
+  inScopeCount: number;
+  scopeIdentifiers: string[]; // sorted list of in-scope identifiers
+}
+
+function buildSnapshotPayload(norm: NormalizedProgram, programType: string): SnapshotPayload {
+  const inScope = norm.scopes.filter((s) => s.inScope);
+  return {
+    name: norm.name,
+    url: norm.url,
+    handle: norm.handle,
+    programType,
+    offersBounty: norm.offersBounty,
+    offersSwag: norm.offersSwag,
+    managed: norm.managed,
+    minBounty: norm.minBounty,
+    maxBounty: norm.maxBounty,
+    currency: norm.currency,
+    submissionState: norm.submissionState,
+    safeHarbor: norm.safeHarbor,
+    scopeCount: norm.scopes.length,
+    inScopeCount: inScope.length,
+    scopeIdentifiers: inScope.map((s) => s.identifier).sort(),
+  };
+}
+
+function hashPayload(p: SnapshotPayload): string {
+  // Deterministic: keys are declared in-order above; scopeIdentifiers already sorted.
+  return createHash('sha256').update(JSON.stringify(p)).digest('hex');
+}
+
+async function maybeSnapshot(programId: number, ingestRunId: number, payload: SnapshotPayload) {
+  const hash = hashPayload(payload);
+  const [latest] = await db
+    .select({ contentHash: schema.programSnapshots.contentHash })
+    .from(schema.programSnapshots)
+    .where(eq(schema.programSnapshots.programId, programId))
+    .orderBy(desc(schema.programSnapshots.capturedAt))
+    .limit(1);
+  if (latest && latest.contentHash === hash) return false;
+  await db.insert(schema.programSnapshots).values({
+    programId,
+    ingestRunId,
+    contentHash: hash,
+    payload,
+  });
+  return true;
+}
+
 export async function ingestPlatform(platform: Platform) {
   const sourceId = await upsertSource(platform);
   const [run] = await db.insert(schema.ingestRuns).values({ sourceId }).returning({ id: schema.ingestRuns.id });
   let programsUpserted = 0;
   let scopesUpserted = 0;
+  let snapshotsWritten = 0;
   try {
     const records = await fetchSource(platform);
     const normalize = NORMALIZERS[platform];
@@ -369,6 +443,7 @@ export async function ingestPlatform(platform: Platform) {
           maxBounty: norm.maxBounty,
           currency: norm.currency,
           submissionState: norm.submissionState,
+          safeHarbor: norm.safeHarbor,
           lastUpdatedAt: new Date(),
           raw: norm.raw,
           searchText: [norm.name, norm.handle, norm.slug].filter(Boolean).join(' '),
@@ -387,6 +462,7 @@ export async function ingestPlatform(platform: Platform) {
             maxBounty: norm.maxBounty,
             currency: norm.currency,
             submissionState: norm.submissionState,
+            safeHarbor: norm.safeHarbor,
             lastUpdatedAt: new Date(),
             raw: norm.raw,
           },
@@ -404,6 +480,9 @@ export async function ingestPlatform(platform: Platform) {
         }
         scopesUpserted += norm.scopes.length;
       }
+
+      const wrote = await maybeSnapshot(prog.id, run.id, buildSnapshotPayload(norm, programType));
+      if (wrote) snapshotsWritten++;
     }
 
     await db
@@ -414,7 +493,7 @@ export async function ingestPlatform(platform: Platform) {
       .update(schema.sources)
       .set({ lastRunAt: new Date(), lastStatus: 'ok', lastError: null })
       .where(eq(schema.sources.id, sourceId));
-    return { platform, programsUpserted, scopesUpserted };
+    return { platform, programsUpserted, scopesUpserted, snapshotsWritten };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     await db

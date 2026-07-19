@@ -17,6 +17,7 @@ export const programs = pgTable(
     maxBounty: integer('max_bounty'),
     currency: text('currency').default('USD'),
     submissionState: text('submission_state'), // open | paused | closed
+    safeHarbor: text('safe_harbor'), // full | partial | none | null (unknown). Populated where source exposes it (Bugcrowd today).
     lastUpdatedAt: timestamp('last_updated_at', { withTimezone: true }),
     firstSeenAt: timestamp('first_seen_at', { withTimezone: true }).notNull().defaultNow(),
     raw: jsonb('raw'), // original record from source for debugging
@@ -72,7 +73,27 @@ export const ingestRuns = pgTable('ingest_runs', {
   error: text('error'),
 });
 
+export const programSnapshots = pgTable(
+  'program_snapshots',
+  {
+    id: serial('id').primaryKey(),
+    programId: integer('program_id')
+      .notNull()
+      .references(() => programs.id, { onDelete: 'cascade' }),
+    ingestRunId: integer('ingest_run_id').references(() => ingestRuns.id, { onDelete: 'set null' }),
+    capturedAt: timestamp('captured_at', { withTimezone: true }).notNull().defaultNow(),
+    contentHash: text('content_hash').notNull(),
+    payload: jsonb('payload').notNull(),
+  },
+  (t) => ({
+    programCapturedIdx: index('program_snapshots_program_captured_idx').on(t.programId, t.capturedAt),
+    programHashIdx: index('program_snapshots_program_hash_idx').on(t.programId, t.contentHash),
+  }),
+);
+
 export type Program = typeof programs.$inferSelect;
 export type NewProgram = typeof programs.$inferInsert;
 export type Scope = typeof scopes.$inferSelect;
 export type NewScope = typeof scopes.$inferInsert;
+export type ProgramSnapshot = typeof programSnapshots.$inferSelect;
+export type NewProgramSnapshot = typeof programSnapshots.$inferInsert;

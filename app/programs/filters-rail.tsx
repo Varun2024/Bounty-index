@@ -97,6 +97,16 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         ))}
       </FilterGroup>
 
+      <FilterGroup label="Safety">
+        <Chip
+          active={filters.safeHarbor ?? false}
+          onClick={() => update({ safeHarbor: filters.safeHarbor ? null : '1' })}
+          title="Programs with a confirmed safe-harbor clause (Bugcrowd only; other platforms don't publish this structurally)"
+        >
+          safe harbor
+        </Chip>
+      </FilterGroup>
+
       <FilterGroup label="Sort">
         {(['newest', 'reward', 'name'] as const).map((s) => (
           <Chip key={s} active={(filters.sort ?? 'newest') === s} onClick={() => update({ sort: s })}>
@@ -126,12 +136,14 @@ interface ChipProps {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  title?: string;
 }
 
-function Chip({ active, onClick, children }: ChipProps) {
+function Chip({ active, onClick, children, title }: ChipProps) {
   return (
     <button
       onClick={onClick}
+      title={title}
       className={`chip-pop focus-ring mono text-[11px] px-2 py-1 rounded border ${
         active
           ? 'border-emerald-400/60 bg-emerald-400/10 text-emerald-300'
