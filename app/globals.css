@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0b;
+  --foreground: #e5e5e5;
+  --accent: #34d399;
+  --border: #1f1f22;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html, body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.mono { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+
+::selection { background: rgba(52, 211, 153, 0.25); color: #fff; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes dash {
+  to { stroke-dashoffset: -206; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 50%; }
+  100% { background-position: -200% 50%; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Disable expensive tilt transforms on touch devices where mousemove never fires */
+@media (hover: none) {
+  [style*='perspective'] { transform: none !important; }
+  .parallax-fast, .parallax-slow { animation: none !important; }
+}
+
+/* Top-of-page route loading bar */
+@keyframes route-bar {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.route-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #34d399, transparent);
+  animation: route-bar 1.1s ease-in-out infinite;
+  z-index: 50;
+}
+
+/* Scroll-triggered reveal (native CSS scroll-driven animations, no lib) */
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  animation: reveal-in 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 25%;
+}
+.reveal-delay-1 { animation-delay: 100ms; }
+.reveal-delay-2 { animation-delay: 200ms; }
+.reveal-delay-3 { animation-delay: 300ms; }
+
+/* Parallax on hero backdrops using scroll timeline */
+@keyframes parallax-up {
+  to { transform: translateY(-160px); }
+}
+@keyframes parallax-slow {
+  to { transform: translateY(-60px); }
+}
+.parallax-fast {
+  animation: parallax-up linear both;
+  animation-timeline: scroll(root);
+  animation-range: 0 100vh;
+}
+.parallax-slow {
+  animation: parallax-slow linear both;
+  animation-timeline: scroll(root);
+  animation-range: 0 100vh;
+}
+
+/* Graceful fallback: browsers without animation-timeline just show final state */
+@supports not (animation-timeline: view()) {
+  .reveal { animation: none; opacity: 1; transform: none; }
+  .parallax-fast, .parallax-slow { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .parallax-fast, .parallax-slow { animation: none !important; opacity: 1; transform: none; }
+}
+
+/* ---- Micro-interactions ---- */
+
+/* Underline sweep on nav links */
+.nav-underline { position: relative; }
+.nav-underline::after {
+  content: '';
+  position: absolute;
+  left: 12px; right: 12px; bottom: 4px;
+  height: 1px;
+  background: #34d399;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-underline:hover::after { transform: scaleX(1); }
+
+/* Chip pop on hover */
+.chip-pop { transition: transform 150ms ease-out, border-color 150ms, background-color 150ms; }
+.chip-pop:hover { transform: translateY(-1px); }
+.chip-pop:active { transform: translateY(0) scale(0.97); }
+
+/* Arrow-slide on primary CTA */
+.cta-arrow { position: relative; overflow: hidden; }
+.cta-arrow .arrow { display: inline-block; transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1); }
+.cta-arrow:hover .arrow { transform: translateX(4px); }
+
+/* Row lift + emerald edge */
+.row-lift { transition: background-color 150ms, transform 200ms; }
+.row-lift:hover { background-color: rgba(23, 23, 23, 0.6); }
+
+/* Focus ring, unified */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px #0a0a0b, 0 0 0 3px rgba(52, 211, 153, 0.5);
+  border-radius: 6px;
+}
+
+/* Pulse on live dots that aren't already animated */
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.soft-pulse { animation: soft-pulse 2.4s ease-in-out infinite; }
+
+/* Copy-code style: caret blink for terminal prompts */
+@keyframes caret-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.caret::after {
+  content: '▍';
+  color: #34d399;
+  margin-left: 2px;
+  animation: caret-blink 1.1s steps(1) infinite;
+}
+
+/* Reveal marker line — a thin emerald line that draws in */
+@keyframes draw-in {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.draw-in {
+  transform-origin: left;
+  animation: draw-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 30%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soft-pulse, .caret::after, .draw-in { animation: none !important; }
+  .cta-arrow:hover .arrow, .chip-pop:hover { transform: none; }
+}
