@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getProgramBySlug } from '@/lib/db/queries';
 import { formatBounty, platformLabel, PLATFORM_META, relativeTime, scopeHref } from '@/lib/format';
 import { ExternalIcon } from '@/app/_ui/icons';
+import { CompareButton } from '@/app/_ui/compare-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,14 +85,17 @@ export default async function ProgramDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            <a
-              href={program.url}
-              target="_blank"
-              rel="noreferrer"
-              className="focus-ring cta-arrow mono text-sm px-4 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition shadow-[0_0_40px_-10px] shadow-emerald-400/70 shrink-0 inline-flex items-center gap-2"
-            >
-              open program <ExternalIcon size={12} className="arrow" />
-            </a>
+            <div className="flex items-center gap-2 shrink-0">
+              <CompareButton programId={program.id} />
+              <a
+                href={program.url}
+                target="_blank"
+                rel="noreferrer"
+                className="focus-ring cta-arrow mono text-sm px-4 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition shadow-[0_0_40px_-10px] shadow-emerald-400/70 inline-flex items-center gap-2"
+              >
+                open program <ExternalIcon size={12} className="arrow" />
+              </a>
+            </div>
           </div>
 
           <div className="mt-5 flex flex-wrap gap-2 mono text-[11px]">

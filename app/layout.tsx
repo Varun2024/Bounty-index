@@ -4,6 +4,7 @@ import Link from 'next/link';
 import './globals.css';
 import { Logo } from './_ui/logo';
 import { GlobalKeyboard } from './_ui/global-keyboard';
+import { CompareTray } from './_ui/compare-tray';
 import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -89,6 +90,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </Link>
             <nav className="flex items-center gap-0.5 md:gap-1 text-sm">
               <NavLink href="/programs">Programs</NavLink>
+              <NavLink href="/compare">Compare</NavLink>
               <NavLink href="/scope-lookup"><span className="hidden sm:inline">Scope lookup</span><span className="sm:hidden">Scope</span></NavLink>
               <NavLink href="/feed">New</NavLink>
               <span className="ml-4 mono text-[10px] uppercase tracking-widest text-neutral-600 hidden md:inline-flex items-center gap-1.5">
@@ -101,6 +103,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </header>
         <main className="flex-1">{children}</main>
         <GlobalKeyboard />
+        <CompareTray />
         <Analytics />
         <footer className="border-t border-neutral-900 relative overflow-hidden">
           <div
@@ -130,6 +133,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
               <FooterCol title="Product">
                 <FooterLink href="/programs">Programs</FooterLink>
+                <FooterLink href="/compare">Compare</FooterLink>
                 <FooterLink href="/scope-lookup">Scope lookup</FooterLink>
                 <FooterLink href="/feed">New programs</FooterLink>
                 <FooterLink href="/feed.xml" external>RSS feed</FooterLink>
