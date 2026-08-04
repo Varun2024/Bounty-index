@@ -553,7 +553,7 @@ function CompareCell({ value, active }: { value: string; active?: boolean }) {
 function Features({ s }: { s: Awaited<ReturnType<typeof stats>> | null }) {
   return (
     <section className="border-t border-neutral-900">
-      <div className="max-w-[1200px] mx-auto px-6 pt-24 pb-6">
+      <div className="max-w-[1200px] mx-auto px-6 py-28">
         <div className="reveal">
           <SectionEyebrow n="03" label="What it does" />
           <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50 max-w-2xl">
@@ -718,7 +718,7 @@ function FinalCTA({ s }: { s: Awaited<ReturnType<typeof stats>> | null }) {
         className="absolute pointer-events-none inset-x-0 -bottom-40 h-80 opacity-30"
         style={{ background: 'radial-gradient(ellipse 60% 100% at 50% 100%, #34d399 0%, transparent 70%)' }}
       />
-      <div className="relative max-w-[1200px] mx-auto px-6 pt-6 pb-24 text-center">
+      <div className="relative max-w-[1200px] mx-auto px-6 py-28 text-center">
         <SectionEyebrow n="04" label="Start hunting" centered />
         <h2 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight text-neutral-50 max-w-3xl mx-auto leading-[1]">
           {s ? (

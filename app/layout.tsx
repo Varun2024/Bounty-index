@@ -102,7 +102,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <main className="flex-1">{children}</main>
         <GlobalKeyboard />
         <Analytics />
-        <footer className="border-t border-neutral-900 mt-24 relative overflow-hidden">
+        <footer className="border-t border-neutral-900 relative overflow-hidden">
           <div
             className="absolute pointer-events-none inset-x-0 -top-20 h-40 opacity-25"
             style={{ background: 'radial-gradient(ellipse 50% 100% at 50% 0%, #34d399 0%, transparent 70%)' }}
