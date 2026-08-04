@@ -21,7 +21,6 @@ export default async function Home() {
       <Comparison />
       <SectionOrnament />
       <Features s={s} />
-      <TrustBar s={s} />
       <FinalCTA s={s} />
     </>
   );

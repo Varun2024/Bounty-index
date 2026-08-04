@@ -154,7 +154,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <span className="text-neutral-800">·</span>
                 <span>MIT licensed</span>
                 <span className="text-neutral-800">·</span>
-                <span>updated hourly</span>
+                <span>updated daily</span>
               </div>
             </div>
           </div>
