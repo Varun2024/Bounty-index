@@ -117,6 +117,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <p className="mt-4 text-sm text-neutral-500 leading-relaxed max-w-xs">
                   The bug bounty market, live-indexed. Every public program across five platforms, filterable in one view.
                 </p>
+                <a
+                  href="https://buymeacoffee.com/varun_builds"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="mt-5 inline-flex items-center gap-2 mono text-xs px-3 py-2 border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300 rounded-md hover:border-emerald-400/60 hover:bg-emerald-400/[0.12] transition focus-ring"
+                >
+                  <span aria-hidden>☕</span>
+                  buy me a coffee
+                </a>
               </div>
 
               <FooterCol title="Product">

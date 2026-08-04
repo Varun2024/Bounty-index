@@ -430,11 +430,11 @@ interface CompareRow {
 
 function Comparison() {
   const rows: CompareRow[] = [
+    { name: 'bounty.index', coverage: '5 of 5 · unified', sort: '✓ max payout', lookup: '✓ one query', keyboard: '✓ / j k ↵', active: true },
     { name: 'HackerOne directory', coverage: '1 of 5', sort: 'severity only', lookup: '✗', keyboard: '✗' },
     { name: 'Bugcrowd programs page', coverage: '1 of 5', sort: '✓ max payout', lookup: '✗', keyboard: '✗' },
     { name: 'disclose.io', coverage: 'VDP policies only', sort: '✗', lookup: '✗', keyboard: '✗' },
     { name: 'bounty-targets-data', coverage: '5 of 5 · raw JSON', sort: 'grep + jq', lookup: 'grep + jq', keyboard: 'n/a' },
-    { name: 'bounty.index', coverage: '5 of 5 · unified', sort: '✓ max payout', lookup: '✓ one query', keyboard: '✓ / j k ↵', active: true },
   ];
   return (
     <section className="border-t border-neutral-900 bg-neutral-950/40 relative">
