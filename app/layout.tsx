@@ -174,11 +174,42 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </div>
 
             <div className="mt-16 pt-6 border-t border-neutral-900 flex flex-wrap items-center justify-between gap-4 mono text-xs text-neutral-600">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60" />
                 <span>© 2026 bounty.index</span>
                 <span className="text-neutral-800">·</span>
                 <span>not affiliated with any platform</span>
+                <span className="text-neutral-800">·</span>
+                <span className="inline-flex items-center gap-2">
+                  built by
+                  <a
+                    href="https://varuncodes.tech/"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="text-neutral-300 hover:text-emerald-400 transition focus-ring rounded"
+                  >
+                    Varun
+                  </a>
+                  <a
+                    href="https://x.com/TheV_Stack"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    aria-label="Varun on X"
+                    className="text-neutral-500 hover:text-emerald-400 transition focus-ring rounded"
+                  >
+                    X
+                  </a>
+                  <span className="text-neutral-800">·</span>
+                  <a
+                    href="https://github.com/Varun2024"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    aria-label="Varun on GitHub"
+                    className="text-neutral-500 hover:text-emerald-400 transition focus-ring rounded"
+                  >
+                    GitHub
+                  </a>
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <span>data · <a href="https://github.com/arkadiyt/bounty-targets-data" className="hover:text-emerald-400 transition">arkadiyt/bounty-targets-data</a></span>
