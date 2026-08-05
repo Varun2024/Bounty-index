@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Link from 'next/link';
+import Image from 'next/image';
 import './globals.css';
 import { Logo } from './_ui/logo';
 import { GlobalKeyboard } from './_ui/global-keyboard';
@@ -130,6 +131,21 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   <span aria-hidden>☕</span>
                   buy me a coffee
                 </a>
+                <Link
+                  href="https://launchleague.xyz/?product=bounty-index"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="mt-4 block w-fit focus-ring rounded"
+                  aria-label="Launching on LaunchLeague"
+                >
+                  <Image
+                    src="https://cdn.launchleague.xyz/site-images/badges/badge-dark.svg"
+                    alt="Launching on LaunchLeague"
+                    width={300}
+                    height={66}
+                    unoptimized
+                  />
+                </Link>
               </div>
 
               <FooterCol title="Product">
