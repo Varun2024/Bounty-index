@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getProgramsByIds } from '@/lib/db/queries';
-import { formatBounty, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
+import { formatBounty, platformLabel, relativeTime } from '@/lib/format';
 import { RemoveColumnButton } from './remove-column-button';
+import { PlatformLogo } from '@/app/_ui/platform-logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,11 +53,11 @@ export default async function ComparePage({ searchParams }: PageProps) {
                 <th className="text-left px-5 py-4 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-40 align-top">
                   Field
                 </th>
-                {programs.map((p) => {
-                  const dot = PLATFORM_META[p.platform]?.dot ?? 'bg-neutral-500';
-                  return (
-                    <th key={p.id} className="text-left px-5 py-4 align-top">
-                      <div className="flex items-start justify-between gap-3">
+                {programs.map((p) => (
+                  <th key={p.id} className="text-left px-5 py-4 align-top">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex items-start gap-3">
+                        <PlatformLogo platform={p.platform} size="md" className="mt-0.5 shrink-0" />
                         <div className="min-w-0">
                           <Link
                             href={`/programs/${p.platform}/${p.slug}`}
@@ -64,16 +65,15 @@ export default async function ComparePage({ searchParams }: PageProps) {
                           >
                             {p.name}
                           </Link>
-                          <div className="mono text-[11px] text-neutral-500 mt-1 inline-flex items-center gap-1.5">
-                            <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+                          <div className="mono text-[11px] text-neutral-500 mt-1">
                             {platformLabel(p.platform)}
                           </div>
                         </div>
-                        <RemoveColumnButton programId={p.id} />
                       </div>
-                    </th>
-                  );
-                })}
+                      <RemoveColumnButton programId={p.id} />
+                    </div>
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>

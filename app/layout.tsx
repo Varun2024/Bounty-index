@@ -5,6 +5,7 @@ import './globals.css';
 import { Logo } from './_ui/logo';
 import { GlobalKeyboard } from './_ui/global-keyboard';
 import { CompareTray } from './_ui/compare-tray';
+import { PlatformLogo } from './_ui/platform-logo';
 import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -45,12 +46,12 @@ function FooterLink({
   href,
   children,
   external,
-  dot,
+  platform,
 }: {
   href: string;
   children: React.ReactNode;
   external?: boolean;
-  dot?: string;
+  platform?: string;
 }) {
   const props = external ? { target: '_blank', rel: 'noreferrer noopener' } : {};
   return (
@@ -58,9 +59,9 @@ function FooterLink({
       <a
         href={href}
         {...props}
-        className="text-sm text-neutral-400 hover:text-emerald-400 transition inline-flex items-center gap-2 focus-ring rounded"
+        className="text-sm text-neutral-400 hover:text-emerald-400 transition inline-flex items-center gap-2.5 focus-ring rounded"
       >
-        {dot && <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />}
+        {platform && <PlatformLogo platform={platform} size="sm" />}
         {children}
       </a>
     </li>
@@ -140,14 +141,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </FooterCol>
 
               <FooterCol title="Platforms">
-                <FooterLink href="/programs?platform=hackerone" dot="bg-red-400">HackerOne</FooterLink>
-                <FooterLink href="/programs?platform=bugcrowd" dot="bg-orange-400">Bugcrowd</FooterLink>
-                <FooterLink href="/programs?platform=intigriti" dot="bg-emerald-400">Intigriti</FooterLink>
-                <FooterLink href="/programs?platform=yeswehack" dot="bg-sky-400">YesWeHack</FooterLink>
-                <FooterLink href="/programs?platform=federacy" dot="bg-violet-400">Federacy</FooterLink>
+                <FooterLink href="/programs?platform=hackerone" platform="hackerone">HackerOne</FooterLink>
+                <FooterLink href="/programs?platform=bugcrowd" platform="bugcrowd">Bugcrowd</FooterLink>
+                <FooterLink href="/programs?platform=intigriti" platform="intigriti">Intigriti</FooterLink>
+                <FooterLink href="/programs?platform=yeswehack" platform="yeswehack">YesWeHack</FooterLink>
+                <FooterLink href="/programs?platform=federacy" platform="federacy">Federacy</FooterLink>
               </FooterCol>
 
               <FooterCol title="Resources">
+                <FooterLink href="/how-it-works">How it works</FooterLink>
                 <FooterLink href="https://github.com/arkadiyt/bounty-targets-data" external>Data source</FooterLink>
                 <FooterLink href="https://hackerone.com/hacktivity" external>Hacktivity</FooterLink>
                 <FooterLink href="https://pentester.land/list-of-bug-bounty-writeups.html" external>Writeups</FooterLink>

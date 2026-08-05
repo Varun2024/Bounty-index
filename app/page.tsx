@@ -3,6 +3,7 @@ import { stats, topPayouts, recentlyAdded, trendingNewPayouts } from '@/lib/db/q
 import { formatBounty, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 import { Ticker } from '@/app/_ui/ticker';
 import { Tilt } from '@/app/_ui/tilt';
+import { PlatformLogo } from '@/app/_ui/platform-logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,9 +49,9 @@ function Hero({ s, top }: HeroProps) {
         <div className="flex-1 flex flex-col items-center justify-center text-center py-24 lg:py-20">
           <section className="max-w-3xl animate-[fadeUp_.7s_ease-out_both]">
             <h1 className="text-5xl md:text-6xl xl:text-[5.5rem] font-semibold tracking-[-0.035em] leading-[0.95] text-neutral-50">
-              Bounties,{' '}
-              <em className="not-italic whitespace-nowrap bg-gradient-to-br from-emerald-300 via-emerald-400 to-emerald-500 bg-clip-text text-transparent">
-                live-indexed.
+              Every public bounty program.{' '}
+              <em className="not-italic bg-gradient-to-br from-emerald-300 via-emerald-400 to-emerald-500 bg-clip-text text-transparent">
+                One index.
               </em>
             </h1>
 
@@ -172,7 +173,7 @@ function HowItWorks() {
     {
       n: '01',
       title: 'Aggregate.',
-      body: 'Every public program from five platforms pulled hourly into a single normalized index. HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy.',
+      body: 'Every public program from five platforms pulled daily into a single normalized index. HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy.',
       note: 'source · arkadiyt/bounty-targets-data',
     },
     {
@@ -237,14 +238,13 @@ function HowItWorks() {
 }
 
 function StepVisual({ index }: { index: number }) {
-  if (index === 0) return <AggregateDiagram />;
-  if (index === 1) return <FilterDiagram />;
-  return <HuntDiagram />;
+  const diagram = index === 0 ? <AggregateDiagram /> : index === 1 ? <FilterDiagram /> : <HuntDiagram />;
+  return <Tilt className="rounded-xl">{diagram}</Tilt>;
 }
 
 function FilterDiagram() {
   return (
-    <div className="relative border border-neutral-900 rounded-xl bg-neutral-950/60 aspect-[4/3] overflow-hidden">
+    <div className="relative border border-neutral-900 rounded-xl bg-neutral-950/60 aspect-[4/3] overflow-hidden hover:border-neutral-800 transition group">
       <div
         className="absolute inset-0 pointer-events-none opacity-30"
         style={{
@@ -299,7 +299,7 @@ function FilterDiagram() {
 
 function HuntDiagram() {
   return (
-    <div className="relative border border-neutral-900 rounded-xl bg-neutral-950/60 aspect-[4/3] overflow-hidden">
+    <div className="relative border border-neutral-900 rounded-xl bg-neutral-950/60 aspect-[4/3] overflow-hidden hover:border-neutral-800 transition group">
       <div
         className="absolute inset-0 pointer-events-none opacity-30"
         style={{
@@ -344,15 +344,8 @@ function AggregateDiagram() {
     { key: 'federacy', label: 'Federacy', y: 240, count: 35 },
   ];
   const total = platforms.reduce((n, p) => n + p.count, 0);
-  const dotHex: Record<string, string> = {
-    hackerone: '#f87171',
-    bugcrowd: '#fb923c',
-    intigriti: '#34d399',
-    yeswehack: '#38bdf8',
-    federacy: '#a78bfa',
-  };
   return (
-    <div className="relative border border-neutral-900 rounded-xl bg-neutral-950/60 aspect-[4/3] overflow-hidden">
+    <div className="relative border border-neutral-900 rounded-xl bg-neutral-950/60 aspect-[4/3] overflow-hidden hover:border-neutral-800 transition group">
       <div
         className="absolute inset-0 pointer-events-none opacity-30"
         style={{
@@ -410,9 +403,9 @@ function AggregateDiagram() {
 
       <ul className="absolute top-14 left-5 space-y-3 mono text-[11px]">
         {platforms.map((p) => (
-          <li key={p.key} className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: dotHex[p.key] }} />
-            <span className="text-neutral-400 w-16">{p.label}</span>
+          <li key={p.key} className="flex items-center gap-2.5">
+            <PlatformLogo platform={p.key} size="md" />
+            <span className="text-neutral-300 w-16">{p.label}</span>
             <span className="text-neutral-600 tabular-nums">+{p.count}</span>
           </li>
         ))}

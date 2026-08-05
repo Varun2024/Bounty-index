@@ -5,6 +5,7 @@ import { getProgramBySlug } from '@/lib/db/queries';
 import { formatBounty, platformLabel, PLATFORM_META, relativeTime, scopeHref } from '@/lib/format';
 import { ExternalIcon } from '@/app/_ui/icons';
 import { CompareButton } from '@/app/_ui/compare-button';
+import { PlatformLogo } from '@/app/_ui/platform-logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,8 +65,8 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             <div className="min-w-0">
               <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-50 break-words">{program.name}</h1>
               <div className="mt-3 mono text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="inline-flex items-center gap-1.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${platformDot}`} />
+                <span className="inline-flex items-center gap-2">
+                  <PlatformLogo platform={program.platform} size="sm" />
                   {platformLabel(program.platform)}
                 </span>
                 <span className="text-neutral-700">·</span>
