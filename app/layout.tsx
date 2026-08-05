@@ -180,32 +180,33 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <span className="text-neutral-800">·</span>
                 <span>not affiliated with any platform</span>
                 <span className="text-neutral-800">·</span>
-                <span className="inline-flex items-center gap-2">
+                <span className="inline-flex items-center gap-2 text-neutral-400">
                   built by
                   <a
                     href="https://varuncodes.tech/"
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="text-neutral-300 hover:text-emerald-400 transition focus-ring rounded"
+                    className="text-emerald-300 hover:text-emerald-200 transition focus-ring rounded underline decoration-emerald-400/30 underline-offset-4 hover:decoration-emerald-300/60"
                   >
                     Varun
                   </a>
+                  <span className="text-neutral-700">·</span>
                   <a
                     href="https://x.com/TheV_Stack"
                     target="_blank"
                     rel="noreferrer noopener"
                     aria-label="Varun on X"
-                    className="text-neutral-500 hover:text-emerald-400 transition focus-ring rounded"
+                    className="text-neutral-200 hover:text-emerald-400 transition focus-ring rounded"
                   >
                     X
                   </a>
-                  <span className="text-neutral-800">·</span>
+                  <span className="text-neutral-700">·</span>
                   <a
                     href="https://github.com/Varun2024"
                     target="_blank"
                     rel="noreferrer noopener"
                     aria-label="Varun on GitHub"
-                    className="text-neutral-500 hover:text-emerald-400 transition focus-ring rounded"
+                    className="text-neutral-200 hover:text-emerald-400 transition focus-ring rounded"
                   >
                     GitHub
                   </a>
