@@ -79,7 +79,7 @@ export default async function ScopeLookup({ searchParams }: PageProps) {
 
           {inScope.length > 0 && (
             <MatchList
-              title={`In scope · ${inScope.length}`}
+              title={`In scope · ${inScopePrograms} program${inScopePrograms === 1 ? '' : 's'}`}
               matches={inScope}
               kind="in"
             />
@@ -87,7 +87,7 @@ export default async function ScopeLookup({ searchParams }: PageProps) {
 
           {outOfScope.length > 0 && (
             <MatchList
-              title={`Explicitly out of scope · ${outOfScope.length}`}
+              title={`Explicitly out of scope · ${outOfScopePrograms} program${outOfScopePrograms === 1 ? '' : 's'}`}
               matches={outOfScope}
               kind="out"
               note="These programs list this identifier as OUT-OF-SCOPE. Testing here could get you removed from the program."
@@ -211,7 +211,39 @@ interface MatchListProps {
   note?: string;
 }
 
+interface GroupedMatch {
+  program: Match['program'];
+  identifiers: string[]; // deduped, sorted (most specific first)
+}
+
+function groupByProgram(matches: Match[]): GroupedMatch[] {
+  const groups = new Map<number, GroupedMatch>();
+  for (const m of matches) {
+    const existing = groups.get(m.program.id);
+    if (existing) {
+      if (!existing.identifiers.includes(m.scope.identifier)) {
+        existing.identifiers.push(m.scope.identifier);
+      }
+    } else {
+      groups.set(m.program.id, { program: m.program, identifiers: [m.scope.identifier] });
+    }
+  }
+  // Longer identifiers = more specific; show those first.
+  for (const g of groups.values()) g.identifiers.sort((a, b) => b.length - a.length);
+  return [...groups.values()];
+}
+
 function MatchList({ title, matches, kind, note }: MatchListProps) {
+  const groups = groupByProgram(matches);
+  // When two programs on the same platform share a name (Bugcrowd has both a legacy `tesla` and a
+  // managed `engagements/tesla`), show the slug to disambiguate — otherwise the rows look identical.
+  const dupNames = new Set<string>();
+  const seen = new Set<string>();
+  for (const g of groups) {
+    const key = `${g.program.platform}:${g.program.name}`;
+    if (seen.has(key)) dupNames.add(key);
+    seen.add(key);
+  }
   const glyph = kind === 'in' ? '+' : '−';
   const glyphColor = kind === 'in' ? 'text-emerald-400' : 'text-amber-400';
   const identifierColor = kind === 'in' ? 'text-neutral-500' : 'text-amber-300/70';
@@ -227,26 +259,35 @@ function MatchList({ title, matches, kind, note }: MatchListProps) {
         </p>
       )}
       <ul className={`border rounded-lg overflow-hidden ${kind === 'in' ? 'border-neutral-900 bg-neutral-950/40' : 'border-amber-400/15 bg-amber-400/[0.02]'}`}>
-        {matches.map((m, i) => (
-          <li key={`${m.program.id}-${m.scope.id}`} className={i === matches.length - 1 ? '' : `border-b ${kind === 'in' ? 'border-neutral-900' : 'border-amber-400/10'}`}>
+        {groups.map((g, i) => (
+          <li key={g.program.id} className={i === groups.length - 1 ? '' : `border-b ${kind === 'in' ? 'border-neutral-900' : 'border-amber-400/10'}`}>
             <Link
-              href={`/programs/${m.program.platform}/${m.program.slug}`}
-              className={`flex items-center gap-4 px-5 py-3.5 transition group ${kind === 'in' ? 'hover:bg-neutral-900/50' : 'hover:bg-amber-400/[0.06]'}`}
+              href={`/programs/${g.program.platform}/${g.program.slug}`}
+              className={`flex items-start gap-4 px-5 py-3.5 transition group ${kind === 'in' ? 'hover:bg-neutral-900/50' : 'hover:bg-amber-400/[0.06]'}`}
             >
-              <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${PLATFORM_META[m.program.platform]?.dot ?? 'bg-neutral-500'}`} />
+              <span className={`shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full ${PLATFORM_META[g.program.platform]?.dot ?? 'bg-neutral-500'}`} />
               <div className="min-w-0 flex-1">
                 <p className={`text-sm truncate transition ${kind === 'in' ? 'text-neutral-100 group-hover:text-emerald-400' : 'text-neutral-100 group-hover:text-amber-300'}`}>
-                  {m.program.name}
+                  {g.program.name}
+                  {dupNames.has(`${g.program.platform}:${g.program.name}`) && (
+                    <span className="mono text-[11px] text-neutral-600 ml-2 font-normal">/{g.program.slug}</span>
+                  )}
                 </p>
-                <code className={`mono text-[11px] block truncate mt-0.5 ${identifierColor}`}>
-                  <span className={`${glyphColor} mr-1`}>{glyph}</span>
-                  {m.scope.identifier}
-                </code>
+                <ul className="mt-0.5 space-y-0.5">
+                  {g.identifiers.map((id) => (
+                    <li key={id}>
+                      <code className={`mono text-[11px] block truncate ${identifierColor}`}>
+                        <span className={`${glyphColor} mr-1`}>{glyph}</span>
+                        {id}
+                      </code>
+                    </li>
+                  ))}
+                </ul>
               </div>
               <div className="text-right shrink-0">
-                <p className="mono text-xs text-neutral-400">{platformLabel(m.program.platform)}</p>
+                <p className="mono text-xs text-neutral-400">{platformLabel(g.program.platform)}</p>
                 <p className="mono text-xs text-neutral-100 tabular-nums mt-0.5">
-                  {formatBounty(m.program.maxBounty, m.program.currency ?? 'USD')}
+                  {formatBounty(g.program.maxBounty, g.program.currency ?? 'USD')}
                 </p>
               </div>
             </Link>
