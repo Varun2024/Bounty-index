@@ -101,10 +101,13 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         <Chip
           active={filters.safeHarbor ?? false}
           onClick={() => update({ safeHarbor: filters.safeHarbor ? null : '1' })}
-          title="Programs with a confirmed safe-harbor clause (Bugcrowd only; other platforms don't publish this structurally)"
         >
           safe harbor
         </Chip>
+        <p className="mono text-[10px] leading-relaxed text-neutral-600 mt-1 w-full">
+          <span className="text-neutral-700">{'// '}</span>
+          coverage: Bugcrowd only. other platforms don&apos;t publish this structurally yet.
+        </p>
       </FilterGroup>
 
       <FilterGroup label="Sort">
