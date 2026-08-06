@@ -109,13 +109,8 @@ export async function findByDomain(domain: string) {
     })
     .from(schema.scopes)
     .innerJoin(schema.programs, eq(schema.scopes.programId, schema.programs.id))
-    .where(
-      and(
-        eq(schema.scopes.inScope, true),
-        or(ilike(schema.scopes.identifier, `%${d}%`), ilike(schema.scopes.identifier, `%*.${d}%`)),
-      ),
-    )
-    .limit(200);
+    .where(or(ilike(schema.scopes.identifier, `%${d}%`), ilike(schema.scopes.identifier, `%*.${d}%`)))
+    .limit(400);
   return rows;
 }
 

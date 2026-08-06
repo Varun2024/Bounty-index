@@ -10,9 +10,11 @@ interface PageProps {
   searchParams: Promise<{ domain?: string }>;
 }
 
+type Match = Awaited<ReturnType<typeof findByDomain>>[number];
+
 export default async function ScopeLookup({ searchParams }: PageProps) {
   const { domain } = await searchParams;
-  let matches: Awaited<ReturnType<typeof findByDomain>> = [];
+  let matches: Match[] = [];
   let dbError: string | null = null;
   if (domain) {
     try {
@@ -22,21 +24,23 @@ export default async function ScopeLookup({ searchParams }: PageProps) {
     }
   }
 
-  // Group by program for the verdict
-  const uniquePrograms = new Map<number, (typeof matches)[number]['program']>();
-  for (const m of matches) {
-    if (!uniquePrograms.has(m.program.id)) uniquePrograms.set(m.program.id, m.program);
-  }
-  const programCount = uniquePrograms.size;
+  const inScope = matches.filter((m) => m.scope.inScope);
+  const outOfScope = matches.filter((m) => !m.scope.inScope);
+  const inScopePrograms = new Set(inScope.map((m) => m.program.id)).size;
+  const outOfScopePrograms = new Set(outOfScope.map((m) => m.program.id)).size;
+
+  // Verdict severity: any in-scope wins. Only out-of-scope hits are a warning.
+  const verdict: 'in' | 'out' | 'none' =
+    inScope.length > 0 ? 'in' : outOfScope.length > 0 ? 'out' : 'none';
 
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10">
       <div className="reveal">
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Search</p>
-      <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Scope lookup</h1>
-      <p className="text-neutral-400 mt-3 max-w-xl">
-        Paste a domain, subdomain, or wildcard. Get every program it appears in — in-scope only.
-      </p>
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Search</p>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Scope lookup</h1>
+        <p className="text-neutral-400 mt-3 max-w-xl">
+          Paste a domain, subdomain, or wildcard. Get every program it appears in — plus a warning if it&apos;s explicitly out-of-scope.
+        </p>
       </div>
 
       <form className="mt-8 flex gap-2 max-w-xl">
@@ -57,81 +61,37 @@ export default async function ScopeLookup({ searchParams }: PageProps) {
         <p className="mono text-xs text-amber-400 mt-6">DB_NOT_CONNECTED — {dbError}</p>
       )}
 
-      {/* Verdict */}
       {domain && !dbError && (
         <>
-          <div
-            className={`mt-10 relative overflow-hidden rounded-xl border ${
-              programCount > 0
-                ? 'border-emerald-400/30 bg-emerald-400/[0.04]'
-                : 'border-neutral-800 bg-neutral-950/40'
-            }`}
-          >
-            <div
-              className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent ${programCount > 0 ? 'via-emerald-400/50' : 'via-neutral-700/40'} to-transparent`}
-            />
-            <div className="px-6 py-6 flex items-center gap-4">
-              <span
-                className={`mono text-[10px] uppercase tracking-widest px-2 py-1 rounded ${
-                  programCount > 0
-                    ? 'text-emerald-300 bg-emerald-400/10 border border-emerald-400/30'
-                    : 'text-neutral-500 bg-neutral-900/60 border border-neutral-800'
-                }`}
-              >
-                {programCount > 0 ? 'in scope' : 'no match'}
-              </span>
-              <p className="text-lg text-neutral-100">
-                {programCount > 0 ? (
-                  <>
-                    <code className="mono text-emerald-300">{domain}</code>
-                    <span className="text-neutral-400"> appears in </span>
-                    <span className="mono text-neutral-100 tabular-nums">{programCount}</span>
-                    <span className="text-neutral-400"> program{programCount === 1 ? '' : 's'} · </span>
-                    <span className="mono text-neutral-500 tabular-nums">{matches.length}</span>
-                    <span className="text-neutral-400"> scope entr{matches.length === 1 ? 'y' : 'ies'}</span>
-                  </>
-                ) : (
-                  <>
-                    <code className="mono text-neutral-300">{domain}</code>
-                    <span className="text-neutral-400"> — no in-scope program found</span>
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
+          <Verdict
+            domain={domain}
+            verdict={verdict}
+            inScopePrograms={inScopePrograms}
+            outOfScopePrograms={outOfScopePrograms}
+            inScopeEntries={inScope.length}
+          />
 
-          {programCount === 0 && (
+          {verdict === 'none' && (
             <p className="mono text-xs text-neutral-500 mt-6">
               try a broader query — e.g. drop the subdomain, or use the parent domain
             </p>
           )}
 
-          {matches.length > 0 && (
-            <div className="mt-8">
-              <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">Matches · {matches.length}</p>
-              <ul className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">
-                {matches.map((m, i) => (
-                  <li key={i} className={i === matches.length - 1 ? '' : 'border-b border-neutral-900'}>
-                    <Link
-                      href={`/programs/${m.program.platform}/${m.program.slug}`}
-                      className="flex items-center gap-4 px-5 py-3.5 hover:bg-neutral-900/50 transition group"
-                    >
-                      <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${PLATFORM_META[m.program.platform]?.dot ?? 'bg-neutral-500'}`} />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm text-neutral-100 group-hover:text-emerald-400 transition truncate">{m.program.name}</p>
-                        <code className="mono text-[11px] text-neutral-500 block truncate mt-0.5">+ {m.scope.identifier}</code>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="mono text-xs text-neutral-400">{platformLabel(m.program.platform)}</p>
-                        <p className="mono text-xs text-neutral-100 tabular-nums mt-0.5">
-                          {formatBounty(m.program.maxBounty, m.program.currency ?? 'USD')}
-                        </p>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {inScope.length > 0 && (
+            <MatchList
+              title={`In scope · ${inScope.length}`}
+              matches={inScope}
+              kind="in"
+            />
+          )}
+
+          {outOfScope.length > 0 && (
+            <MatchList
+              title={`Explicitly out of scope · ${outOfScope.length}`}
+              matches={outOfScope}
+              kind="out"
+              note="These programs list this identifier as OUT-OF-SCOPE. Testing here could get you removed from the program."
+            />
           )}
         </>
       )}
@@ -150,6 +110,149 @@ export default async function ScopeLookup({ searchParams }: PageProps) {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+interface VerdictProps {
+  domain: string;
+  verdict: 'in' | 'out' | 'none';
+  inScopePrograms: number;
+  outOfScopePrograms: number;
+  inScopeEntries: number;
+}
+
+function Verdict({ domain, verdict, inScopePrograms, outOfScopePrograms, inScopeEntries }: VerdictProps) {
+  const style =
+    verdict === 'in'
+      ? {
+          border: 'border-emerald-400/30',
+          bg: 'bg-emerald-400/[0.04]',
+          rail: 'via-emerald-400/50',
+          chipText: 'text-emerald-300',
+          chipBg: 'bg-emerald-400/10',
+          chipBorder: 'border-emerald-400/30',
+          label: 'in scope',
+          domainColor: 'text-emerald-300',
+        }
+      : verdict === 'out'
+        ? {
+            border: 'border-amber-400/30',
+            bg: 'bg-amber-400/[0.04]',
+            rail: 'via-amber-400/50',
+            chipText: 'text-amber-300',
+            chipBg: 'bg-amber-400/10',
+            chipBorder: 'border-amber-400/30',
+            label: 'out of scope',
+            domainColor: 'text-amber-300',
+          }
+        : {
+            border: 'border-neutral-800',
+            bg: 'bg-neutral-950/40',
+            rail: 'via-neutral-700/40',
+            chipText: 'text-neutral-500',
+            chipBg: 'bg-neutral-900/60',
+            chipBorder: 'border-neutral-800',
+            label: 'no match',
+            domainColor: 'text-neutral-300',
+          };
+
+  return (
+    <div className={`mt-10 relative overflow-hidden rounded-xl border ${style.border} ${style.bg}`}>
+      <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent ${style.rail} to-transparent`} />
+      <div className="px-6 py-6 flex items-center gap-4 flex-wrap">
+        <span className={`mono text-[10px] uppercase tracking-widest px-2 py-1 rounded border ${style.chipText} ${style.chipBg} ${style.chipBorder}`}>
+          {style.label}
+        </span>
+        <p className="text-lg text-neutral-100">
+          {verdict === 'in' && (
+            <>
+              <code className={`mono ${style.domainColor}`}>{domain}</code>
+              <span className="text-neutral-400"> appears in </span>
+              <span className="mono text-neutral-100 tabular-nums">{inScopePrograms}</span>
+              <span className="text-neutral-400"> program{inScopePrograms === 1 ? '' : 's'} · </span>
+              <span className="mono text-neutral-500 tabular-nums">{inScopeEntries}</span>
+              <span className="text-neutral-400"> scope entr{inScopeEntries === 1 ? 'y' : 'ies'}</span>
+              {outOfScopePrograms > 0 && (
+                <>
+                  <span className="text-neutral-700"> · </span>
+                  <span className="mono text-amber-300 tabular-nums">{outOfScopePrograms}</span>
+                  <span className="text-neutral-400"> also list it as out-of-scope — see below</span>
+                </>
+              )}
+            </>
+          )}
+          {verdict === 'out' && (
+            <>
+              <code className={`mono ${style.domainColor}`}>{domain}</code>
+              <span className="text-neutral-400"> is </span>
+              <span className="text-amber-300">explicitly listed as out-of-scope</span>
+              <span className="text-neutral-400"> in </span>
+              <span className="mono text-neutral-100 tabular-nums">{outOfScopePrograms}</span>
+              <span className="text-neutral-400"> program{outOfScopePrograms === 1 ? '' : 's'}. Do not test.</span>
+            </>
+          )}
+          {verdict === 'none' && (
+            <>
+              <code className={`mono ${style.domainColor}`}>{domain}</code>
+              <span className="text-neutral-400"> — not listed by any indexed program</span>
+            </>
+          )}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+interface MatchListProps {
+  title: string;
+  matches: Match[];
+  kind: 'in' | 'out';
+  note?: string;
+}
+
+function MatchList({ title, matches, kind, note }: MatchListProps) {
+  const glyph = kind === 'in' ? '+' : '−';
+  const glyphColor = kind === 'in' ? 'text-emerald-400' : 'text-amber-400';
+  const identifierColor = kind === 'in' ? 'text-neutral-500' : 'text-amber-300/70';
+
+  return (
+    <div className="mt-8">
+      <p className={`mono text-[10px] uppercase tracking-widest mb-3 ${kind === 'in' ? 'text-neutral-500' : 'text-amber-400'}`}>
+        {title}
+      </p>
+      {note && (
+        <p className="mono text-[11px] text-amber-300/80 bg-amber-400/[0.04] border border-amber-400/20 rounded-md px-3 py-2 mb-3">
+          <span className="text-amber-400">⚠</span> {note}
+        </p>
+      )}
+      <ul className={`border rounded-lg overflow-hidden ${kind === 'in' ? 'border-neutral-900 bg-neutral-950/40' : 'border-amber-400/15 bg-amber-400/[0.02]'}`}>
+        {matches.map((m, i) => (
+          <li key={`${m.program.id}-${m.scope.id}`} className={i === matches.length - 1 ? '' : `border-b ${kind === 'in' ? 'border-neutral-900' : 'border-amber-400/10'}`}>
+            <Link
+              href={`/programs/${m.program.platform}/${m.program.slug}`}
+              className={`flex items-center gap-4 px-5 py-3.5 transition group ${kind === 'in' ? 'hover:bg-neutral-900/50' : 'hover:bg-amber-400/[0.06]'}`}
+            >
+              <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${PLATFORM_META[m.program.platform]?.dot ?? 'bg-neutral-500'}`} />
+              <div className="min-w-0 flex-1">
+                <p className={`text-sm truncate transition ${kind === 'in' ? 'text-neutral-100 group-hover:text-emerald-400' : 'text-neutral-100 group-hover:text-amber-300'}`}>
+                  {m.program.name}
+                </p>
+                <code className={`mono text-[11px] block truncate mt-0.5 ${identifierColor}`}>
+                  <span className={`${glyphColor} mr-1`}>{glyph}</span>
+                  {m.scope.identifier}
+                </code>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="mono text-xs text-neutral-400">{platformLabel(m.program.platform)}</p>
+                <p className="mono text-xs text-neutral-100 tabular-nums mt-0.5">
+                  {formatBounty(m.program.maxBounty, m.program.currency ?? 'USD')}
+                </p>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
