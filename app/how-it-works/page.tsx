@@ -52,7 +52,7 @@ export default function HowItWorksPage() {
       <header className="reveal">
         <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">Under the hood</p>
         <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-neutral-50 leading-[1.02]">
-          How it's built.
+          How it&apos;s built.
         </h1>
         <p className="mt-6 text-neutral-400 text-lg max-w-2xl leading-relaxed">
           One quiet daily job, indexed for scan speed. Every public bounty program on five platforms flows through

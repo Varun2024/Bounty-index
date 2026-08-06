@@ -1,5 +1,5 @@
 import { db, schema } from '@/lib/db/client';
-import { sql, eq, desc } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
 
 const BASE = 'https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/main/data';
@@ -289,38 +289,6 @@ function normalizeFederacy(r: FederacyRecord): NormalizedProgram | null {
   };
 }
 
-interface HackenProofRecord {
-  name?: string;
-  url?: string;
-  slug?: string;
-  bounty?: boolean;
-  targets?: RawTargets;
-  min_bounty?: number | null;
-  max_bounty?: number | null;
-}
-
-function normalizeHackenProof(r: HackenProofRecord): NormalizedProgram | null {
-  if (!r.name) return null;
-  const slug = r.slug ?? slugify(r.name);
-  const offersBounty = !!r.bounty || (r.max_bounty ?? 0) > 0;
-  return {
-    slug,
-    handle: null,
-    name: r.name,
-    url: r.url ?? `https://hackenproof.com/programs/${slug}`,
-    offersBounty,
-    offersSwag: false,
-    managed: false,
-    minBounty: r.min_bounty ?? null,
-    maxBounty: r.max_bounty ?? null,
-    currency: 'USD',
-    submissionState: null,
-    safeHarbor: null,
-    scopes: normalizeScopes(r.targets ?? {}, offersBounty),
-    raw: r as unknown as object,
-  };
-}
-
 const NORMALIZERS: Record<Platform, (r: unknown) => NormalizedProgram | null> = {
   hackerone: (r) => normalizeHackerOne(r as HackerOneRecord),
   bugcrowd: (r) => normalizeBugcrowd(r as BugcrowdRecord),
@@ -328,9 +296,6 @@ const NORMALIZERS: Record<Platform, (r: unknown) => NormalizedProgram | null> = 
   yeswehack: (r) => normalizeYesWeHack(r as YesWeHackRecord),
   federacy: (r) => normalizeFederacy(r as FederacyRecord),
 };
-
-// Unused for now — kept in case hackenproof returns.
-void normalizeHackenProof;
 
 // ---- Fetch + persist ----
 
@@ -520,5 +485,3 @@ export async function ingestAll() {
   }
   return results;
 }
-
-export const _sql = sql;

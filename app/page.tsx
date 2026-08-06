@@ -428,7 +428,7 @@ function Pulse({ recent, trending }: PulseProps) {
       <div className="mb-12 flex items-end justify-between reveal">
         <div>
           <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">§ 03 · Pulse</p>
-          <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What's moving now.</h2>
+          <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What&apos;s moving now.</h2>
         </div>
         <Link
           href="/feed"
@@ -785,30 +785,6 @@ function Features({ s }: { s: Awaited<ReturnType<typeof stats>> | null }) {
             </div>
           </div>
           </Tilt>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ---------- Trust bar ----------
-
-function TrustBar({ s }: { s: Awaited<ReturnType<typeof stats>> | null }) {
-  return (
-    <section className="border-t border-neutral-900 bg-neutral-950/60">
-      <div className="max-w-[1400px] mx-auto px-6 py-10">
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 mono text-xs text-neutral-500 justify-between">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/70" />
-            <span>data · <a href="https://github.com/arkadiyt/bounty-targets-data" className="text-neutral-300 hover:text-emerald-400 transition">arkadiyt/bounty-targets-data</a></span>
-            <span className="text-neutral-700">·</span>
-            <span>MIT licensed</span>
-            <span className="text-neutral-700">·</span>
-            <span>updated hourly</span>
-            <span className="text-neutral-700">·</span>
-            <span>not affiliated with any platform</span>
-          </div>
-          {s?.lastIngestAt && <span className="text-neutral-400">last ingest {relativeTime(s.lastIngestAt)}</span>}
         </div>
       </div>
     </section>
