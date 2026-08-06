@@ -52,13 +52,17 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         <SearchIcon size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600 pointer-events-none" />
         <input
           type="search"
-          placeholder="search programs…"
+          placeholder="program or scope…"
           defaultValue={filters.q ?? ''}
           onKeyDown={(e) => {
             if (e.key === 'Enter') update({ q: e.currentTarget.value });
           }}
           className="focus-ring w-full mono text-xs pl-8 pr-3 py-2 bg-neutral-900 border border-neutral-800 rounded focus:outline-none focus:border-emerald-400/50"
         />
+        <p className="mono text-[10px] text-neutral-600 mt-1.5">
+          <span className="text-neutral-700">{'// '}</span>
+          matches program name OR any in-scope identifier
+        </p>
       </div>
 
       <FilterGroup label="Platform">

@@ -1,5 +1,5 @@
-// Enables pg_trgm and creates a GIN trigram index on programs.search_text.
-// Idempotent — safe to re-run. Speeds up ILIKE '%q%' and enables similarity() ranking.
+// Enables pg_trgm and installs trigram GIN indexes for fuzzy search on program names
+// and scope identifiers. Idempotent — safe to re-run.
 import 'dotenv/config';
 import { sql } from 'drizzle-orm';
 import { db } from '../lib/db/client';
@@ -9,7 +9,10 @@ async function main() {
   await db.execute(
     sql`CREATE INDEX IF NOT EXISTS programs_search_text_trgm_idx ON programs USING GIN (search_text gin_trgm_ops)`,
   );
-  console.log('pg_trgm ready. Trigram GIN index installed on programs.search_text.');
+  await db.execute(
+    sql`CREATE INDEX IF NOT EXISTS scopes_identifier_trgm_idx ON scopes USING GIN (identifier gin_trgm_ops)`,
+  );
+  console.log('pg_trgm ready. Trigram GIN indexes on programs.search_text and scopes.identifier.');
 }
 
 main()

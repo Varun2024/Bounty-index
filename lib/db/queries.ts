@@ -19,11 +19,28 @@ export async function listPrograms(f: ProgramFilters = {}) {
   const pageSize = Math.min(100, Math.max(1, f.pageSize ?? 25));
   const offset = (page - 1) * pageSize;
 
-  // Fuzzy search: when q present, match substring (accelerated by pg_trgm GIN) OR trigram similarity above threshold.
-  // The trigram operator `%` catches typos & word transpositions; ILIKE catches shorter/partial matches trigrams can't score high enough.
+  // Fuzzy search: when q present, match on program searchText (name/handle/slug) OR on any
+  // in-scope identifier containing the token. Both sides accelerated by pg_trgm GIN indexes.
+  // Trigram similarity() catches typos on the name side; ILIKE substring catches partials
+  // that trigrams score too low, and drives the scope-identifier match.
   const q = f.q?.trim();
+  let programIdsByScope: number[] | null = null;
+  if (q) {
+    const scopeMatches = await db
+      .selectDistinct({ id: schema.scopes.programId })
+      .from(schema.scopes)
+      .where(and(eq(schema.scopes.inScope, true), ilike(schema.scopes.identifier, `%${q}%`)))
+      .limit(500);
+    programIdsByScope = scopeMatches.map((r) => r.id);
+  }
   const qClause = q
-    ? sql`(${schema.programs.searchText} ILIKE ${'%' + q + '%'} OR ${schema.programs.searchText} % ${q})`
+    ? or(
+        ilike(schema.programs.searchText, `%${q}%`),
+        sql`${schema.programs.searchText} % ${q}`,
+        programIdsByScope && programIdsByScope.length > 0
+          ? inArray(schema.programs.id, programIdsByScope)
+          : undefined,
+      )
     : undefined;
 
   const where = and(
