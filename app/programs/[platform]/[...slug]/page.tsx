@@ -151,50 +151,132 @@ interface ScopeColumnProps {
   items: ScopeItem[];
 }
 
+// Hunter-order: what they scan first, then edge cases. Anything unknown falls at the end.
+const ASSET_TYPE_ORDER = ['wildcard', 'url', 'api', 'android', 'ios', 'source_code', 'hardware', 'smart_contract', 'other'];
+
+const ASSET_TYPE_LABEL: Record<string, string> = {
+  wildcard: 'wildcards',
+  url: 'urls',
+  api: 'apis',
+  android: 'android',
+  ios: 'ios',
+  source_code: 'source code',
+  hardware: 'hardware',
+  smart_contract: 'smart contracts',
+  other: 'other',
+};
+
+function groupByAssetType(items: ScopeItem[]): { type: string; items: ScopeItem[] }[] {
+  const buckets = new Map<string, ScopeItem[]>();
+  for (const item of items) {
+    const t = item.assetType || 'other';
+    const existing = buckets.get(t);
+    if (existing) existing.push(item);
+    else buckets.set(t, [item]);
+  }
+  const knownOrdered = ASSET_TYPE_ORDER.filter((t) => buckets.has(t)).map((t) => ({ type: t, items: buckets.get(t)! }));
+  const unknown = [...buckets.keys()].filter((t) => !ASSET_TYPE_ORDER.includes(t)).map((t) => ({ type: t, items: buckets.get(t)! }));
+  return [...knownOrdered, ...unknown];
+}
+
 function ScopeColumn({ kind, items }: ScopeColumnProps) {
   const isIn = kind === 'in';
-  const glyph = isIn ? '+' : '−';
-  const glyphColor = isIn ? 'text-emerald-400' : 'text-neutral-600';
   const title = isIn ? 'In scope' : 'Out of scope';
+  const buckets = groupByAssetType(items);
+  const shouldGroup = buckets.length > 1;
 
   return (
     <section>
       <div className="flex items-baseline justify-between mb-3">
         <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500">{title}</h2>
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">{items.length.toString().padStart(3, '0')}</span>
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
+          {items.length.toString().padStart(3, '0')}
+        </span>
       </div>
       {items.length === 0 ? (
         <p className="mono text-xs text-neutral-600 py-6">— none listed —</p>
+      ) : shouldGroup ? (
+        <div className="space-y-5">
+          {buckets.map((bucket) => (
+            <ScopeBucket
+              key={bucket.type}
+              type={bucket.type}
+              items={bucket.items}
+              kind={kind}
+              showTypeTag={false}
+            />
+          ))}
+        </div>
       ) : (
-        <ul className={`border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 ${isIn ? '' : 'opacity-80'}`}>
-          {items.map((s, i) => {
-            const href = scopeHref(s.identifier);
-            const rowClass = `flex items-center gap-3 px-4 py-3 md:py-2.5 ${i === items.length - 1 ? '' : 'border-b border-neutral-900'} hover:bg-neutral-900/40 active:bg-neutral-900/60 transition group`;
-            const body = (
-              <>
-                <span className={`mono text-sm ${glyphColor} shrink-0 w-3`}>{glyph}</span>
-                <code className={`mono text-xs break-all flex-1 ${href ? 'text-neutral-200 group-hover:text-emerald-300' : 'text-neutral-300'}`}>
-                  {s.identifier}
-                </code>
-                {href && (
-                  <ExternalIcon size={10} className="text-neutral-700 group-hover:text-emerald-400 shrink-0 transition" />
-                )}
-                <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 shrink-0">{s.assetType}</span>
-                {s.severity && (
-                  <span className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">· {s.severity}</span>
-                )}
-              </>
-            );
-            return href ? (
-              <li key={s.id}>
-                <a href={href} target="_blank" rel="noreferrer noopener" className={rowClass}>{body}</a>
-              </li>
-            ) : (
-              <li key={s.id} className={rowClass}>{body}</li>
-            );
-          })}
-        </ul>
+        <ScopeList items={items} kind={kind} showTypeTag={true} />
       )}
     </section>
+  );
+}
+
+interface ScopeBucketProps {
+  type: string;
+  items: ScopeItem[];
+  kind: 'in' | 'out';
+  showTypeTag: boolean;
+}
+
+function ScopeBucket({ type, items, kind, showTypeTag }: ScopeBucketProps) {
+  return (
+    <div>
+      <div className="flex items-baseline gap-2 mb-2">
+        <span className="mono text-[10px] uppercase tracking-widest text-emerald-400/80">
+          {ASSET_TYPE_LABEL[type] ?? type}
+        </span>
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
+          {items.length.toString().padStart(2, '0')}
+        </span>
+      </div>
+      <ScopeList items={items} kind={kind} showTypeTag={showTypeTag} />
+    </div>
+  );
+}
+
+interface ScopeListProps {
+  items: ScopeItem[];
+  kind: 'in' | 'out';
+  showTypeTag: boolean;
+}
+
+function ScopeList({ items, kind, showTypeTag }: ScopeListProps) {
+  const isIn = kind === 'in';
+  const glyph = isIn ? '+' : '−';
+  const glyphColor = isIn ? 'text-emerald-400' : 'text-neutral-600';
+  return (
+    <ul className={`border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 ${isIn ? '' : 'opacity-80'}`}>
+      {items.map((s, i) => {
+        const href = scopeHref(s.identifier);
+        const rowClass = `flex items-center gap-3 px-4 py-3 md:py-2.5 ${i === items.length - 1 ? '' : 'border-b border-neutral-900'} hover:bg-neutral-900/40 active:bg-neutral-900/60 transition group`;
+        const body = (
+          <>
+            <span className={`mono text-sm ${glyphColor} shrink-0 w-3`}>{glyph}</span>
+            <code className={`mono text-xs break-all flex-1 ${href ? 'text-neutral-200 group-hover:text-emerald-300' : 'text-neutral-300'}`}>
+              {s.identifier}
+            </code>
+            {href && (
+              <ExternalIcon size={10} className="text-neutral-700 group-hover:text-emerald-400 shrink-0 transition" />
+            )}
+            {showTypeTag && (
+              <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 shrink-0">{s.assetType}</span>
+            )}
+            {s.severity && (
+              <span className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">· {s.severity}</span>
+            )}
+          </>
+        );
+        return href ? (
+          <li key={s.id}>
+            <a href={href} target="_blank" rel="noreferrer noopener" className={rowClass}>{body}</a>
+          </li>
+        ) : (
+          <li key={s.id} className={rowClass}>{body}</li>
+        );
+      })}
+    </ul>
   );
 }
