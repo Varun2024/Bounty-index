@@ -48,6 +48,16 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
     pageSize: 30,
   };
 
+  // Build export query string from the current filters (drop `page` — export returns everything).
+  const exportQs = (() => {
+    const p = new URLSearchParams();
+    for (const [k, v] of Object.entries(sp)) {
+      if (k === 'page' || v == null || v === '') continue;
+      p.set(k, Array.isArray(v) ? v.join(',') : v);
+    }
+    return p.toString();
+  })();
+
   let rows: Awaited<ReturnType<typeof listPrograms>>['rows'] = [];
   let total = 0;
   let dbError: string | null = null;
@@ -82,6 +92,26 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
             <p className="mono text-[10px] uppercase tracking-widest text-neutral-600 mt-1">
               sorted by {filters.sort}
             </p>
+            {!dbError && total > 0 && (
+              <p className="mono text-[10px] uppercase tracking-widest text-neutral-600 mt-2 flex items-center gap-2 justify-end">
+                <span>export</span>
+                <a
+                  href={`/api/export/programs?format=csv${exportQs ? '&' + exportQs : ''}`}
+                  className="text-emerald-400 hover:text-emerald-300 transition focus-ring rounded"
+                  title="Download current filter set as CSV"
+                >
+                  csv
+                </a>
+                <span className="text-neutral-800">·</span>
+                <a
+                  href={`/api/export/programs?format=json${exportQs ? '&' + exportQs : ''}`}
+                  className="text-emerald-400 hover:text-emerald-300 transition focus-ring rounded"
+                  title="Download current filter set as JSON"
+                >
+                  json
+                </a>
+              </p>
+            )}
           </div>
         </div>
 

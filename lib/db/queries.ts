@@ -16,7 +16,8 @@ export type ProgramFilters = {
 
 export async function listPrograms(f: ProgramFilters = {}) {
   const page = Math.max(1, f.page ?? 1);
-  const pageSize = Math.min(100, Math.max(1, f.pageSize ?? 25));
+  // Cap at 5000 so exports can pull the full set (~1.2k rows today) without a caller-injected DoS.
+  const pageSize = Math.min(5000, Math.max(1, f.pageSize ?? 25));
   const offset = (page - 1) * pageSize;
 
   // Fuzzy search: when q present, match on program searchText (name/handle/slug) OR on any
