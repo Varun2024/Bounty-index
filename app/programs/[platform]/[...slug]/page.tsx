@@ -5,6 +5,7 @@ import { getProgramBySlug } from '@/lib/db/queries';
 import { formatBounty, platformLabel, PLATFORM_META, relativeTime, scopeHref } from '@/lib/format';
 import { ExternalIcon } from '@/app/_ui/icons';
 import { CompareButton } from '@/app/_ui/compare-button';
+import { WatchButton } from '@/app/_ui/watch-button';
 import { PlatformLogo } from '@/app/_ui/platform-logo';
 
 export const dynamic = 'force-dynamic';
@@ -87,6 +88,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
+              <WatchButton programId={program.id} />
               <CompareButton programId={program.id} />
               <a
                 href={program.url}

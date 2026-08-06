@@ -178,3 +178,72 @@ export async function trendingNewPayouts(limit = 6, days = 30) {
     .orderBy(sql`${schema.programs.maxBounty} DESC NULLS LAST`)
     .limit(limit);
 }
+
+// Watchlist data: each program + its two most recent snapshot payloads for diff computation.
+export interface WatchlistEntry {
+  program: typeof schema.programs.$inferSelect;
+  latest: SnapshotPayloadShape | null;
+  previous: SnapshotPayloadShape | null;
+  latestAt: Date | null;
+}
+
+// Shape of the payload we write in lib/ingest/bounty-targets.ts::buildSnapshotPayload.
+// Kept as an interface (not imported) so queries.ts stays free of ingest coupling.
+export interface SnapshotPayloadShape {
+  name: string;
+  url: string;
+  handle: string | null;
+  programType: string;
+  offersBounty: boolean;
+  offersSwag: boolean;
+  managed: boolean;
+  minBounty: number | null;
+  maxBounty: number | null;
+  currency: string;
+  submissionState: string | null;
+  safeHarbor: string | null;
+  scopeCount: number;
+  inScopeCount: number;
+  scopeIdentifiers: string[];
+}
+
+export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
+  if (!ids.length) return [];
+  const programs = await db.select().from(schema.programs).where(inArray(schema.programs.id, ids));
+
+  // Snapshots are sparse (only writes when content_hash changes), so fetching all rows for the
+  // watched set is cheap. Bucket per program in JS, sort desc by capturedAt, take first two.
+  // ponytail: JS-side bucketing. If watchlists grow >100 programs, switch to a window-function query.
+  const allSnaps = await db
+    .select({
+      programId: schema.programSnapshots.programId,
+      capturedAt: schema.programSnapshots.capturedAt,
+      payload: schema.programSnapshots.payload,
+    })
+    .from(schema.programSnapshots)
+    .where(inArray(schema.programSnapshots.programId, ids))
+    .orderBy(desc(schema.programSnapshots.capturedAt));
+
+  const bucket = new Map<number, { latest: SnapshotPayloadShape | null; previous: SnapshotPayloadShape | null; latestAt: Date | null }>();
+  for (const row of allSnaps) {
+    const entry = bucket.get(row.programId);
+    const payload = row.payload as SnapshotPayloadShape;
+    if (!entry) {
+      bucket.set(row.programId, { latest: payload, previous: null, latestAt: row.capturedAt });
+    } else if (!entry.previous) {
+      entry.previous = payload;
+    }
+    // Rows are already ordered DESC; anything after the second snapshot is discarded.
+  }
+
+  const byId = new Map(programs.map((p) => [p.id, p]));
+  return ids
+    .map((id) => byId.get(id))
+    .filter((p): p is (typeof programs)[number] => !!p)
+    .map((p) => ({
+      program: p,
+      latest: bucket.get(p.id)?.latest ?? null,
+      previous: bucket.get(p.id)?.previous ?? null,
+      latestAt: bucket.get(p.id)?.latestAt ?? null,
+    }));
+}
