@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { getWatchlist, type WatchlistEntry, type SnapshotPayloadShape } from '@/lib/db/queries';
+import { getWatchlist, type WatchlistEntry } from '@/lib/db/queries';
 import { formatBounty, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
+import { diffSnapshots, isEmptyDiff } from '@/lib/snapshots';
 import { WatchlistSync } from './sync';
 import { UnwatchButton } from './unwatch-button';
 
@@ -81,7 +82,7 @@ function EmptyState({ hasIds }: { hasIds: boolean }) {
 function WatchlistRow({ entry }: { entry: WatchlistEntry }) {
   const { program, latest, previous, latestAt } = entry;
   const diff = diffSnapshots(previous, latest);
-  const hasChanges = diff && (diff.added.length > 0 || diff.removed.length > 0 || diff.rewardDelta !== null || diff.safeHarborChanged);
+  const hasChanges = diff !== null && !isEmptyDiff(diff);
   const dot = PLATFORM_META[program.platform]?.dot ?? 'bg-neutral-500';
 
   return (
@@ -184,24 +185,3 @@ function IdentifierBlock({
   );
 }
 
-// --- diff helpers ---
-
-interface SnapshotDiff {
-  added: string[];
-  removed: string[];
-  rewardDelta: { from: number | null; to: number | null } | null;
-  safeHarborChanged: { from: string | null; to: string | null } | null;
-}
-
-function diffSnapshots(prev: SnapshotPayloadShape | null, cur: SnapshotPayloadShape | null): SnapshotDiff | null {
-  if (!cur || !prev) return null;
-  const prevIds = new Set(prev.scopeIdentifiers);
-  const curIds = new Set(cur.scopeIdentifiers);
-  const added = cur.scopeIdentifiers.filter((id) => !prevIds.has(id));
-  const removed = prev.scopeIdentifiers.filter((id) => !curIds.has(id));
-  const rewardDelta =
-    prev.maxBounty !== cur.maxBounty ? { from: prev.maxBounty, to: cur.maxBounty } : null;
-  const safeHarborChanged =
-    prev.safeHarbor !== cur.safeHarbor ? { from: prev.safeHarbor, to: cur.safeHarbor } : null;
-  return { added, removed, rewardDelta, safeHarborChanged };
-}

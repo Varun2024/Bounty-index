@@ -7,6 +7,21 @@ export function formatBounty(amount: number | null | undefined, currency = 'USD'
   return `${sym}${amount}`;
 }
 
+// Render min–max as a range when both are known. Falls back to "up to X" or "from X" when
+// only one side is present. Returns null when neither side is known so callers can skip the label.
+export function formatPayoutRange(
+  min: number | null | undefined,
+  max: number | null | undefined,
+  currency = 'USD',
+): { label: string; value: string } | null {
+  const hasMin = min != null && min > 0;
+  const hasMax = max != null && max > 0;
+  if (hasMin && hasMax) return { label: 'payout', value: `${formatBounty(min, currency)} – ${formatBounty(max, currency)}` };
+  if (hasMax) return { label: 'payout up to', value: formatBounty(max, currency) };
+  if (hasMin) return { label: 'payout from', value: formatBounty(min, currency) };
+  return null;
+}
+
 export const PLATFORM_META: Record<string, { label: string; dot: string }> = {
   hackerone: { label: 'HackerOne', dot: 'bg-red-400' },
   bugcrowd: { label: 'Bugcrowd', dot: 'bg-orange-400' },

@@ -225,6 +225,24 @@ export interface SnapshotPayloadShape {
   scopeIdentifiers: string[];
 }
 
+// Full snapshot history for a single program, oldest → newest so callers can build a timeline.
+export interface ProgramSnapshot {
+  capturedAt: Date;
+  payload: SnapshotPayloadShape;
+}
+
+export async function getProgramSnapshots(programId: number): Promise<ProgramSnapshot[]> {
+  const rows = await db
+    .select({
+      capturedAt: schema.programSnapshots.capturedAt,
+      payload: schema.programSnapshots.payload,
+    })
+    .from(schema.programSnapshots)
+    .where(eq(schema.programSnapshots.programId, programId))
+    .orderBy(schema.programSnapshots.capturedAt);
+  return rows.map((r) => ({ capturedAt: r.capturedAt, payload: r.payload as SnapshotPayloadShape }));
+}
+
 export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
   if (!ids.length) return [];
   const programs = await db.select().from(schema.programs).where(inArray(schema.programs.id, ids));
