@@ -7,6 +7,7 @@ import { Logo } from './_ui/logo';
 import { GlobalKeyboard } from './_ui/global-keyboard';
 import { CompareTray } from './_ui/compare-tray';
 import { PlatformLogo } from './_ui/platform-logo';
+import { UserMenu } from './_ui/user-menu';
 import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -99,6 +100,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <span className="ml-4 mono text-[10px] uppercase tracking-widest text-neutral-600 hidden md:inline-flex items-center gap-1.5">
                 <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
                 <span>to search</span>
+              </span>
+              <span className="ml-3 pl-3 border-l border-neutral-800 hidden md:inline-flex items-center">
+                <UserMenu />
               </span>
             </nav>
           </div>
