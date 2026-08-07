@@ -23,8 +23,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .select({ platform: schema.programs.platform, slug: schema.programs.slug, updated: schema.programs.lastUpdatedAt })
       .from(schema.programs)
       .limit(10000);
+    // URL-encode each path segment individually so `&`, spaces, and other XML/URL-hostile
+    // characters in a slug (e.g. Bugcrowd's `at&t`) don't break the sitemap XML parser.
+    // Slashes inside a slug (Bugcrowd's `engagements/foo` pattern) must be preserved — split, encode, rejoin.
+    const encodeSlug = (s: string) => s.split('/').map(encodeURIComponent).join('/');
     const programEntries: MetadataRoute.Sitemap = rows.map((r) => ({
-      url: `${base}/programs/${r.platform}/${r.slug}`,
+      url: `${base}/programs/${encodeURIComponent(r.platform)}/${encodeSlug(r.slug)}`,
       lastModified: r.updated ?? undefined,
       priority: 0.5,
     }));

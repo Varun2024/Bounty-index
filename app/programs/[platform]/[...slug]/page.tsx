@@ -91,13 +91,15 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const payout = formatPayoutRange(program.minBounty, program.maxBounty, program.currency ?? 'USD');
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.bountyindex.in';
+  const encodedSlug = program.slug.split('/').map(encodeURIComponent).join('/');
+  const encodedPlatform = encodeURIComponent(program.platform);
   const breadcrumbLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Programs', item: `${siteUrl}/programs` },
-      { '@type': 'ListItem', position: 2, name: platformLabel(program.platform), item: `${siteUrl}/programs?platform=${program.platform}` },
-      { '@type': 'ListItem', position: 3, name: program.name, item: `${siteUrl}/programs/${program.platform}/${program.slug}` },
+      { '@type': 'ListItem', position: 2, name: platformLabel(program.platform), item: `${siteUrl}/programs?platform=${encodedPlatform}` },
+      { '@type': 'ListItem', position: 3, name: program.name, item: `${siteUrl}/programs/${encodedPlatform}/${encodedSlug}` },
     ],
   };
 

@@ -10,9 +10,12 @@ export async function GET(req: Request) {
   const origin = new URL(req.url).origin;
   const rows = await newestPrograms(50);
 
+  // Encode each URL path segment so `&`, spaces, etc. in slugs (Bugcrowd `at&t`, `engagements/foo`)
+  // don't break the RSS parser. Preserve slashes inside multi-segment slugs.
+  const encodeSlug = (s: string) => s.split('/').map(encodeURIComponent).join('/');
   const items = rows
     .map((p) => {
-      const link = `${origin}/programs/${p.platform}/${p.slug}`;
+      const link = `${origin}/programs/${encodeURIComponent(p.platform)}/${encodeSlug(p.slug)}`;
       const pubDate = p.firstSeenAt ? new Date(p.firstSeenAt).toUTCString() : new Date().toUTCString();
       const bounty = p.maxBounty ? ` — up to $${p.maxBounty.toLocaleString()}` : '';
       const desc = `${p.platform} · ${p.programType}${bounty}`;
