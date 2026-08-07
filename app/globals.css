@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Suppress default disclosure triangle on <details><summary> — we use details as a menu container. */
+.user-menu > summary::-webkit-details-marker { display: none; }
+.user-menu > summary::marker { content: ''; }
+
 :root {
   --background: #0a0a0b;
   --foreground: #e5e5e5;

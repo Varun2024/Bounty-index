@@ -94,20 +94,20 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <Logo size={22} className="text-neutral-500 group-hover:text-neutral-300 transition" />
               <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
             </Link>
-            <nav className="flex items-center gap-0.5 md:gap-1 text-sm">
-              <NavLink href="/programs">Programs</NavLink>
-              <NavLink href="/compare">Compare</NavLink>
-              <NavLink href="/watchlist">Watch</NavLink>
-              <NavLink href="/scope-lookup"><span className="hidden sm:inline">Scope lookup</span><span className="sm:hidden">Scope</span></NavLink>
-              <NavLink href="/feed">New</NavLink>
-              <span className="ml-4 mono text-[10px] uppercase tracking-widest text-neutral-600 hidden md:inline-flex items-center gap-1.5">
+            <div className="flex items-center gap-1 md:gap-2 text-sm">
+              <nav className="flex items-center gap-0.5 md:gap-1">
+                <NavLink href="/programs">Programs</NavLink>
+                <NavLink href="/scope-lookup"><span className="hidden sm:inline">Scope lookup</span><span className="sm:hidden">Scope</span></NavLink>
+                <NavLink href="/feed">New</NavLink>
+              </nav>
+              <span className="ml-2 mono text-[10px] uppercase tracking-widest text-neutral-600 hidden md:inline-flex items-center gap-1.5">
                 <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
                 <span>to search</span>
               </span>
-              <span className="ml-3 pl-3 border-l border-neutral-800 hidden md:inline-flex items-center">
+              <span className="ml-1.5 md:ml-3 md:pl-3 md:border-l md:border-neutral-800 inline-flex items-center">
                 <UserMenu />
               </span>
-            </nav>
+            </div>
           </div>
           <div className="h-px bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent" />
         </header>
