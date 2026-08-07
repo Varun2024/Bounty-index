@@ -1,6 +1,11 @@
 'use client';
 
 import { useCallback, useSyncExternalStore } from 'react';
+import { useSession } from 'next-auth/react';
+import {
+  addToServerWatchlist,
+  removeFromServerWatchlist,
+} from '@/app/actions/sync';
 
 const KEY = 'bounty-index:watchlist';
 
@@ -18,10 +23,15 @@ function readLocalStorage(): number[] {
   }
 }
 
-function write(ids: number[]) {
+function writeLocal(ids: number[]) {
   window.localStorage.setItem(KEY, JSON.stringify(ids));
   cachedSnapshot = null;
   window.dispatchEvent(new Event('watchlist:change'));
+}
+
+// Exported for the AuthSync bridge — should not be called from feature code.
+export function _writeWatchlistLocal(ids: number[]) {
+  writeLocal(ids);
 }
 
 const EMPTY: number[] = Object.freeze([]) as unknown as number[];
@@ -62,17 +72,44 @@ function useHydrated(): boolean {
 export function useWatchlist() {
   const ids = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const hydrated = useHydrated();
+  const { data: session } = useSession();
+  const isAuthed = !!session?.user;
 
-  const toggle = useCallback((id: number) => {
-    const cur = readLocalStorage();
-    write(cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]);
-  }, []);
+  const toggle = useCallback(
+    async (id: number) => {
+      const cur = readLocalStorage();
+      const isRemoving = cur.includes(id);
+      const optimistic = isRemoving ? cur.filter((x) => x !== id) : [...cur, id];
+      writeLocal(optimistic);
+      if (!isAuthed) return;
+      try {
+        const authoritative = isRemoving
+          ? await removeFromServerWatchlist(id)
+          : await addToServerWatchlist(id);
+        writeLocal(authoritative);
+      } catch {
+        writeLocal(cur); // rollback on server error
+      }
+    },
+    [isAuthed],
+  );
 
-  const remove = useCallback((id: number) => {
-    write(readLocalStorage().filter((x) => x !== id));
-  }, []);
+  const remove = useCallback(
+    async (id: number) => {
+      const cur = readLocalStorage();
+      writeLocal(cur.filter((x) => x !== id));
+      if (!isAuthed) return;
+      try {
+        const authoritative = await removeFromServerWatchlist(id);
+        writeLocal(authoritative);
+      } catch {
+        writeLocal(cur);
+      }
+    },
+    [isAuthed],
+  );
 
-  const clear = useCallback(() => write([]), []);
+  const clear = useCallback(() => writeLocal([]), []);
 
-  return { ids, hydrated, toggle, remove, clear };
+  return { ids, hydrated, toggle, remove, clear, isAuthed };
 }

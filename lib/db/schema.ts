@@ -146,6 +146,42 @@ export const verificationTokens = pgTable(
   }),
 );
 
+// --- Per-user state (cross-device sync for watchlist + compare) ---
+
+export const userWatchlist = pgTable(
+  'user_watchlist',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    programId: integer('program_id')
+      .notNull()
+      .references(() => programs.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.programId] }),
+    userIdx: index('user_watchlist_user_idx').on(t.userId),
+  }),
+);
+
+export const userCompare = pgTable(
+  'user_compare',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    programId: integer('program_id')
+      .notNull()
+      .references(() => programs.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.programId] }),
+    userIdx: index('user_compare_user_idx').on(t.userId),
+  }),
+);
+
 export type Program = typeof programs.$inferSelect;
 export type NewProgram = typeof programs.$inferInsert;
 export type Scope = typeof scopes.$inferSelect;

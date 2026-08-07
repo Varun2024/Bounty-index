@@ -1,6 +1,12 @@
 'use client';
 
 import { useCallback, useSyncExternalStore } from 'react';
+import { useSession } from 'next-auth/react';
+import {
+  addToServerCompare,
+  removeFromServerCompare,
+  clearServerCompare,
+} from '@/app/actions/sync';
 
 const KEY = 'bounty-index:compare';
 const MAX = 4;
@@ -19,16 +25,18 @@ function readLocalStorage(): number[] {
   }
 }
 
-function write(ids: number[]) {
+function writeLocal(ids: number[]) {
   window.localStorage.setItem(KEY, JSON.stringify(ids.slice(0, MAX)));
   cachedSnapshot = null;
   window.dispatchEvent(new Event('compare:change'));
 }
 
-// Stable empty ref for SSR + fallback — useSyncExternalStore requires snapshot identity to be stable across calls when nothing changed.
-const EMPTY: number[] = Object.freeze([]) as unknown as number[];
+// Exported for the AuthSync bridge — should not be called from feature code.
+export function _writeCompareLocal(ids: number[]) {
+  writeLocal(ids);
+}
 
-// Client-side snapshot cache. Invalidated on change events + on write().
+const EMPTY: number[] = Object.freeze([]) as unknown as number[];
 let cachedSnapshot: number[] | null = null;
 
 function getSnapshot(): number[] {
@@ -54,8 +62,6 @@ function subscribe(cb: () => void): () => void {
   };
 }
 
-// A never-firing subscribe means the value only reads on mount + on re-render triggered elsewhere.
-// Server returns false, client returns true — that's the whole "am I past hydration" signal.
 const noopSubscribe = () => () => {};
 function useHydrated(): boolean {
   return useSyncExternalStore(
@@ -68,20 +74,52 @@ function useHydrated(): boolean {
 export function useCompareSelection() {
   const ids = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const hydrated = useHydrated();
+  const { data: session } = useSession();
+  const isAuthed = !!session?.user;
 
-  const toggle = useCallback((id: number) => {
-    const cur = readLocalStorage();
-    const next = cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id].slice(0, MAX);
-    write(next);
-  }, []);
+  const toggle = useCallback(
+    async (id: number) => {
+      const cur = readLocalStorage();
+      const isRemoving = cur.includes(id);
+      const optimistic = isRemoving ? cur.filter((x) => x !== id) : [...cur, id].slice(0, MAX);
+      writeLocal(optimistic);
+      if (!isAuthed) return;
+      try {
+        const authoritative = isRemoving
+          ? await removeFromServerCompare(id)
+          : await addToServerCompare(id);
+        writeLocal(authoritative);
+      } catch {
+        writeLocal(cur);
+      }
+    },
+    [isAuthed],
+  );
 
-  const remove = useCallback((id: number) => {
-    write(readLocalStorage().filter((x) => x !== id));
-  }, []);
+  const remove = useCallback(
+    async (id: number) => {
+      const cur = readLocalStorage();
+      writeLocal(cur.filter((x) => x !== id));
+      if (!isAuthed) return;
+      try {
+        const authoritative = await removeFromServerCompare(id);
+        writeLocal(authoritative);
+      } catch {
+        writeLocal(cur);
+      }
+    },
+    [isAuthed],
+  );
 
-  const clear = useCallback(() => {
-    write([]);
-  }, []);
+  const clear = useCallback(async () => {
+    writeLocal([]);
+    if (!isAuthed) return;
+    try {
+      await clearServerCompare();
+    } catch {
+      /* keep the local clear even if the server call fails; user can re-clear */
+    }
+  }, [isAuthed]);
 
-  return { ids, hydrated, toggle, remove, clear, max: MAX, isFull: ids.length >= MAX };
+  return { ids, hydrated, toggle, remove, clear, max: MAX, isFull: ids.length >= MAX, isAuthed };
 }

@@ -8,6 +8,8 @@ import { GlobalKeyboard } from './_ui/global-keyboard';
 import { CompareTray } from './_ui/compare-tray';
 import { PlatformLogo } from './_ui/platform-logo';
 import { UserMenu } from './_ui/user-menu';
+import { SessionProvider } from './_ui/session-provider';
+import { AuthSync } from './_ui/auth-sync';
 import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -85,6 +87,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col bg-[#0a0a0b] text-neutral-200 font-sans">
+        <SessionProvider>
         <header className="sticky top-0 z-20 backdrop-blur-md bg-[#0a0a0b]/80 border-b border-neutral-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
             <Link href="/" className="mono text-sm tracking-tight flex items-center gap-2.5 group focus-ring rounded-md py-1 -my-1">
@@ -111,6 +114,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <main className="flex-1">{children}</main>
         <GlobalKeyboard />
         <CompareTray />
+        <AuthSync />
         <Analytics />
         <footer className="border-t border-neutral-900 relative overflow-hidden">
           <div
@@ -228,6 +232,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </div>
           </div>
         </footer>
+        </SessionProvider>
       </body>
     </html>
   );
