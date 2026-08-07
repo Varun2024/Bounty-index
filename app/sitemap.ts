@@ -10,6 +10,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/programs`, priority: 0.9 },
     { url: `${base}/scope-lookup`, priority: 0.8 },
     { url: `${base}/feed`, priority: 0.7 },
+    { url: `${base}/programs/paying`, priority: 0.8 },
+    { url: `${base}/programs/safe-harbor`, priority: 0.8 },
+    { url: `${base}/programs/wildcard`, priority: 0.8 },
+    { url: `${base}/how-it-works`, priority: 0.5 },
+    { url: `${base}/compare`, priority: 0.6 },
+    { url: `${base}/watchlist`, priority: 0.4 },
   ];
 
   try {

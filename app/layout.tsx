@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   title: 'Bounty Index — every bug bounty program, filterable',
   description: 'Every public bug bounty program on HackerOne, Bugcrowd, Intigriti, YesWeHack, and Federacy — filterable by scope, payout, and asset type.',
   alternates: { canonical: '/' },
+  verification: {
+    google: 'npK_dP6YyX19gt_ROU1Riz9bMkua551DZF847Yx2xTQ',
+  },
   openGraph: {
     title: 'bounty.index — every public bounty, one index',
     description: 'Every public bug bounty program across five platforms — filterable by scope, payout, and asset type.',
@@ -33,6 +36,29 @@ export const metadata: Metadata = {
     description: 'Every public bug bounty program across five platforms.',
     images: ['/og.jpg'],
   },
+};
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.bountyindex.in';
+
+const WEBSITE_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'bounty.index',
+  url: SITE_URL,
+  description: 'Aggregated index of every public bug bounty program across HackerOne, Bugcrowd, Intigriti, YesWeHack, and Federacy.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/programs?q={search_term_string}` },
+    'query-input': 'required name=search_term_string',
+  },
+};
+
+const ORG_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'bounty.index',
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon-512.png`,
 };
 
 interface RootLayoutProps {
@@ -89,6 +115,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
       <body className="min-h-full flex flex-col bg-[#0a0a0b] text-neutral-200 font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_LD) }}
+        />
         <SessionProvider>
         <header className="sticky top-0 z-20 backdrop-blur-md bg-[#0a0a0b]/80 border-b border-neutral-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">

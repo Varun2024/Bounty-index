@@ -21,10 +21,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const result = await getProgramBySlug(platform, fullSlug).catch(() => null);
   if (!result) return { title: 'Program not found · Bounty Index' };
   const { program, scopes } = result;
-  const bounty = program.maxBounty ? ` — up to $${program.maxBounty.toLocaleString()}` : '';
-  const title = `${program.name} · ${program.platform}${bounty}`;
-  const inScopeCount = scopes.filter((s) => s.inScope).length;
-  const description = `${program.name} on ${program.platform}. ${inScopeCount} in-scope assets. Program type: ${program.programType}.`;
+  const inScope = scopes.filter((s) => s.inScope);
+  const platformLabel = program.platform.charAt(0).toUpperCase() + program.platform.slice(1);
+  const typeWord = program.offersBounty ? 'Bug Bounty Program' : 'Vulnerability Disclosure Program';
+  const payoutBit = formatPayoutForMeta(program.minBounty, program.maxBounty, program.currency ?? 'USD');
+  const title = payoutBit
+    ? `${program.name} ${typeWord} on ${platformLabel} — Payout ${payoutBit}`
+    : `${program.name} ${typeWord} on ${platformLabel}`;
+  const description = buildProgramDescription(program.name, platformLabel, program.offersBounty, payoutBit, inScope);
   return {
     title,
     description,
@@ -32,6 +36,46 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     twitter: { card: 'summary', title, description },
     alternates: { canonical: `/programs/${program.platform}/${program.slug}` },
   };
+}
+
+function formatPayoutForMeta(min: number | null, max: number | null, currency: string): string {
+  const sym = currency === 'EUR' ? '€' : '$';
+  const fmt = (n: number): string => {
+    if (n >= 1_000_000) return `${sym}${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)}M`;
+    if (n >= 1000) return `${sym}${Math.round(n / 1000)}K`;
+    return `${sym}${n}`;
+  };
+  if (min && max) return `${fmt(min)}–${fmt(max)}`;
+  if (max) return `up to ${fmt(max)}`;
+  if (min) return `from ${fmt(min)}`;
+  return '';
+}
+
+interface InScopeItem {
+  assetType: string;
+}
+
+function buildProgramDescription(
+  name: string,
+  platformLabel: string,
+  offersBounty: boolean,
+  payoutBit: string,
+  inScope: InScopeItem[],
+): string {
+  const typeWord = offersBounty ? 'runs a bug bounty program' : 'runs a vulnerability disclosure program';
+  const payoutPart = payoutBit ? `, payouts ${payoutBit}` : '';
+  const total = inScope.length;
+  // Compose an asset-type breakdown like "5 URLs, 2 APIs" — top 3 buckets.
+  const buckets = new Map<string, number>();
+  for (const s of inScope) buckets.set(s.assetType, (buckets.get(s.assetType) ?? 0) + 1);
+  const sorted = [...buckets.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const breakdown = sorted.length
+    ? sorted.map(([type, n]) => `${n} ${type}${n === 1 ? '' : 's'}`).join(', ')
+    : '';
+  const base = `${name} ${typeWord} on ${platformLabel}${payoutPart}. ${total} in-scope asset${total === 1 ? '' : 's'}`;
+  const full = breakdown ? `${base}: ${breakdown}.` : `${base}.`;
+  // Meta descriptions cap ~160 chars; truncate defensively.
+  return full.length > 158 ? full.slice(0, 155) + '…' : full;
 }
 
 export default async function ProgramDetailPage({ params }: PageProps) {
@@ -46,8 +90,23 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const platformDot = PLATFORM_META[program.platform]?.dot ?? 'bg-neutral-500';
   const payout = formatPayoutRange(program.minBounty, program.maxBounty, program.currency ?? 'USD');
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.bountyindex.in';
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Programs', item: `${siteUrl}/programs` },
+      { '@type': 'ListItem', position: 2, name: platformLabel(program.platform), item: `${siteUrl}/programs?platform=${program.platform}` },
+      { '@type': 'ListItem', position: 3, name: program.name, item: `${siteUrl}/programs/${program.platform}/${program.slug}` },
+    ],
+  };
+
   return (
     <div className="relative">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       {/* Breadcrumb */}
       <div className="border-b border-neutral-900">
         <div className="max-w-[1100px] mx-auto px-6 py-4 mono text-xs flex items-center gap-2">
