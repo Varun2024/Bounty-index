@@ -18,18 +18,20 @@ const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin']
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   title: 'Bounty Index — every bug bounty program, filterable',
-  description: 'Aggregated index of bug bounty and VDP programs across every major platform.',
+  description: 'Every public bug bounty program on HackerOne, Bugcrowd, Intigriti, YesWeHack, and Federacy — filterable by scope, payout, and asset type.',
+  alternates: { canonical: '/' },
   openGraph: {
-    title: 'bounty.index — bounties, live-indexed',
-    description: 'Every public bug bounty program across HackerOne, Bugcrowd, Intigriti, YesWeHack, and Federacy. Filter by scope, asset type, and payout.',
+    title: 'bounty.index — every public bounty, one index',
+    description: 'Every public bug bounty program across five platforms — filterable by scope, payout, and asset type.',
     type: 'website',
-    images: [{ url: '/og.png', width: 1792, height: 1024, alt: 'bounty.index' }],
+    siteName: 'bounty.index',
+    images: [{ url: '/og.jpg', width: 1200, height: 630, alt: 'bounty.index — every public bounty, one index' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'bounty.index — bounties, live-indexed',
-    description: 'Every public bug bounty program, filterable.',
-    images: ['/og.png'],
+    title: 'bounty.index — every public bounty, one index',
+    description: 'Every public bug bounty program across five platforms.',
+    images: ['/og.jpg'],
   },
 };
 
