@@ -21,4 +21,11 @@ export const db = new Proxy({} as Db, {
   },
 });
 
+// Auth.js DrizzleAdapter needs a real drizzle instance at construction time — it inspects the
+// object to auto-detect the driver. Our lazy Proxy target is `{}` and confuses that detection.
+// Expose an eager accessor for the adapter; everything else keeps using `db`.
+export function getDrizzleInstance(): Db {
+  return connect();
+}
+
 export { schema };
