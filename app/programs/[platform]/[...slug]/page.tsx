@@ -3,11 +3,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProgramBySlug, getProgramSnapshots, type ProgramSnapshot } from '@/lib/db/queries';
 import { formatBounty, formatPayoutRange, platformLabel, PLATFORM_META, relativeTime, scopeHref } from '@/lib/format';
-import { diffSnapshots, isEmptyDiff } from '@/lib/snapshots';
+import { diffSnapshots, isEmptyDiff, summarizeActivity } from '@/lib/snapshots';
+import { extractCompanyDomain } from '@/lib/program-domain';
 import { ExternalIcon } from '@/app/_ui/icons';
 import { CompareButton } from '@/app/_ui/compare-button';
 import { WatchButton } from '@/app/_ui/watch-button';
 import { PlatformLogo } from '@/app/_ui/platform-logo';
+import { CompanyLogo } from '@/app/_ui/company-logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,6 +91,9 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const outOfScope = scopes.filter((s) => !s.inScope);
   const platformDot = PLATFORM_META[program.platform]?.dot ?? 'bg-neutral-500';
   const payout = formatPayoutRange(program.minBounty, program.maxBounty, program.currency ?? 'USD');
+  const companyDomain = extractCompanyDomain(scopes, program.name);
+  const activity = summarizeActivity(snapshots, 7);
+  const hasActivity = activity.hasBaseline && (activity.addedCount > 0 || activity.removedCount > 0 || activity.rewardChanged);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.bountyindex.in';
   const encodedSlug = program.slug.split('/').map(encodeURIComponent).join('/');
@@ -127,27 +132,45 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         {/* Hero */}
         <section className="border-b border-neutral-900 pb-8 reveal">
           <div className="flex items-start justify-between gap-6 flex-wrap">
-            <div className="min-w-0">
-              <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-50 break-words">{program.name}</h1>
-              <div className="mt-3 mono text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="inline-flex items-center gap-2">
-                  <PlatformLogo platform={program.platform} size="sm" />
-                  {platformLabel(program.platform)}
-                </span>
-                <span className="text-neutral-700">·</span>
-                {payout ? (
-                  <>
-                    <span className="text-emerald-300">{payout.label} {payout.value}</span>
-                    <span className="text-neutral-700">·</span>
-                  </>
-                ) : null}
-                <span>{inScope.length} in-scope · {outOfScope.length} out</span>
-                {program.lastUpdatedAt && (
-                  <>
-                    <span className="text-neutral-700">·</span>
-                    <span>updated {relativeTime(program.lastUpdatedAt)}</span>
-                  </>
-                )}
+            <div className="min-w-0 flex items-start gap-4">
+              <CompanyLogo domain={companyDomain} name={program.name} size={48} className="mt-1" />
+              <div className="min-w-0">
+                <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-50 break-words">{program.name}</h1>
+                <div className="mt-3 mono text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <span className="inline-flex items-center gap-2">
+                    <PlatformLogo platform={program.platform} size="sm" />
+                    {platformLabel(program.platform)}
+                  </span>
+                  <span className="text-neutral-700">·</span>
+                  {payout ? (
+                    <>
+                      <span className="text-emerald-300">{payout.label} {payout.value}</span>
+                      <span className="text-neutral-700">·</span>
+                    </>
+                  ) : null}
+                  <span>{inScope.length} in-scope · {outOfScope.length} out</span>
+                  {program.lastUpdatedAt && (
+                    <>
+                      <span className="text-neutral-700">·</span>
+                      <span>updated {relativeTime(program.lastUpdatedAt)}</span>
+                    </>
+                  )}
+                  {hasActivity && (
+                    <>
+                      <span className="text-neutral-700">·</span>
+                      <span
+                        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300"
+                        title={`Scope changes in the last ${activity.windowDays} days`}
+                      >
+                        <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                        {activity.addedCount > 0 && <span>+{activity.addedCount}</span>}
+                        {activity.removedCount > 0 && <span className="text-amber-300">−{activity.removedCount}</span>}
+                        {activity.rewardChanged && <span>reward</span>}
+                        <span className="text-neutral-500">· {activity.windowDays}d</span>
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
