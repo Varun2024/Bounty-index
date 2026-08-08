@@ -176,6 +176,21 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   <span aria-hidden>☕</span>
                   buy me a coffee
                 </a>
+                <a
+                  href="https://www.producthunt.com/products/bounty-index?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-bounty-index"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="mt-4 block w-fit focus-ring rounded"
+                  aria-label="Bounty Index on Product Hunt"
+                >
+                  <Image
+                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1218125&theme=dark&t=1786208999205"
+                    alt="Bounty Index - Every public bounty program. One index. | Product Hunt"
+                    width={250}
+                    height={54}
+                    unoptimized
+                  />
+                </a>
                 <Link
                   href="https://launchleague.xyz/?product=bounty-index"
                   target="_blank"
