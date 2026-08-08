@@ -83,3 +83,5 @@ B2B pivot.
 _Log new decisions and reversals here so we can see how the plan evolved._
 
 - 2026-08-06 — user decided to build a data moat (target intelligence + community reviews) instead of pivoting to B2B.
+- 2026-08-07 — real domain purchased (`bountyindex.in`). Auth (GitHub OAuth) + cross-device sync shipped. SEO groundwork in place: JSON-LD, sitemap with URL-encoded slugs, verification, preset landing pages.
+- 2026-08-08 — bbradar.io competitive walkthrough. Key discovery: they've already built the target-intelligence moat (scope-change alerts via Discord/Telegram, monetized at €89/yr) and cover 24 platforms vs our 5. Strategic pivot: don't try to catch their paid moat head-on — build free versions of what they gate, widen coverage where they own niches (Immunefi, Huntr), and keep the UX edge (scope lookup, compare, editorial UI). See ROADMAP.md → Now.

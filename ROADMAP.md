@@ -3,7 +3,7 @@
 Working doc. `NEXT_STEP.md` is the long wishlist — this is what actually ships.
 Move items between Now / Next / Later as they progress. When Now empties, promote from Next.
 
-Last updated: 2026-08-06
+Last updated: 2026-08-08 (after the bbradar.io competitive pass)
 
 ---
 
@@ -11,39 +11,46 @@ Last updated: 2026-08-06
 
 Pick 2-3. Keep it real.
 
-- [ ] **Bulk export from filtered `/programs`** — CSV + JSON download of the current filter set. Turns the site into a research tool for pentesters and security teams. High ROI: real hunter workflow, small diff.
-- [ ] **Program timeline view** — snapshot data now spans ~3 weeks; render a per-program history strip on the detail page (reward changes, scope additions/removals over time). Uses the same diff code as `/watchlist`, just plotted.
-- [ ] **Reward range display** — currently shows only `max`. When both min and max exist, render `$500 – $100K`. Small, but every hunter reads this before spending time on a target.
+Ranked by ROI × leverage of existing code. Items 1-3 close visible gaps against bbradar.io using data we already have; item 4 is where they're most ahead.
+
+- [ ] **Public activity counts on program pages** — surface `+N scopes added / -M removed in the last 7 days` on each program detail page. Data already lives in `program_snapshots`; we just don't render it. Zero new infra, closes the biggest visible gap where bbradar looks smarter. ~1 hr.
+- [ ] **Company logos on program pages** — replace platform-only dot with the actual company logo. Two paths: (a) `logo.dev` API by domain, (b) scrape favicon/OG image from `program.url` and cache. Small visual polish, big perception jump. ~2 hrs.
+- [ ] **Per-program scope-change RSS** — `/programs/[platform]/[slug]/feed.xml` emitting each snapshot diff as an RSS `<item>`. Free version of bbradar Pro's scope-alerts. Uses existing snapshot data. ~2 hrs.
+- [ ] **Coverage expansion (Immunefi first)** — Immunefi is DeFi/crypto bug bounties, 6-7 figure payouts. Highest-value niche where bbradar has the field to themselves. Own ingest since it's not in `arkadiyt/bounty-targets-data`. ~4-6 hrs including normalizer.
 
 ## Next — queued after Now empties
 
+- [ ] **Scope-changelog stream** at `/feed/scopes` — individual scope additions across all programs, not just program-level (the `/feed` we have shows programs, not their scopes). Uses snapshot data. Their "Latest Targets" but not paywalled.
+- [ ] **Program opportunity score** — algorithmic ranking from `max payout × in-scope surface × recent activity × safe-harbor status`. Cheap differentiator vs their opaque tiers. Expose the formula publicly.
+- [ ] **Cover Huntr + HackenProof (return)** — AI/ML bounties (Huntr) and the platforms we dropped when upstream went stale.
 - [ ] **Better empty states** — `/programs` when filters return zero, `/scope-lookup` when no query, `/feed` when no recent additions. Existing states are functional but bland.
 - [ ] **Command palette (Cmd+K)** — jump-to-program, quick actions. Real time-saver once you use it daily.
-- [ ] **Company pages** — aggregate all programs from one org (e.g. Google has HackerOne + separate Chrome + Android). Requires org detection which the source data doesn't provide reliably; may need manual mapping table.
-- [ ] **Watchlist export as JSON** — one button on `/watchlist` to dump the list + latest snapshots. Enables cross-device via manual paste, matches the "portable state" ethos.
-- [ ] **URL-state polish** — current filters are URL-backed but the `q` search input doesn't reflect in the URL until Enter. Debounce+push.
+- [ ] **Watchlist RSS feed** — `/watchlist.xml?ids=1,2,3` (or per signed-in user) surfacing snapshot diffs in a feed reader. Replaces the email notifications we killed.
+- [ ] **Saved filter sets** — signed-in users can name + save filter combos.
+- [ ] **Community reviews (design first, code second)** — needs a design chat: rating shape, moderation model, reputation gating. Held for a proper scoping session.
 
 ## Later — worth doing eventually
 
-- [ ] **Auth (GitHub OAuth only)** — only promote if users explicitly ask for cross-device sync. Ships on top of the localStorage layer, doesn't replace it.
+- [ ] **"Get Listed" B2B page** — companies with unlisted programs can request to be indexed. Small B2B foothold.
+- [ ] **Cover Standoff365, Sherlock, Compass Security** — long-tail platforms bbradar includes; adds coverage but each is a bespoke normalizer for smaller audiences.
 - [ ] **Public API** — Arkadiyt's raw JSON already exists; only build ours if there's demand for the *normalized* shape.
-- [ ] **Watchlist RSS feed** — a hunter's `/watchlist.xml?ids=1,2,3` that surfaces snapshot changes in their feed reader. Replaces email notifications (which are killed).
-- [ ] **Saved filter sets** — localStorage: name + share URL for a filtered view.
+- [ ] **URL-state polish** — the `q` search input doesn't reflect in the URL until Enter. Debounce+push.
+- [ ] **Personal notes on programs** — signed-in only, per-user. Requires design decisions on richness (plain text? markdown? word cap?).
+- [ ] **Company pages** — aggregate all programs from one org. Requires org detection heuristics.
 
 ## Killed / deferred indefinitely
 
 Kept here so we don't re-litigate.
 
-- **Notifications** (email alerts, push, watchlist emails) — killed. RSS covers this for anyone motivated.
+- **Email notifications** — killed. RSS covers it.
 - **Weekly digest email** — killed with notifications.
+- **Discord/Telegram bots** — deferred until community exists to receive them. Building a bot before there's a community is order-of-ops wrong.
 - **Technology field** — not in source data, would need site fingerprinting.
 - **Country / industry** — not in source data.
-- **Difficulty / competition / response time / recent-payout counts** — subjective or requires hacktivity scraping; deferred until a real data source lands.
 - **AI natural language search** — filter UI + `/` shortcut beats it for this audience.
-- **Community reviews / comments** — moderation burden not worth it for solo maintainer.
 - **SDK / CLI** — Arkadiyt's repo already is the raw API.
-- **Leaderboards** — needs user data first; revisit only if auth ships.
-- **Custom tags / private recon notes** — folded into the single personal-notes idea; won't build both.
+- **Leaderboards** — needs user data first.
+- **Custom tags** — folded into personal-notes; won't build both.
 
 ---
 
@@ -51,21 +58,47 @@ Kept here so we don't re-litigate.
 
 Ordered newest first. Commit hashes for archaeology.
 
-### Since 2026-08-06 (hunter-review pass)
-- Fuzzy scope search — `/programs?q=X` now also matches in-scope identifiers, not just program name (`00e38fa`)
-- Grouped scope by asset type on program detail page — wildcards / urls / apis / mobile / hardware buckets (`e611309`)
-- Watchlist with per-program snapshot diff — localStorage-backed, no auth (`4372e17`)
-- Scope-lookup dedup + name-collision disambiguation (`668432f`)
-- Scope-lookup surfaces explicit out-of-scope hits (amber warning) (`91e9660`)
-- Safe-harbor coverage caveat visible in filter rail (`549d1cd`)
+### 2026-08-07 (SEO + domain + XML fixes)
+- Sitemap/RSS/BreadcrumbList URL-encoded to handle slugs with `&` etc. (`4d9ba6f`)
+- Google verification + WebSite/Organization/BreadcrumbList JSON-LD + preset landing pages (`/programs/paying`, `/safe-harbor`, `/wildcard`) + improved program-detail titles/descriptions (`d015fcb`)
+- OG image spec-compliant (1200×630, 41KB), canonical, siteName (`81b5060`)
+- Profile dropdown redesign — personal buckets moved out of top nav (`dffc591`)
+- Cross-device sync for watchlist + compare (`ad6745f`)
+- Auth adapter fix (real drizzle instance for detection) (`12e9f30`)
+- Auth foundation: GitHub OAuth via Auth.js v5 + Drizzle adapter (`43070a9`)
+- Domain migration to `www.bountyindex.in`
 
-### Since 2026-08-05
+### 2026-08-06 (hunter-review pass)
+- Bulk export (CSV + JSON) (`4e27b63`)
+- Reward range + program timeline (`22bc492`)
+- Roadmap refresh (`6005525`)
+- Brutal review saved to disk (`70f153f`)
+- Fuzzy scope search (`00e38fa`)
+- Grouped scope by asset type (`e611309`)
+- Watchlist with snapshot diff (`4372e17`)
+- Scope-lookup dedup + name disambiguation (`668432f`)
+- Scope-lookup out-of-scope warning (`91e9660`)
+- Safe-harbor coverage caveat (`549d1cd`)
+
+### 2026-08-05
 - Cleanup pass: dead code, JSX apostrophes, `useSyncExternalStore` refactor (`85262a3`)
 - Builder credit in footer (`d907470`, brightened `c5f7785`)
 - LaunchLeague badge (`74dc488`)
 - Real platform SVG logos + hero copy v2 + `/how-it-works` + workflow tilt (`06d37c1`)
 - Compare programs + landing Pulse section (`2bab17f`)
 - Snapshot history + fuzzy search + safe-harbor filter (`05cf56d`)
+
+---
+
+## Competitive intel
+
+**bbradar.io** (2026-08-08 walkthrough) is the closest competitor. Highlights:
+
+- **Ahead of us on:** coverage (24 vs 5 platforms), notification channels (Discord/Telegram/RSS), program activity signals, opportunity scoring, community (Discord), Pro tier (€89/yr working monetization).
+- **Behind us on:** scope lookup (they don't have paste-a-domain), side-by-side compare, free access to identifiers (they gate behind Pro), UI polish.
+- **Strategic posture:** they're a paying-customer product. We're a free utility. Trying to catch their monetized moat head-on is a losing race — build free versions of what they gate, widen coverage, and keep the UX edge.
+
+Detailed comparison lives in this session's transcript; formal doc if that stops being enough.
 
 ---
 
