@@ -36,7 +36,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description,
     openGraph: { title, description, type: 'article' },
     twitter: { card: 'summary', title, description },
-    alternates: { canonical: `/programs/${program.platform}/${program.slug}` },
+    alternates: {
+      canonical: `/programs/${program.platform}/${program.slug}`,
+      types: { 'application/rss+xml': `/programs/${program.platform}/${program.slug}/feed.xml` },
+    },
   };
 }
 
@@ -170,6 +173,14 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                       </span>
                     </>
                   )}
+                  <span className="text-neutral-700">·</span>
+                  <a
+                    href={`/programs/${program.platform}/${program.slug}/feed.xml`}
+                    className="text-neutral-400 hover:text-emerald-300 transition-colors"
+                    title="RSS feed of scope changes"
+                  >
+                    RSS
+                  </a>
                 </div>
               </div>
             </div>
