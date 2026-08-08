@@ -475,13 +475,20 @@ export async function ingestPlatform(platform: Platform) {
 
 export async function ingestAll() {
   const platforms = Object.keys(SOURCES) as Platform[];
-  const results = [];
+  const results: Array<Record<string, unknown>> = [];
   for (const p of platforms) {
     try {
       results.push(await ingestPlatform(p));
     } catch (e) {
       results.push({ platform: p, error: e instanceof Error ? e.message : String(e) });
     }
+  }
+  // Immunefi lives outside arkadiyt/bounty-targets-data — first-party HTML scrape.
+  try {
+    const { ingestImmunefi } = await import('./immunefi');
+    results.push(await ingestImmunefi());
+  } catch (e) {
+    results.push({ platform: 'immunefi', error: e instanceof Error ? e.message : String(e) });
   }
   return results;
 }

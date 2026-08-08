@@ -208,6 +208,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <FooterLink href="/programs?platform=intigriti" platform="intigriti">Intigriti</FooterLink>
                 <FooterLink href="/programs?platform=yeswehack" platform="yeswehack">YesWeHack</FooterLink>
                 <FooterLink href="/programs?platform=federacy" platform="federacy">Federacy</FooterLink>
+                <FooterLink href="/programs?platform=immunefi" platform="immunefi">Immunefi</FooterLink>
               </FooterCol>
 
               <FooterCol title="Resources">

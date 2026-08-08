@@ -23,6 +23,7 @@ const BRAND_HEX: Record<string, string> = {
   intigriti: '#34D399', // emerald-400
   yeswehack: '#38BDF8', // sky-400
   federacy: '#A78BFA',  // violet-400
+  immunefi: '#FBBF24',  // amber-400
 };
 
 // Real brand marks (single- or dual-path). Trademarks belong to their owners; used nominatively.
