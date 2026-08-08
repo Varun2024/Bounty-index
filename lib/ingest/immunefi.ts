@@ -1,5 +1,5 @@
 import { db, schema } from '@/lib/db/client';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and, inArray } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
 
 // Immunefi ingest — two-stage HTML scrape of first-party RSC payloads.
@@ -178,6 +178,13 @@ function hashPayload(p: SnapshotPayload): string {
   return createHash('sha256').update(JSON.stringify(p)).digest('hex');
 }
 
+// Hash of the Stage-1 program-level fields. If unchanged since the last successful ingest,
+// we skip the Stage-2 detail fetch AND the persist step — scopes stay as-is.
+function hashStage1(p: ImmunefiProgram): string {
+  const canonical = JSON.stringify([p.slug, p.project, p.maxBounty, p.safeHarbor, p.kyc, p.managed, p.logo, p.launchDate]);
+  return createHash('sha256').update(canonical).digest('hex');
+}
+
 async function upsertSource(): Promise<number> {
   const [row] = await db
     .insert(schema.sources)
@@ -206,6 +213,7 @@ interface Result {
   scopesUpserted: number;
   snapshotsWritten: number;
   detailFetchFailures: number;
+  programsSkipped: number;
 }
 
 export async function ingestImmunefi(): Promise<Result> {
@@ -215,6 +223,7 @@ export async function ingestImmunefi(): Promise<Result> {
   let scopesUpserted = 0;
   let snapshotsWritten = 0;
   let detailFetchFailures = 0;
+  let programsSkipped = 0;
 
   try {
     // Stage 1: landing page → program list
@@ -224,11 +233,38 @@ export async function ingestImmunefi(): Promise<Result> {
     const programs = parseImmunefiHtml(html);
     if (programs.length === 0) throw new Error('parse returned 0 programs (RSC shape may have changed)');
 
-    // Stage 2: fetch detail pages in batches, collect scopes
-    // ponytail: small concurrency to stay polite; total ~30s for ~180 programs.
+    // Load stored Stage-1 hashes so we can skip programs whose landing-page fields haven't changed.
+    // ponytail: single query for all slugs on this platform. If Immunefi grows past ~10k programs,
+    // this fetches too much; switch to per-slug lookup inside the loop.
+    const slugs = programs.map((p) => p.slug);
+    const existing = await db
+      .select({ slug: schema.programs.slug, raw: schema.programs.raw })
+      .from(schema.programs)
+      .where(and(eq(schema.programs.platform, PLATFORM), inArray(schema.programs.slug, slugs)));
+    const priorHashBySlug = new Map<string, string>();
+    for (const row of existing) {
+      const raw = row.raw as { stage1Hash?: string } | null;
+      if (raw?.stage1Hash) priorHashBySlug.set(row.slug, raw.stage1Hash);
+    }
+
+    // Split programs into changed vs unchanged. Unchanged skip Stage-2 fetch AND persist entirely.
+    const stage1HashByProgram = new Map<ImmunefiProgram, string>();
+    const changed: ImmunefiProgram[] = [];
+    for (const p of programs) {
+      const h = hashStage1(p);
+      stage1HashByProgram.set(p, h);
+      if (priorHashBySlug.get(p.slug) === h) {
+        programsSkipped++;
+      } else {
+        changed.push(p);
+      }
+    }
+
+    // Stage 2: fetch detail pages in batches for CHANGED programs only.
+    // ponytail: small concurrency to stay polite; total ~30s for ~180 programs on first run.
     const scopesBySlug = new Map<string, NormalizedScope[]>();
-    for (let i = 0; i < programs.length; i += DETAIL_BATCH_SIZE) {
-      const batch = programs.slice(i, i + DETAIL_BATCH_SIZE);
+    for (let i = 0; i < changed.length; i += DETAIL_BATCH_SIZE) {
+      const batch = changed.slice(i, i + DETAIL_BATCH_SIZE);
       const results = await Promise.all(
         batch.map(async (p) => {
           try {
@@ -247,11 +283,16 @@ export async function ingestImmunefi(): Promise<Result> {
       }
     }
 
-    // Persist programs + scopes + snapshots
-    for (const p of programs) {
+    // Persist programs + scopes + snapshots — CHANGED only.
+    for (const p of changed) {
       const url = `https://immunefi.com/bug-bounty/${p.slug}/information/`;
       const scopes = scopesBySlug.get(p.slug) ?? [];
-      const raw: Record<string, unknown> = { logo: p.logo, launchDate: p.launchDate, kyc: p.kyc };
+      const raw: Record<string, unknown> = {
+        logo: p.logo,
+        launchDate: p.launchDate,
+        kyc: p.kyc,
+        stage1Hash: stage1HashByProgram.get(p),
+      };
 
       const [prog] = await db
         .insert(schema.programs)
@@ -315,7 +356,7 @@ export async function ingestImmunefi(): Promise<Result> {
       .update(schema.sources)
       .set({ lastRunAt: new Date(), lastStatus: 'ok', lastError: null })
       .where(eq(schema.sources.id, sourceId));
-    return { platform: PLATFORM, programsUpserted, scopesUpserted, snapshotsWritten, detailFetchFailures };
+    return { platform: PLATFORM, programsUpserted, scopesUpserted, snapshotsWritten, detailFetchFailures, programsSkipped };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     await db
