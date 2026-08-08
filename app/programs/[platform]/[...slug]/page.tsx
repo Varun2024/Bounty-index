@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     twitter: { card: 'summary', title, description },
     alternates: {
       canonical: `/programs/${program.platform}/${program.slug}`,
-      types: { 'application/rss+xml': `/programs/${program.platform}/${program.slug}/feed.xml` },
+      types: { 'application/rss+xml': `/rss/programs/${program.platform}/${program.slug}` },
     },
   };
 }
@@ -175,7 +175,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                   )}
                   <span className="text-neutral-700">·</span>
                   <a
-                    href={`/programs/${program.platform}/${program.slug}/feed.xml`}
+                    href={`/rss/programs/${program.platform}/${program.slug}`}
                     className="text-neutral-400 hover:text-emerald-300 transition-colors"
                     title="RSS feed of scope changes"
                   >

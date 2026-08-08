@@ -44,3 +44,6 @@ next-env.d.ts
 /*.png
 !public/*.png
 .playwright-mcp/
+
+.vercel
+.env*
