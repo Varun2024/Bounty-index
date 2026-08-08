@@ -2,16 +2,20 @@ import { db, schema } from '@/lib/db/client';
 import { eq, desc } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
 
-// Immunefi doesn't ship in arkadiyt/bounty-targets-data. They have a first-party API for
-// individual assets (`/public-api/bounties/assets/dice`) but it only surfaces ~6 rows at a
-// time. The full program list lives inside the RSC payload of their /bug-bounty/ landing
-// page — one <script> that pushes escaped JSON. We fetch the HTML once and grep it.
+// Immunefi ingest — two-stage HTML scrape of first-party RSC payloads.
 //
-// ponytail: HTML scrape, not an API. Fragile if they change their RSC shape. Snapshotting
-// deduplicates unchanged runs anyway, so a bad parse just produces a no-op.
+// Stage 1: fetch /bug-bounty/ once → parse the program list (name, slug, logo, maxBounty,
+//          safe-harbor, kyc, premium-triaging).
+// Stage 2: for each program, fetch /bug-bounty/{slug}/information/ → extract the assets
+//          array (each asset = a smart-contract address or web URL in-scope).
+//
+// ponytail: HTML scrape, not an API. Fragile if their RSC shape changes. Snapshotting
+// deduplicates unchanged runs, so a bad parse just produces a no-op or one bad program.
 
 const LIST_URL = 'https://immunefi.com/bug-bounty/';
 const PLATFORM = 'immunefi';
+const DETAIL_BATCH_SIZE = 6; // ~181 programs → 30 batches; keeps total under ~30s.
+const UA = 'bounty.index-ingest/1.0';
 
 interface ImmunefiProgram {
   slug: string;
@@ -22,6 +26,22 @@ interface ImmunefiProgram {
   safeHarbor: 'full' | null;
   kyc: boolean;
   managed: boolean;
+}
+
+interface ImmunefiAsset {
+  id?: string;
+  url: string;
+  type: string;
+  description?: string | null;
+}
+
+interface NormalizedScope {
+  identifier: string;
+  assetType: string;
+  inScope: boolean;
+  eligibleForBounty: boolean;
+  severity: string | null;
+  instruction: string | null;
 }
 
 interface SnapshotPayload {
@@ -43,8 +63,6 @@ interface SnapshotPayload {
 }
 
 function parseImmunefiHtml(html: string): ImmunefiProgram[] {
-  // For each occurrence of `maxBounty":N` in the RSC payload, grab a window and pull the
-  // sibling fields. Order of keys varies so we can't do a single positional regex.
   const seen = new Map<string, ImmunefiProgram>();
   let i = html.indexOf('maxBounty');
   while (i !== -1) {
@@ -74,7 +92,69 @@ function parseImmunefiHtml(html: string): ImmunefiProgram[] {
   return [...seen.values()];
 }
 
-function buildSnapshotPayload(p: ImmunefiProgram, url: string): SnapshotPayload {
+// Extract the JSON `assets` array from a program's detail page RSC.
+// Walks bracket depth to find the array boundary because it contains nested objects
+// and escaped strings.
+function extractAssetsFromDetail(html: string): ImmunefiAsset[] {
+  const key = 'assets\\":[';
+  const idx = html.indexOf(key);
+  if (idx < 0) return [];
+  const arrayStart = idx + 'assets\\":'.length;
+  let depth = 1;
+  let inStr = false;
+  let i = arrayStart + 1; // skip the opening [
+  while (i < html.length && depth > 0) {
+    const c = html[i];
+    if (c === '\\' && html[i + 1] === '"') { i += 2; continue; }
+    if (c === '"') inStr = !inStr;
+    if (!inStr) {
+      if (c === '[') depth++;
+      else if (c === ']') depth--;
+    }
+    i++;
+  }
+  const raw = html.slice(arrayStart, i);
+  const unescaped = raw.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+  try {
+    const parsed = JSON.parse(unescaped);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+// Immunefi asset types → our scope schema's asset_type enum.
+const TYPE_MAP: Record<string, string> = {
+  smart_contract: 'smart_contract',
+  websites_and_applications: 'url',
+  blockchain_dlt: 'other',
+  executables: 'other',
+};
+
+function normalizeAsset(a: ImmunefiAsset): NormalizedScope | null {
+  if (!a.url) return null;
+  const type = TYPE_MAP[a.type] ?? 'other';
+  return {
+    identifier: a.url,
+    assetType: type,
+    inScope: true, // Immunefi program pages list only in-scope assets
+    eligibleForBounty: true,
+    severity: null,
+    instruction: a.description ?? null,
+  };
+}
+
+async function fetchDetailScopes(slug: string): Promise<NormalizedScope[]> {
+  const url = `https://immunefi.com/bug-bounty/${encodeURIComponent(slug)}/information/`;
+  const res = await fetch(url, { cache: 'no-store', headers: { 'user-agent': UA } });
+  if (!res.ok) return [];
+  const html = await res.text();
+  const assets = extractAssetsFromDetail(html);
+  return assets.map(normalizeAsset).filter((s): s is NormalizedScope => s !== null);
+}
+
+function buildSnapshotPayload(p: ImmunefiProgram, url: string, scopes: NormalizedScope[]): SnapshotPayload {
+  const inScope = scopes.filter((s) => s.inScope);
   return {
     name: p.project,
     url,
@@ -88,9 +168,9 @@ function buildSnapshotPayload(p: ImmunefiProgram, url: string): SnapshotPayload 
     currency: 'USD',
     submissionState: null,
     safeHarbor: p.safeHarbor,
-    scopeCount: 0,
-    inScopeCount: 0,
-    scopeIdentifiers: [],
+    scopeCount: scopes.length,
+    inScopeCount: inScope.length,
+    scopeIdentifiers: inScope.map((s) => s.identifier).sort(),
   };
 }
 
@@ -120,26 +200,59 @@ async function maybeSnapshot(programId: number, ingestRunId: number, payload: Sn
   return true;
 }
 
-export async function ingestImmunefi(): Promise<{ platform: string; programsUpserted: number; snapshotsWritten: number; error?: string }> {
+interface Result {
+  platform: string;
+  programsUpserted: number;
+  scopesUpserted: number;
+  snapshotsWritten: number;
+  detailFetchFailures: number;
+}
+
+export async function ingestImmunefi(): Promise<Result> {
   const sourceId = await upsertSource();
   const [run] = await db.insert(schema.ingestRuns).values({ sourceId }).returning({ id: schema.ingestRuns.id });
   let programsUpserted = 0;
+  let scopesUpserted = 0;
   let snapshotsWritten = 0;
+  let detailFetchFailures = 0;
+
   try {
-    const res = await fetch(LIST_URL, { cache: 'no-store', headers: { 'user-agent': 'bounty.index-ingest/1.0' } });
+    // Stage 1: landing page → program list
+    const res = await fetch(LIST_URL, { cache: 'no-store', headers: { 'user-agent': UA } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const html = await res.text();
     const programs = parseImmunefiHtml(html);
     if (programs.length === 0) throw new Error('parse returned 0 programs (RSC shape may have changed)');
 
+    // Stage 2: fetch detail pages in batches, collect scopes
+    // ponytail: small concurrency to stay polite; total ~30s for ~180 programs.
+    const scopesBySlug = new Map<string, NormalizedScope[]>();
+    for (let i = 0; i < programs.length; i += DETAIL_BATCH_SIZE) {
+      const batch = programs.slice(i, i + DETAIL_BATCH_SIZE);
+      const results = await Promise.all(
+        batch.map(async (p) => {
+          try {
+            return { slug: p.slug, scopes: await fetchDetailScopes(p.slug) };
+          } catch {
+            return { slug: p.slug, scopes: null as NormalizedScope[] | null };
+          }
+        }),
+      );
+      for (const r of results) {
+        if (r.scopes === null) {
+          detailFetchFailures++;
+          continue;
+        }
+        scopesBySlug.set(r.slug, r.scopes);
+      }
+    }
+
+    // Persist programs + scopes + snapshots
     for (const p of programs) {
       const url = `https://immunefi.com/bug-bounty/${p.slug}/information/`;
-      const searchText = [p.project, p.slug].join(' ');
-      const raw: Record<string, unknown> = {
-        logo: p.logo,
-        launchDate: p.launchDate,
-        kyc: p.kyc,
-      };
+      const scopes = scopesBySlug.get(p.slug) ?? [];
+      const raw: Record<string, unknown> = { logo: p.logo, launchDate: p.launchDate, kyc: p.kyc };
+
       const [prog] = await db
         .insert(schema.programs)
         .values({
@@ -159,7 +272,7 @@ export async function ingestImmunefi(): Promise<{ platform: string; programsUpse
           safeHarbor: p.safeHarbor,
           lastUpdatedAt: new Date(),
           raw,
-          searchText,
+          searchText: [p.project, p.slug].join(' '),
         })
         .onConflictDoUpdate({
           target: [schema.programs.platform, schema.programs.slug],
@@ -179,19 +292,30 @@ export async function ingestImmunefi(): Promise<{ platform: string; programsUpse
         .returning({ id: schema.programs.id });
       programsUpserted++;
 
-      const wrote = await maybeSnapshot(prog.id, run.id, buildSnapshotPayload(p, url));
+      // Replace scopes for this program
+      await db.delete(schema.scopes).where(eq(schema.scopes.programId, prog.id));
+      if (scopes.length > 0) {
+        const rows = scopes.map((s) => ({ programId: prog.id, ...s }));
+        const CHUNK = 500;
+        for (let i = 0; i < rows.length; i += CHUNK) {
+          await db.insert(schema.scopes).values(rows.slice(i, i + CHUNK));
+        }
+        scopesUpserted += scopes.length;
+      }
+
+      const wrote = await maybeSnapshot(prog.id, run.id, buildSnapshotPayload(p, url, scopes));
       if (wrote) snapshotsWritten++;
     }
 
     await db
       .update(schema.ingestRuns)
-      .set({ status: 'ok', finishedAt: new Date(), programsUpserted, scopesUpserted: 0 })
+      .set({ status: 'ok', finishedAt: new Date(), programsUpserted, scopesUpserted })
       .where(eq(schema.ingestRuns.id, run.id));
     await db
       .update(schema.sources)
       .set({ lastRunAt: new Date(), lastStatus: 'ok', lastError: null })
       .where(eq(schema.sources.id, sourceId));
-    return { platform: PLATFORM, programsUpserted, snapshotsWritten };
+    return { platform: PLATFORM, programsUpserted, scopesUpserted, snapshotsWritten, detailFetchFailures };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     await db

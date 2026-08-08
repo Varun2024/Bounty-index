@@ -486,7 +486,8 @@ export async function ingestAll() {
   // Immunefi lives outside arkadiyt/bounty-targets-data — first-party HTML scrape.
   try {
     const { ingestImmunefi } = await import('./immunefi');
-    results.push(await ingestImmunefi());
+    const r = await ingestImmunefi();
+    results.push({ ...r });
   } catch (e) {
     results.push({ platform: 'immunefi', error: e instanceof Error ? e.message : String(e) });
   }
