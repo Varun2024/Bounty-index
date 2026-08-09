@@ -20,7 +20,7 @@ Ranked by ROI × leverage of existing code. Items 1-3 close visible gaps against
 
 ## Next — queued after Now empties
 
-- [ ] **Scope-changelog stream** at `/feed/scopes` — individual scope additions across all programs, not just program-level (the `/feed` we have shows programs, not their scopes). Uses snapshot data. Their "Latest Targets" but not paywalled.
+- [x] **Scope-changelog stream** — shipped as `/whats-new` (+ `/whats-new.xml`). Every scope, reward, and safe-harbor change across all programs, grouped by day, RSS-enabled. Free version of what bbradar Pro gates.
 - [ ] **Program opportunity score** — algorithmic ranking from `max payout × in-scope surface × recent activity × safe-harbor status`. Cheap differentiator vs their opaque tiers. Expose the formula publicly.
 - [ ] **Cover Huntr + HackenProof (return)** — AI/ML bounties (Huntr) and the platforms we dropped when upstream went stale.
 - [ ] **Better empty states** — `/programs` when filters return zero, `/scope-lookup` when no query, `/feed` when no recent additions. Existing states are functional but bland.

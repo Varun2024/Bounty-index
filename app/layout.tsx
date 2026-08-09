@@ -134,7 +134,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <nav className="flex items-center gap-0.5 md:gap-1">
                 <NavLink href="/programs">Programs</NavLink>
                 <NavLink href="/scope-lookup"><span className="hidden sm:inline">Scope lookup</span><span className="sm:hidden">Scope</span></NavLink>
-                <NavLink href="/feed">New</NavLink>
+                <NavLink href="/whats-new">What&rsquo;s new</NavLink>
               </nav>
               <span className="ml-2 mono text-[10px] uppercase tracking-widest text-neutral-600 hidden md:inline-flex items-center gap-1.5">
                 <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
@@ -213,8 +213,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <FooterLink href="/compare">Compare</FooterLink>
                 <FooterLink href="/watchlist">Watchlist</FooterLink>
                 <FooterLink href="/scope-lookup">Scope lookup</FooterLink>
+                <FooterLink href="/whats-new">What&rsquo;s new</FooterLink>
                 <FooterLink href="/feed">New programs</FooterLink>
-                <FooterLink href="/feed.xml" external>RSS feed</FooterLink>
+                <FooterLink href="/whats-new.xml" external>Changelog RSS</FooterLink>
+                <FooterLink href="/feed.xml" external>New-programs RSS</FooterLink>
               </FooterCol>
 
               <FooterCol title="Platforms">

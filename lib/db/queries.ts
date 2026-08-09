@@ -1,5 +1,6 @@
 import { db, schema } from './client';
-import { and, or, eq, ilike, gte, isNotNull, desc, sql, inArray, ne } from 'drizzle-orm';
+import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne } from 'drizzle-orm';
+import { diffSnapshots, isEmptyDiff, type SnapshotDiff } from '../snapshots';
 
 export type ProgramFilters = {
   q?: string;
@@ -282,4 +283,66 @@ export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
       previous: bucket.get(p.id)?.previous ?? null,
       latestAt: bucket.get(p.id)?.latestAt ?? null,
     }));
+}
+
+// One entry per snapshot diff (predecessor → current) where `current.capturedAt` falls inside
+// the window. Snapshots are sparse (only written when content_hash changes), so any snapshot in
+// the window IS a change — we just need to pair each with its predecessor to compute what
+// actually shifted.
+export interface RecentChange {
+  program: typeof schema.programs.$inferSelect;
+  capturedAt: Date;
+  diff: SnapshotDiff;
+}
+
+export async function getRecentChanges(hoursBack = 168, limit = 200): Promise<RecentChange[]> {
+  const cutoff = new Date(Date.now() - hoursBack * 3_600_000);
+
+  // 1. Programs with any snapshot inside the window.
+  const affected = await db
+    .selectDistinct({ programId: schema.programSnapshots.programId })
+    .from(schema.programSnapshots)
+    .where(gt(schema.programSnapshots.capturedAt, cutoff));
+  if (!affected.length) return [];
+  const programIds = affected.map((r) => r.programId);
+
+  // 2. All snapshots for those programs, ordered so we can walk (prev, cur) pairs.
+  // ponytail: fetches every snapshot for every affected program. Fine at current scale
+  // (~50-200 affected programs × <30 snapshots each). Switch to a window function join
+  // if this ever pulls > ~50k rows.
+  const snaps = await db
+    .select({
+      programId: schema.programSnapshots.programId,
+      capturedAt: schema.programSnapshots.capturedAt,
+      payload: schema.programSnapshots.payload,
+    })
+    .from(schema.programSnapshots)
+    .where(inArray(schema.programSnapshots.programId, programIds))
+    .orderBy(schema.programSnapshots.programId, schema.programSnapshots.capturedAt);
+
+  const programs = await db.select().from(schema.programs).where(inArray(schema.programs.id, programIds));
+  const byId = new Map(programs.map((p) => [p.id, p]));
+
+  // 3. Walk consecutive pairs; emit non-empty diffs whose cur.capturedAt is inside the window.
+  const out: RecentChange[] = [];
+  let currentProgram: number | null = null;
+  let prevPayload: SnapshotPayloadShape | null = null;
+  for (const s of snaps) {
+    if (currentProgram !== s.programId) {
+      currentProgram = s.programId;
+      prevPayload = null;
+    }
+    const curPayload = s.payload as SnapshotPayloadShape;
+    if (prevPayload && s.capturedAt > cutoff) {
+      const diff = diffSnapshots(prevPayload, curPayload);
+      if (diff && !isEmptyDiff(diff)) {
+        const program = byId.get(s.programId);
+        if (program) out.push({ program, capturedAt: s.capturedAt, diff });
+      }
+    }
+    prevPayload = curPayload;
+  }
+
+  out.sort((a, b) => b.capturedAt.getTime() - a.capturedAt.getTime());
+  return out.slice(0, limit);
 }
