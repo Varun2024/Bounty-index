@@ -14,7 +14,7 @@ New entries at the top. One entry per shipped feature or notable decision. Keep 
 
 ## Current phase
 
-**Moat C1 — Community response-time tracking — shipped.** Ship-first batch done; C1 (the "ship next" real moat pick from moat.md) also landed. Next candidates: distribution (E1 Chrome extension or E2 Burp plugin), or coverage expansion (Huntr / HackenProof-return from ROADMAP.md).
+**Moat P1–P4 + C1 shipped, followed by a codebase cleanup pass.** Next candidates: coverage expansion (Huntr / HackenProof-return), distribution (E1 Chrome extension or E2 Burp plugin), or growth loop (Reddit / X posts seeding C1 reports — drafts already written this session).
 
 Phase list:
 - ~~**P1** `/whats-new` daily changelog + RSS~~ — shipped
@@ -22,8 +22,24 @@ Phase list:
 - ~~**P3** Personal notes per program~~ — shipped
 - ~~**P4** Program lifecycle chart~~ — shipped
 - ~~**C1** Community response-time tracking~~ — shipped
+- ~~Refactor pass (4 items)~~ — shipped
 
 ---
+
+## 2026-08-10 — Refactor pass (4 items)
+
+Cleanup after 6 features in 2 days. Zero behavior change; four commits, one per item.
+
+- `9fb2352` — extracted `requireUserId` to `app/actions/require-user.ts`. Three inline copies gone.
+- `9d40a27` — split `app/actions/sync.ts` into per-domain modules (`sync-watchlist.ts`, `sync-compare.ts`, `sync-saved-filters.ts`). Bridge (`syncOnSignIn`) stays in `sync.ts`. Client stores import from the matching per-domain file.
+- `f180a90` — extracted `SectionHeading` primitive in `app/_ui/`. Migrated ScopeColumn / ProgramTimeline / ProgramNotes / CommunityReports.
+- `79ebd11` — split the 555-line program detail page. `page.tsx` 555 → 242. Extracted `scope-columns.tsx` (193) and `timeline.tsx` (129). Cleaner ground for the next batch of per-program features.
+
+Held (speculative for now): unified `useSyncedList<T>` hook across watchlist/compare/saved-filters (signatures differ enough that the abstraction obscures more than it clarifies), design-token module, `_ui/primitives/` layer for stat pills / legend dots (only 2–3 instances each).
+
+---
+
+## 2026-08-10 — C1: Community response-time tracking
 
 ## 2026-08-10 — C1: Community response-time tracking
 
