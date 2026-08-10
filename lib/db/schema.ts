@@ -182,6 +182,26 @@ export const userCompare = pgTable(
   }),
 );
 
+// Named filter presets. `query` is a URL query string without the leading `?`, e.g.
+// `platform=hackerone&minReward=1000&sort=reward`. Signed-out users get the same shape in
+// localStorage (with client-generated string ids) and it merges into this table on sign-in.
+export const userSavedFilters = pgTable(
+  'user_saved_filters',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    query: text('query').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    userIdx: index('user_saved_filters_user_idx').on(t.userId),
+    uniqueName: uniqueIndex('user_saved_filters_user_name_idx').on(t.userId, t.name),
+  }),
+);
+
 export type Program = typeof programs.$inferSelect;
 export type NewProgram = typeof programs.$inferInsert;
 export type Scope = typeof scopes.$inferSelect;

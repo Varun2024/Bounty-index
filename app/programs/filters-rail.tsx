@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import type { ProgramFilters } from '@/lib/db/queries';
 import { SearchIcon, FilterIcon } from '@/app/_ui/icons';
+import { SavedFiltersSection } from './saved-filters-section';
 
 interface FiltersRailProps {
   platforms: string[];
@@ -64,6 +65,8 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
           matches program name OR any in-scope identifier
         </p>
       </div>
+
+      <SavedFiltersSection />
 
       <FilterGroup label="Platform">
         {platforms.map((p) => (

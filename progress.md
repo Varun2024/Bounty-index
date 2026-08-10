@@ -14,15 +14,31 @@ New entries at the top. One entry per shipped feature or notable decision. Keep 
 
 ## Current phase
 
-**Moat "ship first" — Phase 2 of 4 next: saved filter sets.**
+**Moat "ship first" — Phase 3 of 4 next: personal notes per program.**
 
 Phase list:
 - ~~**P1** `/whats-new` daily changelog + RSS~~ — shipped
-- **P2** Saved filter sets — ~2 days
+- ~~**P2** Saved filter sets~~ — shipped
 - **P3** Personal notes per program — ~2 days
 - **P4** Program lifecycle chart — ~3-4 days
 
 ---
+
+## 2026-08-10 — P2: Saved filter sets
+
+New table `user_saved_filters` (id, userId, name, query, createdAt) with a unique index on (userId, name) so save-with-existing-name is idempotent. Server actions mirror the watchlist pattern: `getServerSavedFilters`, `addServerSavedFilter`, `removeServerSavedFilter`, `mergeServerSavedFilters`. Cap of 20 per user, name max 40 chars, query max 500 chars.
+
+Client store `lib/saved-filters.ts` follows watchlist's `useSyncExternalStore` shape. localStorage-only for signed-out users (with client-generated string ids). `AuthSync` extended to merge saved filters on sign-in — the sign-in bridge now handles all three lists (watchlist, compare, saved filters) in one round-trip via `syncOnSignIn`.
+
+UI: new `SavedFiltersSection` component slotted into the filters rail right after the search input. Lists saved filter sets with active-state highlighting when the current URL matches. Empty state prompts users to save the current combo. When active filters are applied and not already saved, a dashed "+ save current filter" button appears. Save flow uses `window.prompt` — MVP-appropriate; can move to an inline form later if the feature gets traction.
+
+---
+
+## 2026-08-09 — Compact identifier display + collapsed long scope lists
+
+`89e847f` — `shortenIdentifier()` strips URL protocol, collapses long hex/base58 address middles to first…last windows, caps display length at 64 chars. Full identifier stays in tooltip + href. Scope lists show the first 10 rows inline; anything beyond gets wrapped in a native `<details>` disclosure. No client JS — pure CSS `:open` state.
+
+## 2026-08-09 — P1: `/whats-new` daily changelog + RSS
 
 ## 2026-08-09 — P1: `/whats-new` daily changelog + RSS
 

@@ -4,10 +4,12 @@ import { useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { _writeWatchlistLocal } from '@/lib/watchlist';
 import { _writeCompareLocal } from '@/lib/compare';
+import { _writeSavedFiltersLocal, type SavedFilter } from '@/lib/saved-filters';
 import { syncOnSignIn } from '@/app/actions/sync';
 
 const WATCHLIST_KEY = 'bounty-index:watchlist';
 const COMPARE_KEY = 'bounty-index:compare';
+const SAVED_FILTERS_KEY = 'bounty-index:saved-filters';
 
 function readIds(key: string): number[] {
   try {
@@ -16,6 +18,25 @@ function readIds(key: string): number[] {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     return parsed.filter((n): n is number => typeof n === 'number' && Number.isFinite(n));
+  } catch {
+    return [];
+  }
+}
+
+function readSavedFilters(): SavedFilter[] {
+  try {
+    const raw = window.localStorage.getItem(SAVED_FILTERS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (f): f is SavedFilter =>
+        f != null &&
+        typeof f === 'object' &&
+        (typeof f.id === 'string' || typeof f.id === 'number') &&
+        typeof f.name === 'string' &&
+        typeof f.query === 'string',
+    );
   } catch {
     return [];
   }
@@ -32,10 +53,12 @@ export function AuthSync() {
     syncedRef.current = true;
     const watchlistLocal = readIds(WATCHLIST_KEY);
     const compareLocal = readIds(COMPARE_KEY);
-    syncOnSignIn({ watchlistLocal, compareLocal })
+    const savedFiltersLocal = readSavedFilters();
+    syncOnSignIn({ watchlistLocal, compareLocal, savedFiltersLocal })
       .then((res) => {
         _writeWatchlistLocal(res.watchlist);
         _writeCompareLocal(res.compare);
+        _writeSavedFiltersLocal(res.savedFilters);
       })
       .catch(() => {
         syncedRef.current = false; // let it retry on next tick if it failed

@@ -26,7 +26,7 @@ Ranked by ROI × leverage of existing code. Items 1-3 close visible gaps against
 - [ ] **Better empty states** — `/programs` when filters return zero, `/scope-lookup` when no query, `/feed` when no recent additions. Existing states are functional but bland.
 - [ ] **Command palette (Cmd+K)** — jump-to-program, quick actions. Real time-saver once you use it daily.
 - [ ] **Watchlist RSS feed** — `/watchlist.xml?ids=1,2,3` (or per signed-in user) surfacing snapshot diffs in a feed reader. Replaces the email notifications we killed.
-- [ ] **Saved filter sets** — signed-in users can name + save filter combos.
+- [x] **Saved filter sets** — signed-in users can name + save filter combos. localStorage fallback signed-out; merges to server on sign-in. Section lives in the filters rail on `/programs`.
 - [ ] **Community reviews (design first, code second)** — needs a design chat: rating shape, moderation model, reputation gating. Held for a proper scoping session.
 
 ## Later — worth doing eventually
