@@ -182,6 +182,30 @@ export const userCompare = pgTable(
   }),
 );
 
+// Community response-time reports. Signed-in required. One row per (user, program) —
+// resubmission updates the same row. Aggregates are public (median first-response, count).
+// Individual rows are not exposed to other users; the moat is peer-sourced trust.
+export const userReports = pgTable(
+  'user_reports',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    programId: integer('program_id')
+      .notNull()
+      .references(() => programs.id, { onDelete: 'cascade' }),
+    submittedAt: timestamp('submitted_at', { withTimezone: true }).notNull(),
+    firstResponseAt: timestamp('first_response_at', { withTimezone: true }), // null = still waiting
+    comment: text('comment'), // optional 120-char note ("slow during holidays" etc.)
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.programId] }),
+    programIdx: index('user_reports_program_idx').on(t.programId),
+  }),
+);
+
 // Private per-program notes. Signed-in only — this feature is intentionally not
 // mirrored to localStorage; it's a lock-in feature (see moat.md B2).
 export const userNotes = pgTable(

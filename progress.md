@@ -14,15 +14,32 @@ New entries at the top. One entry per shipped feature or notable decision. Keep 
 
 ## Current phase
 
-**Moat "ship first" — all 4 phases shipped.** Next-up choice lives in `ROADMAP.md` / `moat.md` — likely candidates: community response-time tracking (moat C1), Chrome extension (E1), or `/feed/scopes` deeper cut.
+**Moat C1 — Community response-time tracking — shipped.** Ship-first batch done; C1 (the "ship next" real moat pick from moat.md) also landed. Next candidates: distribution (E1 Chrome extension or E2 Burp plugin), or coverage expansion (Huntr / HackenProof-return from ROADMAP.md).
 
 Phase list:
 - ~~**P1** `/whats-new` daily changelog + RSS~~ — shipped
 - ~~**P2** Saved filter sets~~ — shipped
 - ~~**P3** Personal notes per program~~ — shipped
 - ~~**P4** Program lifecycle chart~~ — shipped
+- ~~**C1** Community response-time tracking~~ — shipped
 
 ---
+
+## 2026-08-10 — C1: Community response-time tracking
+
+New `user_reports` table (userId + programId composite PK, submittedAt, firstResponseAt nullable, comment nullable, timestamps). One row per (user, program) — resubmission via `onConflictDoUpdate`. Aggregates are public (median first-response days + count + waiting count); individual rows are never exposed to other users. This is the moat C1 pick — peer-sourced trust data platforms won't publish.
+
+Server actions in `app/actions/reports.ts`: `submitReport`, `deleteReport`, `getUserReport(programId)`, `getProgramReportStats(programId)`. Median computed via Postgres `percentile_cont(0.5) within group` filtered to non-null first-response rows. Suppressed when fewer than 3 answered reports exist — small-N medians are noise. Date validation: no future dates, no dates older than 5 years, first-response ≥ submitted.
+
+`CommunityReports` client component on the program detail page renders the aggregate stats grid (median, waiting count) or an empty state prompting first report. "+ report your times" button opens a native `<dialog>` form: submitted date (required), first response date (optional — leave blank if still waiting), optional 120-char comment. Signed-out users get bounced to GitHub OAuth. Existing report shows update + delete affordances.
+
+Types + constants in `lib/reports.ts` (same 'use server' lesson as notes.ts). Slotted into program detail between the scope columns and personal notes — it's quality signal that belongs alongside scope when evaluating a program.
+
+Chicken-and-egg concern: with zero reports, this section is a call-to-action, not data. Empty state is designed to invite the first submission. As reports accumulate, the section becomes real intel. Nothing to do about the seeding curve except ship it and let the audience contribute.
+
+---
+
+## 2026-08-10 — P4: Program lifecycle chart
 
 ## 2026-08-10 — P4: Program lifecycle chart
 

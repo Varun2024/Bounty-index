@@ -28,7 +28,7 @@ Freshness signal + personal accumulation + workflow integration is what makes pe
 
 | # | Feature | Effort | Notes |
 |---|---|---|---|
-| C1 | Community response-time tracking | ~3-5 days | Crowdsourced. Users report their triage time. Public per-program score. **Probably the highest-value moat on this list** — genuinely differentiated data that platforms won't publish and hunters *will* trust because it's peer-sourced. |
+| C1 ✅ | Community response-time tracking | ~3-5 days | ✅ Shipped 2026-08-10. MVP scope: two dates per report (submitted + first-response), median across ≥ 3 answered reports, one report per user per program. Comment field, updatable, delete affordance. Seeding curve is the risk — empty-state is a call-to-action until reports accumulate. |
 | C2 | Program lifecycle chart | ~3-4 days | Timeline per program: scope adds, removes, reward changes over the snapshot history we've captured. Uses existing data. Nobody else has this because nobody else has been snapshotting daily. |
 | C3 | "What's similar" | ~1 week | For any program, 5 others with overlapping scope surface. Embedding search over scope identifiers. Nudges exploration. |
 | C4 | Opportunity score (public formula) | ~2 days | Roadmap already. Expose the formula publicly — that's the differentiator vs bbradar's opaque tiers. |
@@ -60,8 +60,8 @@ Freshness signal + personal accumulation + workflow integration is what makes pe
 - B2: Personal notes ✅
 - C2: Program lifecycle chart ✅
 
-**Ship next** — medium effort, real moat:
-- C1: Community response-time tracking
+**Ship next** — medium effort, real moat. ✅ Shipped 2026-08-10:
+- C1: Community response-time tracking ✅
 
 **Ship when you have a full week free** — distribution changes the game; retention stops mattering because users never leave your context:
 - E1: Chrome extension, or
