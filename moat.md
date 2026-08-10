@@ -54,11 +54,11 @@ Freshness signal + personal accumulation + workflow integration is what makes pe
 
 ## Solo-operator ranking
 
-**Ship first** — fast + high leverage, all compound on existing snapshot data:
-- A1: `/whats-new` daily changelog
-- B1: Saved filter sets
-- B2: Personal notes
-- C2: Program lifecycle chart
+**Ship first** — fast + high leverage, all compound on existing snapshot data. ✅ All four shipped 2026-08-09 → 2026-08-10:
+- A1: `/whats-new` daily changelog ✅
+- B1: Saved filter sets ✅
+- B2: Personal notes ✅
+- C2: Program lifecycle chart ✅
 
 **Ship next** — medium effort, real moat:
 - C1: Community response-time tracking

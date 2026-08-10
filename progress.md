@@ -14,15 +14,27 @@ New entries at the top. One entry per shipped feature or notable decision. Keep 
 
 ## Current phase
 
-**Moat "ship first" — Phase 4 of 4 next: program lifecycle chart.**
+**Moat "ship first" — all 4 phases shipped.** Next-up choice lives in `ROADMAP.md` / `moat.md` — likely candidates: community response-time tracking (moat C1), Chrome extension (E1), or `/feed/scopes` deeper cut.
 
 Phase list:
 - ~~**P1** `/whats-new` daily changelog + RSS~~ — shipped
 - ~~**P2** Saved filter sets~~ — shipped
 - ~~**P3** Personal notes per program~~ — shipped
-- **P4** Program lifecycle chart — ~3-4 days
+- ~~**P4** Program lifecycle chart~~ — shipped
 
 ---
+
+## 2026-08-10 — P4: Program lifecycle chart
+
+`LifecycleChart` component in `app/programs/[platform]/[...slug]/lifecycle-chart.tsx` — pure server-render SVG, no chart library, ~180 lines. Renders an in-scope-count-over-time line + area for the full snapshot history on each program detail page. Point dots are colour-coded by event kind: neutral for the baseline snapshot, emerald for scope additions, amber for removals, cyan for reward changes. Native `<title>` on each point provides the hover tooltip (date · count · event kind) — no client JS needed.
+
+Left axis shows the y-max tick (peak in-scope count with 15% headroom) and 0 baseline. Bottom axis shows first and last snapshot dates. A subtitle line above the chart reports duration in days and the peak count. Legend beneath. Only rendered when a program has ≥ 2 snapshots; single-snapshot programs still get the existing "// only one snapshot on record" hint.
+
+Slotted inside the existing "History" section above the event list so chart-plus-list feels like one artifact. Chart gets more valuable per day as snapshot history compounds — this is the moat pitch codified: "we've been snapshotting daily for months, look at the story of this program."
+
+---
+
+## 2026-08-10 — P3: Personal notes per program
 
 ## 2026-08-10 — P3: Personal notes per program
 

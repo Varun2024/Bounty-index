@@ -12,6 +12,7 @@ import { WatchButton } from '@/app/_ui/watch-button';
 import { PlatformLogo } from '@/app/_ui/platform-logo';
 import { CompanyLogo } from '@/app/_ui/company-logo';
 import { ProgramNotes } from '@/app/_ui/program-notes';
+import { LifecycleChart } from './lifecycle-chart';
 
 export const dynamic = 'force-dynamic';
 
@@ -257,6 +258,7 @@ function ProgramTimeline({ snapshots, currency }: ProgramTimelineProps) {
           {meaningfulChanges.length} event{meaningfulChanges.length === 1 ? '' : 's'}
         </span>
       </div>
+      {snapshots.length >= 2 && <LifecycleChart snapshots={snapshots} />}
       <ol className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">
         {meaningfulChanges.map((e, i) => (
           <li key={e.capturedAt.toISOString()} className={i === meaningfulChanges.length - 1 ? '' : 'border-b border-neutral-900'}>
