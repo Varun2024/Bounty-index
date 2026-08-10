@@ -6,7 +6,7 @@ import {
   addToServerCompare,
   removeFromServerCompare,
   clearServerCompare,
-} from '@/app/actions/sync';
+} from '@/app/actions/sync-compare';
 
 const KEY = 'bounty-index:compare';
 const MAX = 4;

@@ -6,7 +6,7 @@ import {
   addServerSavedFilter,
   removeServerSavedFilter,
   type SavedFilter,
-} from '@/app/actions/sync';
+} from '@/app/actions/sync-saved-filters';
 
 export type { SavedFilter };
 

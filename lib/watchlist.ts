@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import {
   addToServerWatchlist,
   removeFromServerWatchlist,
-} from '@/app/actions/sync';
+} from '@/app/actions/sync-watchlist';
 
 const KEY = 'bounty-index:watchlist';
 
