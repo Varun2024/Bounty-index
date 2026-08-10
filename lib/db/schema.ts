@@ -182,6 +182,26 @@ export const userCompare = pgTable(
   }),
 );
 
+// Private per-program notes. Signed-in only — this feature is intentionally not
+// mirrored to localStorage; it's a lock-in feature (see moat.md B2).
+export const userNotes = pgTable(
+  'user_notes',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    programId: integer('program_id')
+      .notNull()
+      .references(() => programs.id, { onDelete: 'cascade' }),
+    content: text('content').notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.programId] }),
+    userIdx: index('user_notes_user_idx').on(t.userId),
+  }),
+);
+
 // Named filter presets. `query` is a URL query string without the leading `?`, e.g.
 // `platform=hackerone&minReward=1000&sort=reward`. Signed-out users get the same shape in
 // localStorage (with client-generated string ids) and it merges into this table on sign-in.

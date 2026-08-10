@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProgramBySlug, getProgramSnapshots, type ProgramSnapshot } from '@/lib/db/queries';
+import { getNote } from '@/app/actions/notes';
 import { formatBounty, formatPayoutRange, platformLabel, PLATFORM_META, relativeTime, scopeHref, shortenIdentifier } from '@/lib/format';
 import { diffSnapshots, isEmptyDiff, summarizeActivity } from '@/lib/snapshots';
 import { extractCompanyDomain } from '@/lib/program-domain';
@@ -10,6 +11,7 @@ import { CompareButton } from '@/app/_ui/compare-button';
 import { WatchButton } from '@/app/_ui/watch-button';
 import { PlatformLogo } from '@/app/_ui/platform-logo';
 import { CompanyLogo } from '@/app/_ui/company-logo';
+import { ProgramNotes } from '@/app/_ui/program-notes';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,7 +91,10 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const result = await getProgramBySlug(platform, fullSlug);
   if (!result) notFound();
   const { program, scopes } = result;
-  const snapshots = await getProgramSnapshots(program.id).catch(() => [] as ProgramSnapshot[]);
+  const [snapshots, initialNote] = await Promise.all([
+    getProgramSnapshots(program.id).catch(() => [] as ProgramSnapshot[]),
+    getNote(program.id).catch(() => ({ content: '', updatedAt: null })),
+  ]);
   const inScope = scopes.filter((s) => s.inScope);
   const outOfScope = scopes.filter((s) => !s.inScope);
   const platformDot = PLATFORM_META[program.platform]?.dot ?? 'bg-neutral-500';
@@ -213,6 +218,8 @@ export default async function ProgramDetailPage({ params }: PageProps) {
           <ScopeColumn kind="in" items={inScope} />
           <ScopeColumn kind="out" items={outOfScope} />
         </div>
+
+        <ProgramNotes programId={program.id} initialNote={initialNote} />
 
         <ProgramTimeline snapshots={snapshots} currency={program.currency ?? 'USD'} />
       </div>

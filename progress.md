@@ -14,13 +14,25 @@ New entries at the top. One entry per shipped feature or notable decision. Keep 
 
 ## Current phase
 
-**Moat "ship first" — Phase 3 of 4 next: personal notes per program.**
+**Moat "ship first" — Phase 4 of 4 next: program lifecycle chart.**
 
 Phase list:
 - ~~**P1** `/whats-new` daily changelog + RSS~~ — shipped
 - ~~**P2** Saved filter sets~~ — shipped
-- **P3** Personal notes per program — ~2 days
+- ~~**P3** Personal notes per program~~ — shipped
 - **P4** Program lifecycle chart — ~3-4 days
+
+---
+
+## 2026-08-10 — P3: Personal notes per program
+
+New table `user_notes` (userId, programId, content, updatedAt) with a composite PK. Signed-in only — deliberately no localStorage fallback because the whole point of moat B2 is account-tied lock-in (see moat.md). Server actions in `app/actions/notes.ts`: `getNote(programId)`, `saveNote(programId, content)`. Empty content deletes the row to keep the table lean.
+
+`ProgramNotes` client component slotted into the program detail page between the scope columns and the timeline. Textarea with autosave (800ms debounce) + flush on blur. Char counter (max 5000, colour shifts amber past 95%). Status pill shows "saving…", "saved 3s ago", or "save failed" — falls back to relative time when idle. Signed-out state renders a dashed sign-in prompt instead of the textarea.
+
+Constants + types moved to `lib/notes.ts` because `'use server'` files can only export async functions — learned that the hard way on first build.
+
+Also fixed in this session: search icon in the filters rail was centering on the wrong container (the wrapper included the helper `<p>`), tightened the wrapper to input-only (`1cd820e`). Highlighted several buried tokens in muted secondary text — 'show N more' counter, '/whats-new' window label, safe-harbor coverage note.
 
 ---
 
@@ -37,8 +49,6 @@ UI: new `SavedFiltersSection` component slotted into the filters rail right afte
 ## 2026-08-09 — Compact identifier display + collapsed long scope lists
 
 `89e847f` — `shortenIdentifier()` strips URL protocol, collapses long hex/base58 address middles to first…last windows, caps display length at 64 chars. Full identifier stays in tooltip + href. Scope lists show the first 10 rows inline; anything beyond gets wrapped in a native `<details>` disclosure. No client JS — pure CSS `:open` state.
-
-## 2026-08-09 — P1: `/whats-new` daily changelog + RSS
 
 ## 2026-08-09 — P1: `/whats-new` daily changelog + RSS
 

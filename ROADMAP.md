@@ -35,7 +35,7 @@ Ranked by ROI × leverage of existing code. Items 1-3 close visible gaps against
 - [ ] **Cover Standoff365, Sherlock, Compass Security** — long-tail platforms bbradar includes; adds coverage but each is a bespoke normalizer for smaller audiences.
 - [ ] **Public API** — Arkadiyt's raw JSON already exists; only build ours if there's demand for the *normalized* shape.
 - [ ] **URL-state polish** — the `q` search input doesn't reflect in the URL until Enter. Debounce+push.
-- [ ] **Personal notes on programs** — signed-in only, per-user. Requires design decisions on richness (plain text? markdown? word cap?).
+- [x] **Personal notes on programs** — shipped. Plain-text private notes per user per program, autosave with 800ms debounce, 5000-char cap. Signed-in only (deliberate lock-in — no localStorage fallback).
 - [ ] **Company pages** — aggregate all programs from one org. Requires org detection heuristics.
 
 ## Killed / deferred indefinitely
