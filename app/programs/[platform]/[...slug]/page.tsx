@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProgramBySlug, getProgramSnapshots, type ProgramSnapshot } from '@/lib/db/queries';
-import { formatBounty, formatPayoutRange, platformLabel, PLATFORM_META, relativeTime, scopeHref } from '@/lib/format';
+import { formatBounty, formatPayoutRange, platformLabel, PLATFORM_META, relativeTime, scopeHref, shortenIdentifier } from '@/lib/format';
 import { diffSnapshots, isEmptyDiff, summarizeActivity } from '@/lib/snapshots';
 import { extractCompanyDomain } from '@/lib/program-domain';
 import { ExternalIcon } from '@/app/_ui/icons';
@@ -467,40 +467,70 @@ interface ScopeListProps {
   showTypeTag: boolean;
 }
 
+// Long buckets get collapsed via native <details>. Threshold matches the "you can scan this
+// in one glance" line — above it the wall of URLs stops being useful and the collapse wins.
+const SCOPE_LIST_INLINE_LIMIT = 10;
+
 function ScopeList({ items, kind, showTypeTag }: ScopeListProps) {
   const isIn = kind === 'in';
   const glyph = isIn ? '+' : '−';
   const glyphColor = isIn ? 'text-emerald-400' : 'text-neutral-600';
+
+  const overflow = Math.max(0, items.length - SCOPE_LIST_INLINE_LIMIT);
+  const inline = overflow > 0 ? items.slice(0, SCOPE_LIST_INLINE_LIMIT) : items;
+  const rest = overflow > 0 ? items.slice(SCOPE_LIST_INLINE_LIMIT) : [];
+
+  const renderRow = (s: ScopeItem, isLast: boolean) => {
+    const href = scopeHref(s.identifier);
+    const rowClass = `flex items-center gap-3 px-4 py-3 md:py-2.5 ${isLast ? '' : 'border-b border-neutral-900'} hover:bg-neutral-900/40 active:bg-neutral-900/60 transition group`;
+    const display = shortenIdentifier(s.identifier);
+    const body = (
+      <>
+        <span className={`mono text-sm ${glyphColor} shrink-0 w-3`}>{glyph}</span>
+        <code
+          title={display === s.identifier ? undefined : s.identifier}
+          className={`mono text-xs break-all flex-1 ${href ? 'text-neutral-200 group-hover:text-emerald-300' : 'text-neutral-300'}`}
+        >
+          {display}
+        </code>
+        {href && (
+          <ExternalIcon size={10} className="text-neutral-700 group-hover:text-emerald-400 shrink-0 transition" />
+        )}
+        {showTypeTag && (
+          <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 shrink-0">{s.assetType}</span>
+        )}
+        {s.severity && (
+          <span className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">· {s.severity}</span>
+        )}
+      </>
+    );
+    return href ? (
+      <li key={s.id}>
+        <a href={href} target="_blank" rel="noreferrer noopener" className={rowClass}>{body}</a>
+      </li>
+    ) : (
+      <li key={s.id} className={rowClass}>{body}</li>
+    );
+  };
+
   return (
     <ul className={`border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 ${isIn ? '' : 'opacity-80'}`}>
-      {items.map((s, i) => {
-        const href = scopeHref(s.identifier);
-        const rowClass = `flex items-center gap-3 px-4 py-3 md:py-2.5 ${i === items.length - 1 ? '' : 'border-b border-neutral-900'} hover:bg-neutral-900/40 active:bg-neutral-900/60 transition group`;
-        const body = (
-          <>
-            <span className={`mono text-sm ${glyphColor} shrink-0 w-3`}>{glyph}</span>
-            <code className={`mono text-xs break-all flex-1 ${href ? 'text-neutral-200 group-hover:text-emerald-300' : 'text-neutral-300'}`}>
-              {s.identifier}
-            </code>
-            {href && (
-              <ExternalIcon size={10} className="text-neutral-700 group-hover:text-emerald-400 shrink-0 transition" />
-            )}
-            {showTypeTag && (
-              <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 shrink-0">{s.assetType}</span>
-            )}
-            {s.severity && (
-              <span className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">· {s.severity}</span>
-            )}
-          </>
-        );
-        return href ? (
-          <li key={s.id}>
-            <a href={href} target="_blank" rel="noreferrer noopener" className={rowClass}>{body}</a>
-          </li>
-        ) : (
-          <li key={s.id} className={rowClass}>{body}</li>
-        );
-      })}
+      {inline.map((s, i) => renderRow(s, i === inline.length - 1 && overflow === 0))}
+      {overflow > 0 && (
+        <li>
+          <details className="group/details">
+            <summary className="mono text-[11px] uppercase tracking-widest text-neutral-500 hover:text-emerald-400 cursor-pointer list-none px-4 py-3 flex items-center gap-2 transition select-none">
+              <span className="text-neutral-700 group-open/details:hidden">▸</span>
+              <span className="text-neutral-700 hidden group-open/details:inline">▾</span>
+              <span className="group-open/details:hidden">show {overflow} more</span>
+              <span className="hidden group-open/details:inline">hide {overflow} more</span>
+            </summary>
+            <ul>
+              {rest.map((s, i) => renderRow(s, i === rest.length - 1))}
+            </ul>
+          </details>
+        </li>
+      )}
     </ul>
   );
 }

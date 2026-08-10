@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getRecentChanges, type RecentChange } from '@/lib/db/queries';
-import { platformLabel, PLATFORM_META } from '@/lib/format';
+import { platformLabel, PLATFORM_META, shortenIdentifier } from '@/lib/format';
 import { RssIcon } from '@/app/_ui/icons';
 
 export const dynamic = 'force-dynamic';
@@ -155,7 +155,7 @@ function DiffSummary({ diff }: { diff: RecentChange['diff'] }) {
     );
   }
 
-  const sampleIds = [...diff.added.slice(0, 3), ...diff.removed.slice(0, 3)];
+  const sampleIds = [...diff.added.slice(0, 3), ...diff.removed.slice(0, 3)].map((s) => shortenIdentifier(s, 44));
 
   return (
     <div className="mt-2 space-y-1">

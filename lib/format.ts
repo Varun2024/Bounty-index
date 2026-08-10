@@ -43,6 +43,23 @@ export function scopeHref(identifier: string): string | null {
   return null;
 }
 
+// Compact display form for a scope identifier. Strips the URL protocol, collapses long hex
+// addresses to a first…last window, and caps overall length so a single row scans fast.
+// The full identifier is preserved by callers via the `title` attribute and outbound `href`.
+export function shortenIdentifier(id: string, maxLen = 64): string {
+  let s = id.trim();
+  s = s.replace(/^https?:\/\//i, '');
+  // Ethereum-style addresses: 0x + 40 hex → 0xABCD…WXYZ
+  s = s.replace(/0x[a-fA-F0-9]{20,}/g, (m) => `${m.slice(0, 6)}…${m.slice(-4)}`);
+  // Solana/base58 addresses (32–44 chars, no 0x prefix): shorten if standalone
+  s = s.replace(/\b[1-9A-HJ-NP-Za-km-z]{32,44}\b/g, (m) => `${m.slice(0, 6)}…${m.slice(-4)}`);
+  if (s.length <= maxLen) return s;
+  // Fall back to middle-ellipsis, biased toward keeping the tail (which usually has the identifying bit).
+  const head = Math.floor((maxLen - 1) * 0.55);
+  const tail = maxLen - 1 - head;
+  return `${s.slice(0, head)}…${s.slice(-tail)}`;
+}
+
 export function relativeTime(from: Date | null | undefined): string {
   if (!from) return '—';
   const diffMs = Date.now() - new Date(from).getTime();
