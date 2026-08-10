@@ -1,9 +1,9 @@
 'use server';
 
 import { and, eq, desc } from 'drizzle-orm';
-import { auth } from '@/auth';
 import { db } from '@/lib/db/client';
 import { userWatchlist, userCompare, userSavedFilters } from '@/lib/db/schema';
+import { requireUserId } from './require-user';
 
 const COMPARE_MAX = 4;
 const SAVED_FILTERS_MAX = 20;
@@ -14,11 +14,6 @@ export interface SavedFilter {
   id: number | string; // number for server rows, string uuid for localStorage-only entries
   name: string;
   query: string;
-}
-
-async function requireUserId(): Promise<string | null> {
-  const session = await auth();
-  return session?.user?.id ?? null;
 }
 
 // --- Watchlist ---

@@ -1,15 +1,10 @@
 'use server';
 
 import { and, eq } from 'drizzle-orm';
-import { auth } from '@/auth';
 import { db } from '@/lib/db/client';
 import { userNotes } from '@/lib/db/schema';
 import { NOTE_MAX_LEN, type NoteResult } from '@/lib/notes';
-
-async function requireUserId(): Promise<string | null> {
-  const session = await auth();
-  return session?.user?.id ?? null;
-}
+import { requireUserId } from './require-user';
 
 const EMPTY_NOTE: NoteResult = { content: '', updatedAt: null };
 

@@ -1,18 +1,13 @@
 'use server';
 
 import { and, eq, sql } from 'drizzle-orm';
-import { auth } from '@/auth';
 import { db } from '@/lib/db/client';
 import { userReports } from '@/lib/db/schema';
 import { REPORT_COMMENT_MAX, type UserReport, type ProgramReportStats } from '@/lib/reports';
+import { requireUserId } from './require-user';
 
 const MIN_STATS_SAMPLE = 3;
 const MAX_YEARS_BACK = 5;
-
-async function requireUserId(): Promise<string | null> {
-  const session = await auth();
-  return session?.user?.id ?? null;
-}
 
 function parseDateInput(raw: string, field: string): Date {
   const trimmed = raw.trim();
