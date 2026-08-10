@@ -57,7 +57,7 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
           <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Changelog</p>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">What&rsquo;s new</h1>
           <p className="text-neutral-400 mt-2">
-            Every scope, reward, and safe-harbor change across all platforms — the last {windowLabel}.
+            Every scope, reward, and safe-harbor change across all platforms — the last <span className="text-neutral-100 tabular-nums">{windowLabel}</span>.
           </p>
         </div>
         <a
@@ -73,7 +73,7 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
         <p className="mono text-xs text-amber-400 mt-8">DB_NOT_CONNECTED</p>
       ) : changes.length === 0 ? (
         <div className="mt-10 space-y-3">
-          <p className="mono text-xs text-neutral-500">— no changes in the last {windowLabel} —</p>
+          <p className="mono text-xs text-neutral-500">— no changes in the last <span className="text-neutral-300 tabular-nums">{windowLabel}</span> —</p>
           <p className="text-sm text-neutral-500">
             Try widening the window:
             {' '}
@@ -167,7 +167,13 @@ function DiffSummary({ diff }: { diff: RecentChange['diff'] }) {
       {sampleIds.length > 0 && (
         <p className="mono text-[11px] text-neutral-500 truncate">
           {sampleIds.join(', ')}
-          {diff.added.length + diff.removed.length > sampleIds.length && ` · +${diff.added.length + diff.removed.length - sampleIds.length} more`}
+          {diff.added.length + diff.removed.length > sampleIds.length && (
+            <>
+              {' · +'}
+              <span className="text-neutral-300 tabular-nums">{diff.added.length + diff.removed.length - sampleIds.length}</span>
+              {' more'}
+            </>
+          )}
         </p>
       )}
     </div>

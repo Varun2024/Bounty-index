@@ -52,11 +52,11 @@ export function SavedFiltersSection() {
       {filters.length === 0 ? (
         <p className="mono text-[10px] leading-relaxed text-neutral-600">
           <span className="text-neutral-700">{'// '}</span>
-          save the current filter combo to jump back to it later.
+          save the <span className="text-neutral-400">current filter combo</span> to jump back to it later.
           {!isAuthed && (
             <>
               {' '}
-              signed-out saves stay on this device.
+              signed-out saves stay <span className="text-neutral-400">on this device</span>.
             </>
           )}
         </p>

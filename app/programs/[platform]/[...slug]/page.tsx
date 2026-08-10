@@ -522,8 +522,8 @@ function ScopeList({ items, kind, showTypeTag }: ScopeListProps) {
             <summary className="mono text-[11px] uppercase tracking-widest text-neutral-500 hover:text-emerald-400 cursor-pointer list-none px-4 py-3 flex items-center gap-2 transition select-none">
               <span className="text-neutral-700 group-open/details:hidden">▸</span>
               <span className="text-neutral-700 hidden group-open/details:inline">▾</span>
-              <span className="group-open/details:hidden">show {overflow} more</span>
-              <span className="hidden group-open/details:inline">hide {overflow} more</span>
+              <span className="group-open/details:hidden">show <span className="text-neutral-200 tabular-nums">{overflow}</span> more</span>
+              <span className="hidden group-open/details:inline">hide <span className="text-neutral-200 tabular-nums">{overflow}</span> more</span>
             </summary>
             <ul>
               {rest.map((s, i) => renderRow(s, i === rest.length - 1))}

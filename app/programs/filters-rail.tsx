@@ -49,20 +49,22 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         <FilterIcon size={12} />
         Filters
       </div>
-      <div className="relative">
-        <SearchIcon size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600 pointer-events-none" />
-        <input
-          type="search"
-          placeholder="program or scope…"
-          defaultValue={filters.q ?? ''}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') update({ q: e.currentTarget.value });
-          }}
-          className="focus-ring w-full mono text-xs pl-8 pr-3 py-2 bg-neutral-900 border border-neutral-800 rounded focus:outline-none focus:border-emerald-400/50"
-        />
+      <div>
+        <div className="relative">
+          <SearchIcon size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600 pointer-events-none" />
+          <input
+            type="search"
+            placeholder="program or scope…"
+            defaultValue={filters.q ?? ''}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') update({ q: e.currentTarget.value });
+            }}
+            className="focus-ring w-full mono text-xs pl-8 pr-3 py-2 bg-neutral-900 border border-neutral-800 rounded focus:outline-none focus:border-emerald-400/50"
+          />
+        </div>
         <p className="mono text-[10px] text-neutral-600 mt-1.5">
           <span className="text-neutral-700">{'// '}</span>
-          matches program name OR any in-scope identifier
+          matches <span className="text-neutral-400">program name</span> OR any <span className="text-neutral-400">in-scope identifier</span>
         </p>
       </div>
 
@@ -113,7 +115,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         </Chip>
         <p className="mono text-[10px] leading-relaxed text-neutral-600 mt-1 w-full">
           <span className="text-neutral-700">{'// '}</span>
-          coverage: Bugcrowd only. other platforms don&apos;t publish this structurally yet.
+          coverage: <span className="text-neutral-400">Bugcrowd only</span>. other platforms don&apos;t publish this structurally yet.
         </p>
       </FilterGroup>
 
