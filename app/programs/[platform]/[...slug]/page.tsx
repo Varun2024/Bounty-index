@@ -14,6 +14,7 @@ import { PlatformLogo } from '@/app/_ui/platform-logo';
 import { CompanyLogo } from '@/app/_ui/company-logo';
 import { ProgramNotes } from '@/app/_ui/program-notes';
 import { CommunityReports } from '@/app/_ui/community-reports';
+import { SectionHeading } from '@/app/_ui/section-heading';
 import { LifecycleChart } from './lifecycle-chart';
 
 export const dynamic = 'force-dynamic';
@@ -263,12 +264,11 @@ function ProgramTimeline({ snapshots, currency }: ProgramTimelineProps) {
 
   return (
     <section className="mt-14 reveal reveal-delay-2">
-      <div className="flex items-baseline justify-between mb-4">
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500">History</h2>
+      <SectionHeading title="History" className="mb-4">
         <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
           {meaningfulChanges.length} event{meaningfulChanges.length === 1 ? '' : 's'}
         </span>
-      </div>
+      </SectionHeading>
       {snapshots.length >= 2 && <LifecycleChart snapshots={snapshots} />}
       <ol className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">
         {meaningfulChanges.map((e, i) => (
@@ -431,12 +431,11 @@ function ScopeColumn({ kind, items }: ScopeColumnProps) {
 
   return (
     <section>
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500">{title}</h2>
+      <SectionHeading title={title}>
         <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
           {items.length.toString().padStart(3, '0')}
         </span>
-      </div>
+      </SectionHeading>
       {items.length === 0 ? (
         <p className="mono text-xs text-neutral-600 py-6">— none listed —</p>
       ) : shouldGroup ? (

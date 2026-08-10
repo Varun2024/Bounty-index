@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { submitReport, deleteReport } from '@/app/actions/reports';
 import { REPORT_COMMENT_MAX, type UserReport, type ProgramReportStats } from '@/lib/reports';
+import { SectionHeading } from './section-heading';
 
 interface CommunityReportsProps {
   programId: number;
@@ -40,12 +41,11 @@ export function CommunityReports({ programId, programName, initialStats, initial
 
   return (
     <section className="mt-14 reveal reveal-delay-2">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500">Community reports</h2>
+      <SectionHeading title="Community reports">
         <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
           {stats.count} {stats.count === 1 ? 'report' : 'reports'}
         </span>
-      </div>
+      </SectionHeading>
 
       <div className="border border-neutral-900 rounded-lg bg-neutral-950/40 p-4 md:p-5">
         {stats.count === 0 ? (

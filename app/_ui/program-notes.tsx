@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { saveNote } from '@/app/actions/notes';
 import { NOTE_MAX_LEN, type NoteResult } from '@/lib/notes';
+import { SectionHeading } from './section-heading';
 import { relativeTime } from '@/lib/format';
 
 interface ProgramNotesProps {
@@ -70,8 +71,7 @@ export function ProgramNotes({ programId, initialNote }: ProgramNotesProps) {
 
   return (
     <section className="mt-14 reveal reveal-delay-1">
-      <div className="flex items-baseline justify-between mb-3">
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500">Your notes</h2>
+      <SectionHeading title="Your notes">
         <StatusPill
           isAuthed={isAuthed}
           sessionLoading={sessionStatus === 'loading'}
@@ -79,7 +79,7 @@ export function ProgramNotes({ programId, initialNote }: ProgramNotesProps) {
           updatedAt={updatedAt}
           length={content.length}
         />
-      </div>
+      </SectionHeading>
 
       {!isAuthed ? (
         <SignedOutPlaceholder onSignIn={() => signIn('github')} />
