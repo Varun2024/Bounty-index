@@ -46,7 +46,10 @@ export default async function FeedPage() {
       </div>
 
       {dbError ? (
-        <p className="mono text-xs text-amber-400 mt-8">DB_NOT_CONNECTED</p>
+        <div className="mt-8 border border-amber-900/60 bg-amber-950/30 rounded-lg p-4 text-sm text-amber-200/80">
+          <p className="mono text-xs text-amber-400 mb-2">INDEX_READ_ONLY</p>
+          <p>New-program history is paused while the index reconnects. Browse the full <a href="/programs" className="underline text-emerald-400">program list</a> — it&rsquo;s live from the upstream mirror.</p>
+        </div>
       ) : rows.length === 0 ? (
         <p className="mono text-xs text-neutral-500 mt-8">— empty log — run <code className="text-emerald-400">npm run ingest</code></p>
       ) : (

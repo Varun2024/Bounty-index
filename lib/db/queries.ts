@@ -1,6 +1,27 @@
 import { db, schema } from './client';
 import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne } from 'drizzle-orm';
 import { diffSnapshots, isEmptyDiff, type SnapshotDiff } from '../snapshots';
+import {
+  listProgramsFallback,
+  getProgramBySlugFallback,
+  findByDomainFallback,
+  statsFallback,
+  topPayoutsFallback,
+  getProgramsByIdsFallback,
+} from '@/lib/fallback/upstream';
+
+// Read-only fallback: on any DB error (Neon quota, cold-start timeout, credential drift),
+// serve reconstructed data from arkadiyt/bounty-targets-data so the site stays browsable.
+// Only wraps read paths that can be rebuilt from upstream; snapshot-history features
+// (whats-new, feed's firstSeenAt) and per-user tables intentionally still throw.
+async function withFallback<T>(primary: () => Promise<T>, fallback: () => Promise<T>, label: string): Promise<T> {
+  try {
+    return await primary();
+  } catch (err) {
+    console.error(`[db-fallback] ${label} → upstream:`, err instanceof Error ? err.message : err);
+    return fallback();
+  }
+}
 
 export type ProgramFilters = {
   q?: string;
@@ -15,7 +36,7 @@ export type ProgramFilters = {
   pageSize?: number;
 };
 
-export async function listPrograms(f: ProgramFilters = {}) {
+async function listProgramsDb(f: ProgramFilters = {}) {
   const page = Math.max(1, f.page ?? 1);
   // Cap at 5000 so exports can pull the full set (~1.2k rows today) without a caller-injected DoS.
   const pageSize = Math.min(5000, Math.max(1, f.pageSize ?? 25));
@@ -85,7 +106,7 @@ export async function listPrograms(f: ProgramFilters = {}) {
   return { rows, total: totalRow[0]?.c ?? 0, page, pageSize };
 }
 
-export async function getProgramsByIds(ids: number[]) {
+async function getProgramsByIdsDb(ids: number[]) {
   if (!ids.length) return [];
   const rows = await db.select().from(schema.programs).where(inArray(schema.programs.id, ids));
   // Aggregate scope counts per program in one query to avoid N+1
@@ -107,7 +128,7 @@ export async function getProgramsByIds(ids: number[]) {
     .map((r) => ({ ...r, scopeTotal: scopeMap.get(r.id)?.total ?? 0, scopeInScope: scopeMap.get(r.id)?.inScope ?? 0 }));
 }
 
-export async function getProgramBySlug(platform: string, slug: string) {
+async function getProgramBySlugDb(platform: string, slug: string) {
   const [program] = await db
     .select()
     .from(schema.programs)
@@ -118,7 +139,7 @@ export async function getProgramBySlug(platform: string, slug: string) {
   return { program, scopes: scopeRows };
 }
 
-export async function findByDomain(domain: string) {
+async function findByDomainDb(domain: string) {
   const d = domain.toLowerCase().trim();
   if (!d) return [];
   const rows = await db
@@ -133,7 +154,7 @@ export async function findByDomain(domain: string) {
   return rows;
 }
 
-export async function topPayouts(limit = 5) {
+async function topPayoutsDb(limit = 5) {
   return db
     .select()
     .from(schema.programs)
@@ -142,7 +163,7 @@ export async function topPayouts(limit = 5) {
     .limit(limit);
 }
 
-export async function stats() {
+async function statsDb() {
   const [programs] = await db.select({ c: sql<number>`count(*)::int` }).from(schema.programs);
   const [bountyPrograms] = await db
     .select({ c: sql<number>`count(*)::int` })
@@ -346,3 +367,16 @@ export async function getRecentChanges(hoursBack = 168, limit = 200): Promise<Re
   out.sort((a, b) => b.capturedAt.getTime() - a.capturedAt.getTime());
   return out.slice(0, limit);
 }
+
+// --- Public read exports: DB first, upstream fallback on any failure. ---
+export const listPrograms = (f: ProgramFilters = {}) =>
+  withFallback(() => listProgramsDb(f), () => listProgramsFallback(f), 'listPrograms');
+export const getProgramsByIds = (ids: number[]) =>
+  withFallback(() => getProgramsByIdsDb(ids), () => getProgramsByIdsFallback(ids), 'getProgramsByIds');
+export const getProgramBySlug = (platform: string, slug: string) =>
+  withFallback(() => getProgramBySlugDb(platform, slug), () => getProgramBySlugFallback(platform, slug), 'getProgramBySlug');
+export const findByDomain = (domain: string) =>
+  withFallback(() => findByDomainDb(domain), () => findByDomainFallback(domain), 'findByDomain');
+export const topPayouts = (limit = 5) =>
+  withFallback(() => topPayoutsDb(limit), () => topPayoutsFallback(limit), 'topPayouts');
+export const stats = () => withFallback(() => statsDb(), () => statsFallback(), 'stats');

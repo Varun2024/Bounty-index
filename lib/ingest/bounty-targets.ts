@@ -5,9 +5,9 @@ import { createHash } from 'node:crypto';
 const BASE = 'https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/main/data';
 
 // ponytail: hackenproof file was removed upstream. Re-add if arkadiyt/bounty-targets-data brings it back.
-type Platform = 'hackerone' | 'bugcrowd' | 'intigriti' | 'yeswehack' | 'federacy';
+export type Platform = 'hackerone' | 'bugcrowd' | 'intigriti' | 'yeswehack' | 'federacy';
 
-const SOURCES: Record<Platform, string> = {
+export const SOURCES: Record<Platform, string> = {
   hackerone: `${BASE}/hackerone_data.json`,
   bugcrowd: `${BASE}/bugcrowd_data.json`,
   intigriti: `${BASE}/intigriti_data.json`,
@@ -15,7 +15,7 @@ const SOURCES: Record<Platform, string> = {
   federacy: `${BASE}/federacy_data.json`,
 };
 
-interface NormalizedProgram {
+export interface NormalizedProgram {
   slug: string;
   handle: string | null;
   name: string;
@@ -32,7 +32,7 @@ interface NormalizedProgram {
   raw: object;
 }
 
-interface NormalizedScope {
+export interface NormalizedScope {
   identifier: string;
   assetType: string;
   inScope: boolean;
@@ -289,7 +289,7 @@ function normalizeFederacy(r: FederacyRecord): NormalizedProgram | null {
   };
 }
 
-const NORMALIZERS: Record<Platform, (r: unknown) => NormalizedProgram | null> = {
+export const NORMALIZERS: Record<Platform, (r: unknown) => NormalizedProgram | null> = {
   hackerone: (r) => normalizeHackerOne(r as HackerOneRecord),
   bugcrowd: (r) => normalizeBugcrowd(r as BugcrowdRecord),
   intigriti: (r) => normalizeIntigriti(r as IntigritiRecord),

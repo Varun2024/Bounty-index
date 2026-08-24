@@ -70,7 +70,10 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
       </div>
 
       {dbError ? (
-        <p className="mono text-xs text-amber-400 mt-8">DB_NOT_CONNECTED</p>
+        <div className="mt-8 border border-amber-900/60 bg-amber-950/30 rounded-lg p-4 text-sm text-amber-200/80">
+          <p className="mono text-xs text-amber-400 mb-2">INDEX_READ_ONLY</p>
+          <p>Change history is paused while the index reconnects. Program list and scope lookup are still live.</p>
+        </div>
       ) : changes.length === 0 ? (
         <div className="mt-10 space-y-3">
           <p className="mono text-xs text-neutral-500">— no changes in the last <span className="text-neutral-300 tabular-nums">{windowLabel}</span> —</p>
