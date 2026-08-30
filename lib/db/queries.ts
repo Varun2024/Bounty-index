@@ -253,6 +253,54 @@ export interface ProgramSnapshot {
   payload: SnapshotPayloadShape;
 }
 
+// Similar programs by count of shared in-scope identifiers. Naive exact-match count — good
+// enough as a first pass because company-specific identifiers (*.shopify.com etc.) are unique
+// to their owner. If noise creeps in later, filter out identifiers with very high global counts.
+export interface SimilarProgram {
+  program: typeof schema.programs.$inferSelect;
+  overlap: number;
+}
+
+export async function getSimilarPrograms(programId: number, limit = 5): Promise<SimilarProgram[]> {
+  try {
+    const ranked = await db
+      .select({
+        id: schema.scopes.programId,
+        overlap: sql<number>`count(*)::int`,
+      })
+      .from(schema.scopes)
+      .where(
+        and(
+          eq(schema.scopes.inScope, true),
+          ne(schema.scopes.programId, programId),
+          inArray(
+            schema.scopes.identifier,
+            db
+              .select({ identifier: schema.scopes.identifier })
+              .from(schema.scopes)
+              .where(and(eq(schema.scopes.programId, programId), eq(schema.scopes.inScope, true))),
+          ),
+        ),
+      )
+      .groupBy(schema.scopes.programId)
+      .orderBy(sql`count(*) DESC`)
+      .limit(limit);
+    if (!ranked.length) return [];
+    const ids = ranked.map((r) => r.id);
+    const progs = await db.select().from(schema.programs).where(inArray(schema.programs.id, ids));
+    const byId = new Map(progs.map((p) => [p.id, p]));
+    return ranked
+      .map((r) => {
+        const p = byId.get(r.id);
+        return p ? { program: p, overlap: Number(r.overlap) } : null;
+      })
+      .filter((x): x is SimilarProgram => x !== null);
+  } catch (err) {
+    console.error('[getSimilarPrograms] failing open:', err instanceof Error ? err.message : err);
+    return [];
+  }
+}
+
 export async function getProgramSnapshots(programId: number): Promise<ProgramSnapshot[]> {
   const rows = await db
     .select({

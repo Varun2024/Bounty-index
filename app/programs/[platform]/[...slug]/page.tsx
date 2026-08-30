@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProgramBySlug, getProgramSnapshots, type ProgramSnapshot } from '@/lib/db/queries';
+import { getProgramBySlug, getProgramSnapshots, getSimilarPrograms, type ProgramSnapshot, type SimilarProgram } from '@/lib/db/queries';
 import { getNote } from '@/app/actions/notes';
 import { getUserReport, getProgramReportStats } from '@/app/actions/reports';
+import { diffSnapshots, isEmptyDiff } from '@/lib/snapshots';
 import { formatPayoutRange, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 import { summarizeActivity } from '@/lib/snapshots';
 import { extractCompanyDomain } from '@/lib/program-domain';
@@ -16,6 +17,10 @@ import { ProgramNotes } from '@/app/_ui/program-notes';
 import { CommunityReports } from '@/app/_ui/community-reports';
 import { ScopeColumn, Tag } from './scope-columns';
 import { ProgramTimeline } from './timeline';
+import { AtAGlance } from './at-a-glance';
+import { RecentChanges } from './recent-changes';
+import { SimilarPrograms } from './similar-programs';
+import { CopyScope } from './copy-scope';
 
 export const dynamic = 'force-dynamic';
 
@@ -95,11 +100,12 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const result = await getProgramBySlug(platform, fullSlug);
   if (!result) notFound();
   const { program, scopes } = result;
-  const [snapshots, initialNote, initialReportStats, initialUserReport] = await Promise.all([
+  const [snapshots, initialNote, initialReportStats, initialUserReport, similar] = await Promise.all([
     getProgramSnapshots(program.id).catch(() => [] as ProgramSnapshot[]),
     getNote(program.id).catch(() => ({ content: '', updatedAt: null })),
     getProgramReportStats(program.id).catch(() => ({ count: 0, waitingCount: 0, medianFirstResponseDays: null })),
     getUserReport(program.id).catch(() => null),
+    getSimilarPrograms(program.id, 5).catch(() => [] as SimilarProgram[]),
   ]);
   const inScope = scopes.filter((s) => s.inScope);
   const outOfScope = scopes.filter((s) => !s.inScope);
@@ -108,6 +114,21 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const companyDomain = extractCompanyDomain(scopes, program.name);
   const activity = summarizeActivity(snapshots, 7);
   const hasActivity = activity.hasBaseline && (activity.addedCount > 0 || activity.removedCount > 0 || activity.rewardChanged);
+
+  // Asset-type mix + last change: derived, no DB.
+  const mixBuckets = new Map<string, number>();
+  for (const s of inScope) mixBuckets.set(s.assetType, (mixBuckets.get(s.assetType) ?? 0) + 1);
+  const assetTypeMix = [...mixBuckets.entries()]
+    .map(([type, count]) => ({ type, count }))
+    .sort((a, b) => b.count - a.count);
+  const lastChangeAt = (() => {
+    for (let i = snapshots.length - 1; i > 0; i--) {
+      const d = diffSnapshots(snapshots[i - 1].payload, snapshots[i].payload);
+      if (d && !isEmptyDiff(d)) return snapshots[i].capturedAt;
+    }
+    return null;
+  })();
+  const inScopeIdentifiers = inScope.map((s) => s.identifier);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.bountyindex.in';
   const encodedSlug = program.slug.split('/').map(encodeURIComponent).join('/');
@@ -219,11 +240,27 @@ export default async function ProgramDetailPage({ params }: PageProps) {
           </div>
         </section>
 
+        <AtAGlance
+          inScopeCount={inScope.length}
+          outOfScopeCount={outOfScope.length}
+          assetTypeMix={assetTypeMix}
+          medianFirstResponseDays={initialReportStats.medianFirstResponseDays}
+          reportCount={initialReportStats.count}
+          lastChangeAt={lastChangeAt}
+        />
+
         {/* Scope: split columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10 reveal reveal-delay-1">
-          <ScopeColumn kind="in" items={inScope} />
-          <ScopeColumn kind="out" items={outOfScope} />
+        <div className="mt-10 reveal reveal-delay-1">
+          <div className="flex items-center justify-end mb-2">
+            <CopyScope identifiers={inScopeIdentifiers} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <ScopeColumn kind="in" items={inScope} />
+            <ScopeColumn kind="out" items={outOfScope} />
+          </div>
         </div>
+
+        <RecentChanges snapshots={snapshots} currency={program.currency ?? 'USD'} />
 
         <CommunityReports
           programId={program.id}
@@ -232,9 +269,24 @@ export default async function ProgramDetailPage({ params }: PageProps) {
           initialUserReport={initialUserReport}
         />
 
+        <SimilarPrograms items={similar} />
+
         <ProgramNotes programId={program.id} initialNote={initialNote} />
 
         <ProgramTimeline snapshots={snapshots} currency={program.currency ?? 'USD'} />
+
+        {program.raw != null && (
+          <details className="mt-10 group">
+            <summary className="mono text-[10px] uppercase tracking-widest text-neutral-500 hover:text-emerald-300 transition cursor-pointer list-none">
+              <span className="text-neutral-700 group-open:hidden">▸</span>
+              <span className="text-neutral-700 hidden group-open:inline">▾</span>{' '}
+              raw source payload
+            </summary>
+            <pre className="mt-3 mono text-[11px] text-neutral-400 bg-neutral-950/60 border border-neutral-900 rounded-lg p-4 overflow-x-auto max-h-[520px]">
+              {JSON.stringify(program.raw, null, 2)}
+            </pre>
+          </details>
+        )}
       </div>
     </div>
   );
