@@ -1,6 +1,6 @@
 import { db, schema } from './client';
 import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne } from 'drizzle-orm';
-import { diffSnapshots, isEmptyDiff, type SnapshotDiff } from '../snapshots';
+import { diffSnapshots, isEmptyDiff } from '../snapshots';
 import {
   listProgramsFallback,
   getProgramBySlugFallback,
@@ -9,6 +9,17 @@ import {
   topPayoutsFallback,
   getProgramsByIdsFallback,
 } from '@/lib/fallback/upstream';
+import type {
+  ProgramFilters,
+  SnapshotPayloadShape,
+  ProgramSnapshot,
+  WatchlistEntry,
+  RecentChange,
+  SimilarProgram,
+} from './types';
+
+// Re-export the shared types so callers can keep importing them from '@/lib/db/queries'.
+export type { ProgramFilters, SnapshotPayloadShape, ProgramSnapshot, WatchlistEntry, RecentChange, SimilarProgram };
 
 // Read-only fallback: on any DB error (Neon quota, cold-start timeout, credential drift),
 // serve reconstructed data from arkadiyt/bounty-targets-data so the site stays browsable.
@@ -22,19 +33,6 @@ async function withFallback<T>(primary: () => Promise<T>, fallback: () => Promis
     return fallback();
   }
 }
-
-export type ProgramFilters = {
-  q?: string;
-  platform?: string[];
-  assetType?: string[];
-  programType?: string; // bounty | vdp | all
-  minReward?: number;
-  hasBounty?: boolean;
-  safeHarbor?: boolean; // true = only programs with confirmed safe harbor (full or partial)
-  sort?: 'newest' | 'reward' | 'name';
-  page?: number;
-  pageSize?: number;
-};
 
 async function listProgramsDb(f: ProgramFilters = {}) {
   const page = Math.max(1, f.page ?? 1);
@@ -219,40 +217,6 @@ export async function trendingNewPayouts(limit = 6, days = 30) {
     .limit(limit);
 }
 
-// Watchlist data: each program + its two most recent snapshot payloads for diff computation.
-export interface WatchlistEntry {
-  program: typeof schema.programs.$inferSelect;
-  latest: SnapshotPayloadShape | null;
-  previous: SnapshotPayloadShape | null;
-  latestAt: Date | null;
-}
-
-// Shape of the payload we write in lib/ingest/bounty-targets.ts::buildSnapshotPayload.
-// Kept as an interface (not imported) so queries.ts stays free of ingest coupling.
-export interface SnapshotPayloadShape {
-  name: string;
-  url: string;
-  handle: string | null;
-  programType: string;
-  offersBounty: boolean;
-  offersSwag: boolean;
-  managed: boolean;
-  minBounty: number | null;
-  maxBounty: number | null;
-  currency: string;
-  submissionState: string | null;
-  safeHarbor: string | null;
-  scopeCount: number;
-  inScopeCount: number;
-  scopeIdentifiers: string[];
-}
-
-// Full snapshot history for a single program, oldest → newest so callers can build a timeline.
-export interface ProgramSnapshot {
-  capturedAt: Date;
-  payload: SnapshotPayloadShape;
-}
-
 // Distinct platforms + program counts. Used by the MCP `list_platforms` tool. No fallback —
 // callers should tolerate an empty array on DB failure (the tool returns "unavailable" text).
 export async function listPlatformsWithCounts(): Promise<{ platform: string; programs: number }[]> {
@@ -275,11 +239,6 @@ export async function listPlatformsWithCounts(): Promise<{ platform: string; pro
 // Similar programs by count of shared in-scope identifiers. Naive exact-match count — good
 // enough as a first pass because company-specific identifiers (*.shopify.com etc.) are unique
 // to their owner. If noise creeps in later, filter out identifiers with very high global counts.
-export interface SimilarProgram {
-  program: typeof schema.programs.$inferSelect;
-  overlap: number;
-}
-
 export async function getSimilarPrograms(programId: number, limit = 5): Promise<SimilarProgram[]> {
   try {
     const ranked = await db
@@ -377,12 +336,6 @@ export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
 // the window. Snapshots are sparse (only written when content_hash changes), so any snapshot in
 // the window IS a change — we just need to pair each with its predecessor to compute what
 // actually shifted.
-export interface RecentChange {
-  program: typeof schema.programs.$inferSelect;
-  capturedAt: Date;
-  diff: SnapshotDiff;
-}
-
 export async function getRecentChanges(hoursBack = 168, limit = 200): Promise<RecentChange[]> {
   const cutoff = new Date(Date.now() - hoursBack * 3_600_000);
 
