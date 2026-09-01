@@ -17,5 +17,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_GITHUB_SECRET,
     }),
   ],
-  session: { strategy: 'database' },
+  // JWT sessions instead of database sessions: authenticated browsing never touches the DB,
+  // so a Neon quota / outage doesn't break sign-in redirect. Adapter still writes user +
+  // account rows on first-time OAuth (that's identity persistence). Existing DB sessions
+  // are invalidated by this switch — every user re-signs-in once.
+  session: { strategy: 'jwt' },
+  trustHost: true,
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user?.id) token.sub = user.id;
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token.sub) session.user.id = token.sub;
+      return session;
+    },
+  },
 });
