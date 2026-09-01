@@ -253,6 +253,25 @@ export interface ProgramSnapshot {
   payload: SnapshotPayloadShape;
 }
 
+// Distinct platforms + program counts. Used by the MCP `list_platforms` tool. No fallback —
+// callers should tolerate an empty array on DB failure (the tool returns "unavailable" text).
+export async function listPlatformsWithCounts(): Promise<{ platform: string; programs: number }[]> {
+  try {
+    const rows = await db
+      .select({
+        platform: schema.programs.platform,
+        programs: sql<number>`count(*)::int`,
+      })
+      .from(schema.programs)
+      .groupBy(schema.programs.platform)
+      .orderBy(sql`count(*) DESC`);
+    return rows;
+  } catch (err) {
+    console.error('[listPlatformsWithCounts] failing open:', err instanceof Error ? err.message : err);
+    return [];
+  }
+}
+
 // Similar programs by count of shared in-scope identifiers. Naive exact-match count — good
 // enough as a first pass because company-specific identifiers (*.shopify.com etc.) are unique
 // to their owner. If noise creeps in later, filter out identifiers with very high global counts.
