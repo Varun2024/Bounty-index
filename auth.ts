@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import { inspect } from 'node:util';
 import { getDrizzleInstance } from '@/lib/db/client';
 import { users, accounts, sessions, verificationTokens } from '@/lib/db/schema';
 
@@ -27,21 +28,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // chain so the actual driver complaint lands in Vercel logs. Remove once root-caused.
   logger: {
     error(error) {
-      const flatten = (e: unknown, depth = 0): unknown => {
-        if (depth > 5 || !e || typeof e !== 'object') return e;
-        const err = e as Record<string, unknown> & { cause?: unknown };
-        return {
-          name: err.name,
-          message: err.message,
-          code: err.code,
-          detail: err.detail,
-          hint: err.hint,
-          severity: err.severity,
-          stack: typeof err.stack === 'string' ? err.stack.split('\n').slice(0, 6).join('\n') : undefined,
-          cause: flatten(err.cause, depth + 1),
-        };
-      };
-      console.error('[auth.error]', JSON.stringify(flatten(error), null, 2));
+      // util.inspect walks getters + non-enumerable fields, which NeonDbError uses.
+      console.error('[auth.error]', inspect(error, { depth: 6, showHidden: true, getters: true }));
     },
   },
   callbacks: {
