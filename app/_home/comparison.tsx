@@ -5,17 +5,18 @@ interface CompareRow {
   coverage: string;
   sort: string;
   lookup: string;
+  mcp: string;
   keyboard: string;
   active?: boolean;
 }
 
 export function Comparison() {
   const rows: CompareRow[] = [
-    { name: 'bounty.index', coverage: '5 of 5 · unified', sort: '✓ max payout', lookup: '✓ one query', keyboard: '✓ / j k ↵', active: true },
-    { name: 'HackerOne directory', coverage: '1 of 5', sort: 'severity only', lookup: '✗', keyboard: '✗' },
-    { name: 'Bugcrowd programs page', coverage: '1 of 5', sort: '✓ max payout', lookup: '✗', keyboard: '✗' },
-    { name: 'disclose.io', coverage: 'VDP policies only', sort: '✗', lookup: '✗', keyboard: '✗' },
-    { name: 'bounty-targets-data', coverage: '5 of 5 · raw JSON', sort: 'grep + jq', lookup: 'grep + jq', keyboard: 'n/a' },
+    { name: 'bounty.index', coverage: '5 of 5 · unified', sort: '✓ max payout', lookup: '✓ one query', mcp: '✓ /mcp endpoint', keyboard: '✓ / j k ↵', active: true },
+    { name: 'HackerOne directory', coverage: '1 of 5', sort: 'severity only', lookup: '✗', mcp: '✗', keyboard: '✗' },
+    { name: 'Bugcrowd programs page', coverage: '1 of 5', sort: '✓ max payout', lookup: '✗', mcp: '✗', keyboard: '✗' },
+    { name: 'disclose.io', coverage: 'VDP policies only', sort: '✗', lookup: '✗', mcp: '✗', keyboard: '✗' },
+    { name: 'bounty-targets-data', coverage: '5 of 5 · raw JSON', sort: 'grep + jq', lookup: 'grep + jq', mcp: '✗', keyboard: 'n/a' },
   ];
   return (
     <section className="border-t border-neutral-900 bg-neutral-950/40 relative">
@@ -34,7 +35,8 @@ export function Comparison() {
           </h2>
           <p className="mt-5 text-neutral-400 max-w-2xl leading-relaxed">
             Each platform shows its own programs. Directories are stale or policy-only. Raw JSON is fine
-            if you enjoy <code className="mono text-neutral-300">jq</code>. This is the one built for scanning.
+            if you enjoy <code className="mono text-neutral-300">jq</code>. And none of them speak
+            <code className="mono text-neutral-300"> MCP</code>. This is the one built for scanning — by you or your agent.
           </p>
         </div>
 
@@ -59,6 +61,7 @@ export function Comparison() {
                   { k: 'Coverage', v: r.coverage },
                   { k: 'Sort by payout', v: r.sort },
                   { k: 'Scope lookup', v: r.lookup },
+                  { k: 'MCP / agent access', v: r.mcp },
                   { k: 'Keyboard nav', v: r.keyboard },
                 ].map((cell) => (
                   <div key={cell.k} className="flex items-center justify-between px-4 py-2.5">
@@ -73,17 +76,18 @@ export function Comparison() {
 
         {/* Desktop: table */}
         <div className="mt-14 border border-neutral-900 rounded-xl overflow-hidden bg-neutral-950/60 hidden md:block">
-          <div className="grid grid-cols-[1.5fr_1.2fr_1.2fr_1.2fr_1.2fr] mono text-[10px] uppercase tracking-widest text-neutral-500 border-b border-neutral-900 bg-neutral-950">
+          <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_1.1fr_1fr] mono text-[10px] uppercase tracking-widest text-neutral-500 border-b border-neutral-900 bg-neutral-950">
             <div className="px-5 py-3.5">Source</div>
             <div className="px-4 py-3.5">Coverage</div>
             <div className="px-4 py-3.5">Sort by payout</div>
             <div className="px-4 py-3.5">Scope lookup</div>
+            <div className="px-4 py-3.5">MCP / agent access</div>
             <div className="px-5 py-3.5">Keyboard nav</div>
           </div>
           {rows.map((r) => (
             <div
               key={r.name}
-              className={`grid grid-cols-[1.5fr_1.2fr_1.2fr_1.2fr_1.2fr] text-sm border-b border-neutral-900 last:border-b-0 ${
+              className={`grid grid-cols-[1.4fr_1fr_1fr_1fr_1.1fr_1fr] text-sm border-b border-neutral-900 last:border-b-0 ${
                 r.active ? 'bg-emerald-400/[0.04] relative' : ''
               }`}
             >
@@ -101,6 +105,7 @@ export function Comparison() {
               <CompareCell value={r.coverage} active={r.active} />
               <CompareCell value={r.sort} active={r.active} />
               <CompareCell value={r.lookup} active={r.active} />
+              <CompareCell value={r.mcp} active={r.active} />
               <CompareCell value={r.keyboard} active={r.active} />
             </div>
           ))}

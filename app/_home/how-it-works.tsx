@@ -235,9 +235,13 @@ function AggregateDiagram() {
         <text x="300" y="160" textAnchor="middle" className="mono" fontSize="10" fill="#34d399" fontWeight="600">{total}</text>
       </svg>
 
-      <ul className="absolute top-14 left-5 space-y-3 mono text-[11px]">
+      <ul className="absolute inset-0 pointer-events-none mono text-[11px]">
         {platforms.map((p) => (
-          <li key={p.key} className="flex items-center gap-2.5">
+          <li
+            key={p.key}
+            className="absolute left-5 flex items-center gap-2.5 -translate-y-1/2"
+            style={{ top: `${(p.y / 300) * 100}%` }}
+          >
             <PlatformLogo platform={p.key} size="md" />
             <span className="text-neutral-300 w-16">{p.label}</span>
             <span className="text-neutral-600 tabular-nums">+{p.count}</span>
