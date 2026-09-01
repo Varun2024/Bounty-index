@@ -135,6 +135,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <NavLink href="/programs">Programs</NavLink>
                 <NavLink href="/scope-lookup"><span className="hidden sm:inline">Scope lookup</span><span className="sm:hidden">Scope</span></NavLink>
                 <NavLink href="/whats-new">What&rsquo;s new</NavLink>
+                <NavLink href="/mcp">
+                  <span className="inline-flex items-center gap-1.5">
+                    MCP
+                    <span className="mono text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300">beta</span>
+                  </span>
+                </NavLink>
               </nav>
               <span className="ml-2 mono text-[10px] uppercase tracking-widest text-neutral-600 hidden md:inline-flex items-center gap-1.5">
                 <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
@@ -230,6 +236,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
               <FooterCol title="Resources">
                 <FooterLink href="/how-it-works">How it works</FooterLink>
+                <FooterLink href="/mcp">MCP server (beta)</FooterLink>
                 <FooterLink href="https://github.com/arkadiyt/bounty-targets-data" external>Data source</FooterLink>
                 <FooterLink href="https://hackerone.com/hacktivity" external>Hacktivity</FooterLink>
                 <FooterLink href="https://pentester.land/list-of-bug-bounty-writeups.html" external>Writeups</FooterLink>
