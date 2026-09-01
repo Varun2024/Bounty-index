@@ -1,7 +1,6 @@
 import NextAuth from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
-import { inspect } from 'node:util';
 import { getDrizzleInstance } from '@/lib/db/client';
 import { users, accounts, sessions, verificationTokens } from '@/lib/db/schema';
 
@@ -24,14 +23,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // are invalidated by this switch — every user re-signs-in once.
   session: { strategy: 'jwt' },
   trustHost: true,
-  // ponytail: temp — Auth.js logger strips NeonDbError message/code. Serialize the full
-  // chain so the actual driver complaint lands in Vercel logs. Remove once root-caused.
-  logger: {
-    error(error) {
-      // util.inspect walks getters + non-enumerable fields, which NeonDbError uses.
-      console.error('[auth.error]', inspect(error, { depth: 6, showHidden: true, getters: true }));
-    },
-  },
   callbacks: {
     async jwt({ token, user }) {
       if (user?.id) token.sub = user.id;
