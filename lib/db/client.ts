@@ -11,7 +11,11 @@ function connect(): Db {
   if (cached) return cached;
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error('DATABASE_URL is not set');
-  cached = drizzle(postgres(url, { max: 10, prepare: false }), { schema });
+  // ponytail: max=1 per instance. Fluid Compute reuses one instance across concurrent
+  // requests, so a small pool per instance × N warm instances stays well under Neon's cap.
+  // max=10 caused 53000 too_many_connections on sign-in. Combine with the pooled Neon URL
+  // (host has -pooler suffix) — that endpoint runs PgBouncer and handles the fan-out.
+  cached = drizzle(postgres(url, { max: 1, prepare: false }), { schema });
   return cached;
 }
 
