@@ -1,21 +1,22 @@
-import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle, type NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import { neon } from '@neondatabase/serverless';
 import * as schema from './schema';
 
 // ponytail: lazy — Next build imports this module during page-data collection
 // even for force-dynamic routes; connecting eagerly makes any URL hiccup a build failure.
-type Db = PostgresJsDatabase<typeof schema>;
+type Db = NeonHttpDatabase<typeof schema>;
 let cached: Db | undefined;
 
 function connect(): Db {
   if (cached) return cached;
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error('DATABASE_URL is not set');
-  // ponytail: max=1 per instance. Fluid Compute reuses one instance across concurrent
-  // requests, so a small pool per instance × N warm instances stays well under Neon's cap.
-  // max=10 caused 53000 too_many_connections on sign-in. Combine with the pooled Neon URL
-  // (host has -pooler suffix) — that endpoint runs PgBouncer and handles the fan-out.
-  cached = drizzle(postgres(url, { max: 1, prepare: false }), { schema });
+  // Neon HTTP driver — fetch-over-HTTPS, zero persistent TCP connections. Every warm
+  // Fluid instance stops holding a socket, so Neon free-tier max_connections isn't
+  // blown by fan-out. Previous postgres.js + max=1 + pooled URL still hit 53000 because
+  // held sockets across warm instances × short compute conn cap. No transactions in
+  // this codebase, so the neon-http no-transaction limitation doesn't apply.
+  cached = drizzle(neon(url), { schema });
   return cached;
 }
 
