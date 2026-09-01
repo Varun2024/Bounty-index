@@ -23,6 +23,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // are invalidated by this switch — every user re-signs-in once.
   session: { strategy: 'jwt' },
   trustHost: true,
+  // ponytail: temporary debug to surface the exact Configuration error into Vercel logs.
+  // Remove after root-cause fixed. Docs: https://authjs.dev/reference/core#debug
+  debug: true,
+  logger: {
+    error(error) {
+      console.error('[auth.error]', error);
+    },
+    warn(code) {
+      console.warn('[auth.warn]', code);
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user?.id) token.sub = user.id;
