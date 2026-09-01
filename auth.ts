@@ -23,6 +23,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // are invalidated by this switch — every user re-signs-in once.
   session: { strategy: 'jwt' },
   trustHost: true,
+  // ponytail: temp — Auth.js logger strips NeonDbError message/code. Serialize the full
+  // chain so the actual driver complaint lands in Vercel logs. Remove once root-caused.
+  logger: {
+    error(error) {
+      const flatten = (e: unknown, depth = 0): unknown => {
+        if (depth > 5 || !e || typeof e !== 'object') return e;
+        const err = e as Record<string, unknown> & { cause?: unknown };
+        return {
+          name: err.name,
+          message: err.message,
+          code: err.code,
+          detail: err.detail,
+          hint: err.hint,
+          severity: err.severity,
+          stack: typeof err.stack === 'string' ? err.stack.split('\n').slice(0, 6).join('\n') : undefined,
+          cause: flatten(err.cause, depth + 1),
+        };
+      };
+      console.error('[auth.error]', JSON.stringify(flatten(error), null, 2));
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user?.id) token.sub = user.id;
