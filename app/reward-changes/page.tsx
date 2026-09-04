@@ -1,20 +1,20 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getRecentChanges, type RecentChange } from '@/lib/db/queries';
-import { platformLabel, PLATFORM_META, shortenIdentifier } from '@/lib/format';
+import { formatBounty, platformLabel, PLATFORM_META } from '@/lib/format';
 import { RssIcon } from '@/app/_ui/icons';
 
 export const dynamic = 'force-dynamic';
 
-const DEFAULT_HOURS = 168;
+const DEFAULT_HOURS = 720; // 30 days — reward changes are rarer than scope changes.
 
 export const metadata: Metadata = {
-  title: "What's new · Bounty Index",
+  title: 'Reward changes · Bounty Index',
   description:
-    "Every scope, reward, and safe-harbor change across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi — the last 7 days at a glance.",
+    'Just the money moves. Every max-payout bump or cut across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi.',
   alternates: {
-    canonical: '/whats-new',
-    types: { 'application/rss+xml': '/whats-new.xml' },
+    canonical: '/reward-changes',
+    types: { 'application/rss+xml': '/reward-changes.xml' },
   },
 };
 
@@ -26,20 +26,21 @@ interface PageProps {
   searchParams: Promise<{ hours?: string }>;
 }
 
-export default async function WhatsNewPage({ searchParams }: PageProps) {
+export default async function RewardChangesPage({ searchParams }: PageProps) {
   const { hours: hoursParam } = await searchParams;
   const parsed = hoursParam ? parseInt(hoursParam, 10) : NaN;
-  const hoursBack = Number.isFinite(parsed) && parsed > 0 && parsed <= 24 * 30 ? parsed : DEFAULT_HOURS;
+  const hoursBack = Number.isFinite(parsed) && parsed > 0 && parsed <= 24 * 90 ? parsed : DEFAULT_HOURS;
 
   let changes: RecentChange[] = [];
   let dbError: string | null = null;
   try {
-    changes = await getRecentChanges(hoursBack);
+    // Pull a wide window then filter; reward changes are rare (< 5% of all diffs).
+    const all = await getRecentChanges(hoursBack, 1000);
+    changes = all.filter((c) => c.diff.rewardDelta);
   } catch (err) {
     dbError = err instanceof Error ? err.message : 'DB error';
   }
 
-  // Group by day (date of capturedAt).
   const groups = new Map<string, RecentChange[]>();
   for (const c of changes) {
     const key = isoDate(c.capturedAt);
@@ -48,21 +49,22 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
     groups.set(key, list);
   }
 
-  const windowLabel = hoursBack === 24 ? '24 hours' : hoursBack === 168 ? '7 days' : `${hoursBack}h`;
+  const windowLabel = hoursBack === 24 ? '24 hours' : hoursBack === 168 ? '7 days' : hoursBack === 720 ? '30 days' : `${hoursBack}h`;
 
   return (
     <div className="max-w-[1000px] mx-auto px-6 py-10">
       <div className="flex items-end justify-between border-b border-neutral-900 pb-6 reveal">
         <div>
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Changelog</p>
-          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">What&rsquo;s new</h1>
+          <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Changelog · reward moves only</p>
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Reward changes</h1>
           <p className="text-neutral-400 mt-2">
-            Every scope, reward, and safe-harbor change across all platforms — the last <span className="text-neutral-100 tabular-nums">{windowLabel}</span>.{' '}
-            <Link href="/reward-changes" className="text-emerald-400 hover:underline">Just reward moves →</Link>
+            Just the money moves. Max-payout bumps and cuts across all platforms — the last{' '}
+            <span className="text-neutral-100 tabular-nums">{windowLabel}</span>.{' '}
+            <Link href="/whats-new" className="text-emerald-400 hover:underline">All changes →</Link>
           </p>
         </div>
         <a
-          href="/whats-new.xml"
+          href="/reward-changes.xml"
           className="focus-ring mono text-xs px-3 py-1.5 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-2"
         >
           <RssIcon size={12} />
@@ -77,15 +79,15 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
         </div>
       ) : changes.length === 0 ? (
         <div className="mt-10 space-y-3">
-          <p className="mono text-xs text-neutral-500">— no changes in the last <span className="text-neutral-300 tabular-nums">{windowLabel}</span> —</p>
+          <p className="mono text-xs text-neutral-500">— no reward changes in the last <span className="text-neutral-300 tabular-nums">{windowLabel}</span> —</p>
           <p className="text-sm text-neutral-500">
             Try widening the window:
             {' '}
-            <Link href="/whats-new?hours=720" className="text-emerald-400 hover:underline">30 days</Link>
+            <Link href="/reward-changes?hours=2160" className="text-emerald-400 hover:underline">90 days</Link>
             {' · '}
-            <Link href="/whats-new?hours=168" className="text-emerald-400 hover:underline">7 days</Link>
+            <Link href="/reward-changes?hours=720" className="text-emerald-400 hover:underline">30 days</Link>
             {' · '}
-            <Link href="/whats-new?hours=24" className="text-emerald-400 hover:underline">24 hours</Link>
+            <Link href="/reward-changes?hours=168" className="text-emerald-400 hover:underline">7 days</Link>
           </p>
         </div>
       ) : (
@@ -95,7 +97,7 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
               <div className="mb-3 md:mb-0 md:pt-1 flex md:block items-baseline gap-3">
                 <p className="mono text-xs text-neutral-500 tabular-nums">{date}</p>
                 <p className="mono text-[10px] uppercase tracking-widest text-neutral-700 md:mt-1">
-                  {entries.length} {entries.length === 1 ? 'change' : 'changes'}
+                  {entries.length} {entries.length === 1 ? 'move' : 'moves'}
                 </p>
               </div>
               <ul>
@@ -114,7 +116,7 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
                           {c.program.name}
                         </p>
                         <p className="mono text-[11px] text-neutral-500 mt-0.5">{platformLabel(c.program.platform)}</p>
-                        <DiffSummary diff={c.diff} />
+                        <RewardDeltaRow delta={c.diff.rewardDelta!} currency={c.program.currency ?? 'USD'} />
                       </div>
                     </Link>
                   </li>
@@ -128,58 +130,34 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
   );
 }
 
-function DiffSummary({ diff }: { diff: RecentChange['diff'] }) {
-  const bits: React.ReactNode[] = [];
-  if (diff.added.length) {
-    bits.push(
-      <span key="added" className="text-emerald-300">
-        +{diff.added.length} added
-      </span>,
-    );
-  }
-  if (diff.removed.length) {
-    bits.push(
-      <span key="removed" className="text-amber-300">
-        −{diff.removed.length} removed
-      </span>,
-    );
-  }
-  if (diff.rewardDelta) {
-    bits.push(
-      <span key="reward" className="text-neutral-200">
-        reward {diff.rewardDelta.from ?? '—'} → {diff.rewardDelta.to ?? '—'}
-      </span>,
-    );
-  }
-  if (diff.safeHarborChanged) {
-    bits.push(
-      <span key="sh" className="text-neutral-200">
-        safe-harbor {diff.safeHarborChanged.from ?? '—'} → {diff.safeHarborChanged.to ?? '—'}
-      </span>,
-    );
-  }
+interface RewardDeltaRowProps {
+  delta: NonNullable<RecentChange['diff']['rewardDelta']>;
+  currency: string;
+}
 
-  const sampleIds = [...diff.added.slice(0, 3), ...diff.removed.slice(0, 3)].map((s) => shortenIdentifier(s, 44));
-
+function RewardDeltaRow({ delta, currency }: RewardDeltaRowProps) {
+  const from = delta.from != null ? formatBounty(delta.from, currency) : '—';
+  const to = delta.to != null ? formatBounty(delta.to, currency) : '—';
+  const direction =
+    delta.from != null && delta.to != null
+      ? delta.to > delta.from
+        ? 'up'
+        : delta.to < delta.from
+          ? 'down'
+          : 'flat'
+      : 'new';
+  const arrowColor =
+    direction === 'up'
+      ? 'text-emerald-300'
+      : direction === 'down'
+        ? 'text-amber-300'
+        : 'text-neutral-400';
   return (
-    <div className="mt-2 space-y-1">
-      <div className="mono text-[11px] flex flex-wrap gap-x-3 gap-y-1">
-        {bits.map((b, i) => (
-          <span key={i}>{b}</span>
-        ))}
-      </div>
-      {sampleIds.length > 0 && (
-        <p className="mono text-[11px] text-neutral-500 truncate">
-          {sampleIds.join(', ')}
-          {diff.added.length + diff.removed.length > sampleIds.length && (
-            <>
-              {' · +'}
-              <span className="text-neutral-300 tabular-nums">{diff.added.length + diff.removed.length - sampleIds.length}</span>
-              {' more'}
-            </>
-          )}
-        </p>
-      )}
+    <div className="mt-2 mono text-[11px] flex items-center gap-2">
+      <span className="text-neutral-500">max reward</span>
+      <span className="text-neutral-300 tabular-nums">{from}</span>
+      <span className={arrowColor}>→</span>
+      <span className="text-neutral-100 tabular-nums">{to}</span>
     </div>
   );
 }
