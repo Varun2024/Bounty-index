@@ -3,8 +3,8 @@
 Implements **E3** from `moat.md`, addresses the #1 retention gap identified in `known-gaps.md` ("no push notifications"). Converts *"visited once"* → *"gets pinged in the server they sit in all day"*.
 
 Reference:
-- Moat rationale: [`moat.md#E3`](./moat.md)
-- Gap this closes: [`known-gaps.md`](./known-gaps.md) — Tier 1, item #1
+- Moat rationale: [`moat.md#E3`](../roadmap/moat.md)
+- Gap this closes: [`known-gaps.md`](../reviews/known-gaps.md) — Tier 1, item #1
 - Existing watchlist code (reused for auth + program-picker UX): `app/watchlist/*`, `lib/db/schema.ts::watchlist`
 
 ---
