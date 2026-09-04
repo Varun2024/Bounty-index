@@ -120,7 +120,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
       </FilterGroup>
 
       <FilterGroup label="Sort">
-        {(['newest', 'reward', 'name'] as const).map((s) => (
+        {(['opportunity', 'newest', 'reward', 'name'] as const).map((s) => (
           <Chip key={s} active={(filters.sort ?? 'newest') === s} onClick={() => update({ sort: s })}>
             {s}
           </Chip>

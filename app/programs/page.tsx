@@ -6,6 +6,7 @@ import { KeyboardNav } from './keyboard-nav';
 import { ActiveFilters } from './active-filters';
 import { FilterDrawer } from './filter-drawer';
 import { formatBounty, platformLabel, PLATFORM_META } from '@/lib/format';
+import { opportunityScore } from '@/lib/opportunity';
 
 export const dynamic = 'force-dynamic';
 
@@ -140,6 +141,9 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
                   <th className="text-left px-4 md:px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal">Program</th>
                   <th className="hidden md:table-cell text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-40">Platform</th>
                   <th className="hidden md:table-cell text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-24">Type</th>
+                  <th className="hidden md:table-cell text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">
+                    <Link href="/how-scored" className="hover:text-emerald-400 transition" title="How the opportunity score is calculated">Opp</Link>
+                  </th>
                   <th className="text-right px-4 md:px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-24 md:w-32">Reward</th>
                 </tr>
               </thead>
@@ -183,6 +187,9 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
                         {p.programType}
                       </span>
                     </td>
+                    <td className="hidden md:table-cell px-4 py-4 mono text-sm text-right tabular-nums">
+                      <OpportunityBadge program={p} />
+                    </td>
                     <td className="px-4 md:px-5 py-4 mono text-sm text-right tabular-nums">
                       <span className={p.maxBounty ? 'text-neutral-100' : 'text-neutral-700'}>
                         {formatBounty(p.maxBounty, p.currency ?? 'USD')}
@@ -220,4 +227,25 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
       <KeyboardNav />
     </div>
   );
+}
+
+interface OpportunityBadgeProps {
+  program: {
+    maxBounty: number | null;
+    offersBounty: boolean;
+    lastUpdatedAt: Date | null;
+  };
+}
+
+function OpportunityBadge({ program }: OpportunityBadgeProps) {
+  const { total } = opportunityScore(program);
+  const tone =
+    total >= 75
+      ? 'text-emerald-300'
+      : total >= 50
+        ? 'text-emerald-400/70'
+        : total >= 25
+          ? 'text-neutral-300'
+          : 'text-neutral-600';
+  return <span className={tone} title={`Opportunity score · see /how-scored`}>{total}</span>;
 }

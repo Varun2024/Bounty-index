@@ -10,7 +10,7 @@ export interface ProgramFilters {
   minReward?: number;
   hasBounty?: boolean;
   safeHarbor?: boolean; // true = only programs with confirmed safe harbor (full or partial)
-  sort?: 'newest' | 'reward' | 'name';
+  sort?: 'newest' | 'reward' | 'name' | 'opportunity';
   page?: number;
   pageSize?: number;
 }

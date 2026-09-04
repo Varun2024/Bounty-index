@@ -1,6 +1,7 @@
 import { db, schema } from './client';
 import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne } from 'drizzle-orm';
 import { diffSnapshots, isEmptyDiff } from '../snapshots';
+import { opportunityScoreSql } from '../opportunity';
 import {
   listProgramsFallback,
   getProgramBySlugFallback,
@@ -91,7 +92,9 @@ async function listProgramsDb(f: ProgramFilters = {}) {
       ? sql`${schema.programs.maxBounty} DESC NULLS LAST`
       : f.sort === 'name'
         ? schema.programs.name
-        : sql`${schema.programs.firstSeenAt} DESC NULLS LAST`;
+        : f.sort === 'opportunity'
+          ? sql`${opportunityScoreSql()} DESC`
+          : sql`${schema.programs.firstSeenAt} DESC NULLS LAST`;
   const orderBy = q
     ? sql`similarity(${schema.programs.searchText}, ${q}) DESC, ${secondarySort}`
     : secondarySort;
