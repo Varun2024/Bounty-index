@@ -87,6 +87,7 @@ export async function UserMenu() {
         <ul className="py-1">
           <MenuLink href="/watchlist" icon="★" label="Watchlist" />
           <MenuLink href="/compare" icon="◫" label="Compare" />
+          <MenuLink href="/settings/discord" icon="◈" label="Discord alerts" />
         </ul>
 
         <div className="border-t border-neutral-900 py-1">
