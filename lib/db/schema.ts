@@ -246,6 +246,34 @@ export const userSavedFilters = pgTable(
   }),
 );
 
+// Discord webhook subscriptions. One row per (user, program, url) subscription.
+// See docs/plans/PLAN_DISCORD.md for the full design.
+// The webhook_url is validated at write time to only accept Discord's webhook hosts
+// (prevents SSRF). broken_at is set on 404/401 delivery failures — no further attempts
+// until the user re-saves. last_delivered_at guards against double-sends on cron retries.
+export const discordWebhooks = pgTable(
+  'discord_webhooks',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    programId: integer('program_id')
+      .notNull()
+      .references(() => programs.id, { onDelete: 'cascade' }),
+    webhookUrl: text('webhook_url').notNull(),
+    label: text('label'),
+    lastDeliveredAt: timestamp('last_delivered_at', { withTimezone: true }),
+    brokenAt: timestamp('broken_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    userProgramUrlUq: uniqueIndex('discord_webhooks_user_program_url_uq').on(t.userId, t.programId, t.webhookUrl),
+    programActiveIdx: index('discord_webhooks_program_active_idx').on(t.programId),
+    userIdx: index('discord_webhooks_user_idx').on(t.userId),
+  }),
+);
+
 export type Program = typeof programs.$inferSelect;
 export type NewProgram = typeof programs.$inferInsert;
 export type Scope = typeof scopes.$inferSelect;
