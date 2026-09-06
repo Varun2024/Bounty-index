@@ -132,3 +132,62 @@ export async function removeAllMyWebhooks(): Promise<void> {
   await db.delete(discordWebhooks).where(eq(discordWebhooks.userId, userId));
   revalidatePath('/settings/discord');
 }
+
+// Fire a sample embed at the webhook to prove wiring works. Used from the settings-page
+// "test" button. Marks the row broken if Discord returns 401/404 so the UI reflects
+// reality on the next refresh.
+export async function testWebhook(id: number): Promise<{ ok: true } | { ok: false; error: string }> {
+  const userId = await requireUserId();
+  if (!userId) return { ok: false, error: 'sign in first' };
+  if (!Number.isInteger(id) || id <= 0) return { ok: false, error: 'invalid id' };
+
+  const [row] = await db
+    .select({
+      id: discordWebhooks.id,
+      webhookUrl: discordWebhooks.webhookUrl,
+      programId: discordWebhooks.programId,
+      programName: programs.name,
+      programPlatform: programs.platform,
+      programSlug: programs.slug,
+      currency: programs.currency,
+    })
+    .from(discordWebhooks)
+    .innerJoin(programs, eq(programs.id, discordWebhooks.programId))
+    .where(and(eq(discordWebhooks.id, id), eq(discordWebhooks.userId, userId)))
+    .limit(1);
+  if (!row) return { ok: false, error: 'not found' };
+
+  const { formatDiffEmbed, postDiffToWebhook } = await import('@/lib/discord');
+  const { platformLabel } = await import('@/lib/format');
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bountyindex.in';
+
+  const sampleDiff = {
+    added: [
+      `test-alert.${row.programSlug}.example`,
+      `*.new-service.${row.programSlug}.example`,
+    ],
+    removed: [`legacy.${row.programSlug}.example`],
+    rewardDelta: { from: 5000, to: 7500 },
+    safeHarborChanged: null,
+  };
+
+  const embed = formatDiffEmbed(sampleDiff, {
+    programName: `${row.programName} · test alert`,
+    programUrl: `${SITE_URL}/programs/${encodeURIComponent(row.programPlatform)}/${row.programSlug
+      .split('/')
+      .map(encodeURIComponent)
+      .join('/')}`,
+    platformLabel: platformLabel(row.programPlatform),
+    currency: row.currency ?? 'USD',
+    capturedAt: new Date(),
+  });
+
+  const res = await postDiffToWebhook(row.webhookUrl, embed);
+  if (res.ok) return { ok: true };
+  if (res.broken) {
+    await db.update(discordWebhooks).set({ brokenAt: new Date() }).where(eq(discordWebhooks.id, id));
+    revalidatePath('/settings/discord');
+    return { ok: false, error: `Discord returned ${res.status} — webhook likely deleted. Row marked broken.` };
+  }
+  return { ok: false, error: `Discord returned ${res.status}` };
+}

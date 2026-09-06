@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { removeWebhook } from '@/app/actions/discord';
+import { removeWebhook, testWebhook } from '@/app/actions/discord';
 import type { UserWebhookRow } from '@/app/actions/discord';
 
 interface Props {
@@ -23,11 +23,22 @@ function relativeTime(iso: string | null): string {
 export function WebhookRow({ row }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [testMsg, setTestMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   function onDelete() {
     if (!confirm(`Remove Discord alert for ${row.programName}?`)) return;
     startTransition(async () => {
       await removeWebhook(row.id);
+      router.refresh();
+    });
+  }
+
+  function onTest() {
+    setTestMsg(null);
+    startTransition(async () => {
+      const res = await testWebhook(row.id);
+      if (res.ok) setTestMsg({ ok: true, text: 'sent — check Discord' });
+      else setTestMsg({ ok: false, text: res.error });
       router.refresh();
     });
   }
@@ -56,13 +67,27 @@ export function WebhookRow({ row }: Props) {
           last delivered {relativeTime(row.lastDeliveredAt)}
         </p>
       </div>
-      <button
-        onClick={onDelete}
-        disabled={pending}
-        className="mono text-[11px] px-2.5 py-1 border border-neutral-800 rounded text-neutral-500 hover:text-red-300 hover:border-red-400/40 transition disabled:opacity-40"
-      >
-        {pending ? '…' : 'remove'}
-      </button>
+      <div className="flex items-center gap-2 shrink-0">
+        {testMsg && (
+          <span className={`mono text-[11px] ${testMsg.ok ? 'text-emerald-400' : 'text-red-400'}`}>
+            {testMsg.ok ? '✓' : '✗'} {testMsg.text}
+          </span>
+        )}
+        <button
+          onClick={onTest}
+          disabled={pending}
+          className="mono text-[11px] px-2.5 py-1 border border-neutral-800 rounded text-neutral-400 hover:text-emerald-300 hover:border-emerald-400/40 transition disabled:opacity-40"
+        >
+          {pending ? '…' : 'test'}
+        </button>
+        <button
+          onClick={onDelete}
+          disabled={pending}
+          className="mono text-[11px] px-2.5 py-1 border border-neutral-800 rounded text-neutral-500 hover:text-red-300 hover:border-red-400/40 transition disabled:opacity-40"
+        >
+          remove
+        </button>
+      </div>
     </li>
   );
 }
