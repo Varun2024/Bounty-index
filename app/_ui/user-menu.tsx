@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { auth, signIn, signOut } from '@/auth';
+import { isAdmin } from '@/lib/admin';
 
 // Server component. Native <details> dropdown when signed in — no JS bundle, no
 // custom outside-click handler; menu closes when the user picks a link
@@ -88,6 +89,7 @@ export async function UserMenu() {
           <MenuLink href="/watchlist" icon="★" label="Watchlist" />
           <MenuLink href="/compare" icon="◫" label="Compare" />
           <MenuLink href="/settings/discord" icon="◈" label="Discord alerts" />
+          {isAdmin(session) && <MenuLink href="/admin" icon="⚙" label="Admin" />}
         </ul>
 
         <div className="border-t border-neutral-900 py-1">

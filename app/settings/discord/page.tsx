@@ -51,21 +51,61 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
       </header>
 
       <section className="mb-10">
-        <h2 className="text-lg font-semibold text-neutral-100 mb-3">1 · Get a webhook URL from Discord</h2>
-        <ol className="text-sm text-neutral-400 space-y-2 list-decimal pl-5 leading-relaxed">
-          <li>Open your Discord server &rarr; <span className="text-neutral-200">Server Settings</span> &rarr; <span className="text-neutral-200">Integrations</span> &rarr; <span className="text-neutral-200">Webhooks</span>.</li>
-          <li>Click <span className="text-neutral-200">New Webhook</span>, pick a channel, give it a name, click <span className="text-neutral-200">Copy Webhook URL</span>.</li>
-          <li>Paste the URL below and pick which program should ping it.</li>
-        </ol>
-        <p className="mt-3 mono text-[11px] text-neutral-600">
-          {'// '}the URL is treated as a secret — anyone with it can post to your channel. We only accept
-          <code className="mono text-neutral-400"> discord.com/api/webhooks/…</code> URLs.
+        <h2 className="text-lg font-semibold text-neutral-100 mb-4">1 · Get a webhook URL from Discord</h2>
+        <p className="text-sm text-neutral-400 mb-4 leading-relaxed">
+          Discord tucks webhooks in two places. Both work. Use whichever is closer to where you are in Discord.
         </p>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="border border-neutral-900 rounded-lg p-4 bg-neutral-950/40">
+            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400 mb-2">Fastest · channel-level</p>
+            <ol className="text-sm text-neutral-400 space-y-1.5 list-decimal pl-5 leading-relaxed">
+              <li>In Discord, hover the channel you want alerts in and click the <span className="text-neutral-200">⚙︎</span> icon (or right-click &rarr; <span className="text-neutral-200">Edit Channel</span>).</li>
+              <li>Left sidebar &rarr; <span className="text-neutral-200">Integrations</span>.</li>
+              <li>Click <span className="text-neutral-200">Webhooks</span> &rarr; <span className="text-neutral-200">New Webhook</span>.</li>
+              <li>Rename it if you want, then click <span className="text-neutral-200">Copy Webhook URL</span>.</li>
+            </ol>
+          </div>
+
+          <div className="border border-neutral-900 rounded-lg p-4 bg-neutral-950/40">
+            <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Alternate · server-level</p>
+            <ol className="text-sm text-neutral-400 space-y-1.5 list-decimal pl-5 leading-relaxed">
+              <li>Click your server name at the top-left &rarr; <span className="text-neutral-200">Server Settings</span>.</li>
+              <li>Left sidebar &rarr; scroll to <span className="text-neutral-500 mono text-[10px] uppercase tracking-widest">Apps</span> &rarr; <span className="text-neutral-200">Integrations</span>.</li>
+              <li>Click the <span className="text-neutral-200">Webhooks</span> card &rarr; <span className="text-neutral-200">New Webhook</span>.</li>
+              <li>Pick a channel &rarr; <span className="text-neutral-200">Copy Webhook URL</span>.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div className="mt-4 space-y-2 text-sm">
+          <p className="text-neutral-500">
+            <span className="mono text-[10px] uppercase tracking-widest text-amber-400 mr-2">can&rsquo;t find it?</span>
+            You need the <span className="text-neutral-300">Manage Webhooks</span> permission on that server.
+            If it&rsquo;s someone else&rsquo;s server, ask an admin — or make your own test server
+            (Discord left rail &rarr; <span className="text-neutral-300">+</span> &rarr; <span className="text-neutral-300">Create My Own</span> &rarr; <span className="text-neutral-300">For me and my friends</span>) where you&rsquo;re automatically admin.
+          </p>
+          <p className="text-neutral-500">
+            <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 mr-2">on mobile?</span>
+            Long-press the channel &rarr; <span className="text-neutral-300">Edit Channel</span> &rarr; <span className="text-neutral-300">Webhooks</span>. Same flow, one extra tap.
+          </p>
+          <p className="text-neutral-500">
+            <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 mr-2">the URL</span>
+            looks like <code className="mono text-[10px] text-neutral-400 break-all">https://discord.com/api/webhooks/1234567890/AbCd-xyz…</code> —
+            treat it like a password. Anyone with it can post to that channel.
+          </p>
+        </div>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-lg font-semibold text-neutral-100 mb-3">2 · Add a subscription</h2>
+        <h2 className="text-lg font-semibold text-neutral-100 mb-3">2 · Paste the URL &amp; pick a program</h2>
+        <p className="text-sm text-neutral-500 mb-4 leading-relaxed">
+          Paste the URL you copied above. Pick which program should fire it — you can add more later. Optional label helps you tell subscriptions apart when you have several (e.g. <span className="mono text-neutral-400">#alerts</span>).
+        </p>
         <AddWebhookForm prefillProgram={prefillProgram} />
+        <p className="mt-3 mono text-[11px] text-neutral-600">
+          {'// '}after saving, hit <span className="text-emerald-400">test</span> on the row to fire a sample embed right now — no need to wait for the daily cron.
+        </p>
       </section>
 
       <section>
