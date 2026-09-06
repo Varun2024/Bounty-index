@@ -220,6 +220,13 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             <div className="flex items-center gap-2 shrink-0">
               <WatchButton programId={program.id} />
               <CompareButton programId={program.id} />
+              <Link
+                href={`/settings/discord?program=${program.id}`}
+                className="focus-ring mono text-xs px-3 py-2 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-1.5"
+                title="Get Discord alerts when this program's scope or reward changes"
+              >
+                Discord →
+              </Link>
               <a
                 href={program.url}
                 target="_blank"

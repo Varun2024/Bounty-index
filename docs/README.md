@@ -5,6 +5,9 @@ Everything not-code, categorized by purpose. Read this first when opening the fo
 ## progress.md
 Running build log. Appended per session, never rewritten. Start here on session resume.
 
+## discord.md
+User-facing setup guide for Discord webhook alerts. Linked from the settings page.
+
 ## foundations/ — what the project is
 Stable reference. Change rarely.
 
