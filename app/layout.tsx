@@ -158,6 +158,63 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <CompareTray />
         <AuthSync />
         <Analytics />
+
+        {/* Featured-on strip. Keeps badges out of the footer, breathes on all screen sizes. */}
+        <section className="border-t border-neutral-900 bg-neutral-950/40">
+          <div className="max-w-[1400px] mx-auto px-6 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">
+              Featured on
+            </p>
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-4 md:justify-end">
+              <a
+                href="https://www.producthunt.com/products/bounty-index?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-bounty-index"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="focus-ring rounded opacity-90 hover:opacity-100 transition"
+                aria-label="Bounty Index on Product Hunt"
+              >
+                <Image
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1218125&theme=dark&t=1786208999205"
+                  alt="Bounty Index on Product Hunt"
+                  width={200}
+                  height={43}
+                  unoptimized
+                />
+              </a>
+              <a
+                href="https://launchleague.xyz/?product=bounty-index"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="focus-ring rounded opacity-90 hover:opacity-100 transition"
+                aria-label="Launching on LaunchLeague"
+              >
+                <Image
+                  src="https://cdn.launchleague.xyz/site-images/badges/badge-dark.svg"
+                  alt="Launching on LaunchLeague"
+                  width={220}
+                  height={48}
+                  unoptimized
+                />
+              </a>
+              <a
+                href="https://www.launchpact.io/startups?utm_source=badge&utm_medium=embed&utm_campaign=directory-badge"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="focus-ring rounded opacity-90 hover:opacity-100 transition"
+                aria-label="Listed on LaunchPact"
+              >
+                <Image
+                  src="https://www.launchpact.io/badge-listed.png"
+                  alt="Listed on LaunchPact"
+                  width={180}
+                  height={60}
+                  unoptimized
+                />
+              </a>
+            </div>
+          </div>
+        </section>
+
         <footer className="border-t border-neutral-900 relative overflow-hidden">
           <div
             className="absolute pointer-events-none inset-x-0 -top-20 h-40 opacity-25"
@@ -171,7 +228,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
                 </Link>
                 <p className="mt-4 text-sm text-neutral-500 leading-relaxed max-w-xs">
-                  The bug bounty market, live-indexed. Every public program across five platforms, filterable in one view.
+                  The bug bounty market, live-indexed. Every public program across six platforms, filterable in one view.
                 </p>
                 <a
                   href="https://buymeacoffee.com/varun_builds"
@@ -182,36 +239,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   <span aria-hidden>☕</span>
                   buy me a coffee
                 </a>
-                <a
-                  href="https://www.producthunt.com/products/bounty-index?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-bounty-index"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="mt-4 block w-fit focus-ring rounded"
-                  aria-label="Bounty Index on Product Hunt"
-                >
-                  <Image
-                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1218125&theme=dark&t=1786208999205"
-                    alt="Bounty Index - Every public bounty program. One index. | Product Hunt"
-                    width={250}
-                    height={54}
-                    unoptimized
-                  />
-                </a>
-                <Link
-                  href="https://launchleague.xyz/?product=bounty-index"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="mt-4 block w-fit focus-ring rounded"
-                  aria-label="Launching on LaunchLeague"
-                >
-                  <Image
-                    src="https://cdn.launchleague.xyz/site-images/badges/badge-dark.svg"
-                    alt="Launching on LaunchLeague"
-                    width={300}
-                    height={66}
-                    unoptimized
-                  />
-                </Link>
               </div>
 
               <FooterCol title="Product">
@@ -220,9 +247,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <FooterLink href="/watchlist">Watchlist</FooterLink>
                 <FooterLink href="/scope-lookup">Scope lookup</FooterLink>
                 <FooterLink href="/whats-new">What&rsquo;s new</FooterLink>
-                <FooterLink href="/feed">New programs</FooterLink>
-                <FooterLink href="/whats-new.xml" external>Changelog RSS</FooterLink>
-                <FooterLink href="/feed.xml" external>New-programs RSS</FooterLink>
+                <FooterLink href="/reward-changes">Reward changes</FooterLink>
+                <FooterLink href="/settings/discord">Discord alerts</FooterLink>
+                <FooterLink href="/how-scored">Opportunity score</FooterLink>
               </FooterCol>
 
               <FooterCol title="Platforms">
@@ -237,10 +264,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <FooterCol title="Resources">
                 <FooterLink href="/how-it-works">How it works</FooterLink>
                 <FooterLink href="/mcp">MCP server (beta)</FooterLink>
+                <FooterLink href="/feed">New programs</FooterLink>
+                <FooterLink href="/whats-new.xml" external>Changelog RSS</FooterLink>
+                <FooterLink href="/reward-changes.xml" external>Reward RSS</FooterLink>
+                <FooterLink href="/feed.xml" external>New-programs RSS</FooterLink>
+                <FooterLink href="https://github.com/Varun2024/Bounty-index" external>Source code</FooterLink>
                 <FooterLink href="https://github.com/arkadiyt/bounty-targets-data" external>Data source</FooterLink>
-                <FooterLink href="https://hackerone.com/hacktivity" external>Hacktivity</FooterLink>
-                <FooterLink href="https://pentester.land/list-of-bug-bounty-writeups.html" external>Writeups</FooterLink>
-                <FooterLink href="https://disclose.io" external>disclose.io</FooterLink>
               </FooterCol>
             </div>
 
