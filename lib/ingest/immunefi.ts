@@ -98,7 +98,7 @@ export function parseImmunefiHtml(html: string): ImmunefiProgram[] {
 // Extract the JSON `assets` array from a program's detail page RSC.
 // Walks bracket depth to find the array boundary because it contains nested objects
 // and escaped strings.
-function extractAssetsFromDetail(html: string): ImmunefiAsset[] {
+export function extractAssetsFromDetail(html: string): ImmunefiAsset[] {
   const key = 'assets\\":[';
   const idx = html.indexOf(key);
   if (idx < 0) return [];
@@ -134,6 +134,9 @@ const TYPE_MAP: Record<string, string> = {
   executables: 'other',
 };
 
+export function normalizeImmunefiAsset(a: ImmunefiAsset): NormalizedScope | null {
+  return normalizeAsset(a);
+}
 function normalizeAsset(a: ImmunefiAsset): NormalizedScope | null {
   if (!a.url) return null;
   const type = TYPE_MAP[a.type] ?? 'other';

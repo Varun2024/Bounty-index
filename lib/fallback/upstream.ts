@@ -4,7 +4,13 @@
 // working without a DB. Snapshot-history features (whats-new, feed's firstSeenAt) can't be
 // rebuilt without persisted history and surface a scoped banner instead.
 import { NORMALIZERS, SOURCES, type NormalizedProgram, type Platform } from '@/lib/ingest/bounty-targets';
-import { IMMUNEFI_LIST_URL, IMMUNEFI_UA, parseImmunefiHtml } from '@/lib/ingest/immunefi';
+import {
+  IMMUNEFI_LIST_URL,
+  IMMUNEFI_UA,
+  parseImmunefiHtml,
+  extractAssetsFromDetail,
+  normalizeImmunefiAsset,
+} from '@/lib/ingest/immunefi';
 import type { Program, Scope } from '@/lib/db/schema';
 import type { ProgramFilters } from '@/lib/db/queries';
 // ponytail: type-only imports above break the runtime cycle with queries.ts.
@@ -187,11 +193,46 @@ export async function listProgramsFallback(f: ProgramFilters = {}) {
   return { rows: rows.slice(offset, offset + pageSize), total, page, pageSize };
 }
 
+// On-demand Immunefi scope hydration: the Stage-1 fallback list has no scopes because
+// scraping detail for all ~180 programs upfront is too expensive. When a user actually
+// opens an Immunefi program page, fetch its detail once (Next cache holds it for an hour).
+async function hydrateImmunefiScopes(programId: number, slug: string): Promise<Scope[]> {
+  const url = `https://immunefi.com/bug-bounty/${encodeURIComponent(slug)}/information/`;
+  try {
+    const res = await fetch(url, { next: { revalidate: 3600 }, headers: { 'user-agent': IMMUNEFI_UA } });
+    if (!res.ok) return [];
+    const html = await res.text();
+    const assets = extractAssetsFromDetail(html);
+    let sid = 1;
+    return assets
+      .map(normalizeImmunefiAsset)
+      .filter((s): s is NonNullable<ReturnType<typeof normalizeImmunefiAsset>> => s !== null)
+      .map((s) => ({
+        id: programId * 1000 + sid++,
+        programId,
+        identifier: s.identifier,
+        assetType: s.assetType,
+        inScope: s.inScope,
+        eligibleForBounty: s.eligibleForBounty,
+        severity: s.severity,
+        instruction: s.instruction,
+      }));
+  } catch {
+    return [];
+  }
+}
+
 export async function getProgramBySlugFallback(platform: string, slug: string) {
   const store = await getStore();
   const program = store.byPlatformSlug.get(`${platform}:${slug}`);
   if (!program) return null;
-  return { program, scopes: store.scopesByProgram.get(program.id) ?? [] };
+  let scopes = store.scopesByProgram.get(program.id) ?? [];
+  if (platform === 'immunefi' && scopes.length === 0) {
+    scopes = await hydrateImmunefiScopes(program.id, slug);
+    // Cache into the store so subsequent hits within this instance are free.
+    if (scopes.length > 0) store.scopesByProgram.set(program.id, scopes);
+  }
+  return { program, scopes };
 }
 
 export async function findByDomainFallback(domain: string) {
