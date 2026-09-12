@@ -28,10 +28,9 @@ export default async function AdminPage() {
   if (!isAdmin(session)) notFound();
 
   // Every metric is a single count query — the whole page is O(metrics), not O(rows).
-  // Note: `user` table has no created_at column (Auth.js adapter default shape), so
-  // "signups in last N days" isn't available without a schema change. Recent-signups
-  // list below is ordered by id (uuid), which is only monotonic by insert order
-  // when using timestamp-based uuids — treat ordering as approximate.
+  // allSettled so one dead query (Neon quota, cold-start) doesn't 500 the whole page.
+  // Failed metrics render as "—" instead of crashing.
+  const settle = <T,>(p: Promise<T>): Promise<T | null> => p.catch(() => null);
   const [
     totalUsers,
     totalWatchlist,
@@ -46,40 +45,45 @@ export default async function AdminPage() {
     recentUsers,
     topWatchedRows,
   ] = await Promise.all([
-    db.$count(users),
-    db.$count(userWatchlist),
-    db.$count(userCompare),
-    db.$count(userNotes),
-    db.$count(userReports),
-    db.$count(userSavedFilters),
-    db.$count(discordWebhooks),
-    db.$count(discordWebhooks, sql`${discordWebhooks.brokenAt} IS NOT NULL`),
-    db.$count(programs),
-    db.$count(programSnapshots),
-    db
-      .select({ id: users.id, name: users.name, email: users.email, image: users.image })
-      .from(users)
-      .orderBy(desc(users.id))
-      .limit(20),
-    db
-      .select({
-        programId: userWatchlist.programId,
-        n: sql<number>`count(*)::int`.as('n'),
-      })
-      .from(userWatchlist)
-      .groupBy(userWatchlist.programId)
-      .orderBy(sql`count(*) DESC`)
-      .limit(10),
+    settle(db.$count(users)),
+    settle(db.$count(userWatchlist)),
+    settle(db.$count(userCompare)),
+    settle(db.$count(userNotes)),
+    settle(db.$count(userReports)),
+    settle(db.$count(userSavedFilters)),
+    settle(db.$count(discordWebhooks)),
+    settle(db.$count(discordWebhooks, sql`${discordWebhooks.brokenAt} IS NOT NULL`)),
+    settle(db.$count(programs)),
+    settle(db.$count(programSnapshots)),
+    settle(
+      db
+        .select({ id: users.id, name: users.name, email: users.email, image: users.image })
+        .from(users)
+        .orderBy(desc(users.id))
+        .limit(20),
+    ),
+    settle(
+      db
+        .select({
+          programId: userWatchlist.programId,
+          n: sql<number>`count(*)::int`.as('n'),
+        })
+        .from(userWatchlist)
+        .groupBy(userWatchlist.programId)
+        .orderBy(sql`count(*) DESC`)
+        .limit(10),
+    ),
   ]);
 
   // Enrich the top-watched list with program names.
-  const topWatched = topWatchedRows.length
+  const topWatched = topWatchedRows && topWatchedRows.length
     ? await (async () => {
         const ids = topWatchedRows.map((r) => r.programId);
         const rows = await db
           .select({ id: programs.id, name: programs.name, platform: programs.platform, slug: programs.slug })
           .from(programs)
-          .where(sql`${programs.id} = ANY(${ids})`);
+          .where(sql`${programs.id} = ANY(${ids})`)
+          .catch(() => [] as Array<{ id: number; name: string; platform: string; slug: string }>);
         const byId = new Map(rows.map((r) => [r.id, r]));
         return topWatchedRows
           .map((w) => ({ n: w.n, program: byId.get(w.programId) }))
@@ -107,7 +111,7 @@ export default async function AdminPage() {
           <Tile label="Notes" value={totalNotes} />
           <Tile label="Community reports" value={totalReports} />
           <Tile label="Discord webhooks" value={totalWebhooks} />
-          <Tile label="Broken webhooks" value={brokenWebhooks} tone={brokenWebhooks > 0 ? 'warn' : undefined} />
+          <Tile label="Broken webhooks" value={brokenWebhooks} tone={brokenWebhooks && brokenWebhooks > 0 ? 'warn' : undefined} />
         </div>
       </section>
 
@@ -121,7 +125,9 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">Recent sign-ups <span className="text-neutral-700">· latest 20</span></h2>
-        {recentUsers.length === 0 ? (
+        {!recentUsers ? (
+          <p className="mono text-xs text-neutral-600">— unavailable (DB degraded) —</p>
+        ) : recentUsers.length === 0 ? (
           <p className="mono text-xs text-neutral-500">— no users yet —</p>
         ) : (
           <ul className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 divide-y divide-neutral-900">
@@ -173,16 +179,23 @@ export default async function AdminPage() {
 
 interface TileProps {
   label: string;
-  value: number;
+  value: number | null;
   tone?: 'warn';
 }
 
 function Tile({ label, value, tone }: TileProps) {
-  const color = tone === 'warn' && value > 0 ? 'text-amber-300' : 'text-neutral-100';
+  const unavailable = value === null;
+  const color = unavailable
+    ? 'text-neutral-600'
+    : tone === 'warn' && value > 0
+    ? 'text-amber-300'
+    : 'text-neutral-100';
   return (
     <div className="border border-neutral-900 rounded-lg p-4 bg-neutral-950/40">
       <p className="mono text-[10px] uppercase tracking-widest text-neutral-500">{label}</p>
-      <p className={`mt-1 text-2xl font-semibold tabular-nums ${color}`}>{value.toLocaleString()}</p>
+      <p className={`mt-1 text-2xl font-semibold tabular-nums ${color}`}>
+        {unavailable ? '—' : value.toLocaleString()}
+      </p>
     </div>
   );
 }

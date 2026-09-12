@@ -217,6 +217,26 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </div>
         </section>
 
+        {/* Follow strip: single-line CTA for updates. Kept above the footer grid so it doesn't compete with the nav columns. */}
+        <section className="border-t border-neutral-900 bg-gradient-to-b from-neutral-950/60 to-transparent">
+          <div className="max-w-[1400px] mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-3 text-center">
+            <span className="mono text-[10px] uppercase tracking-widest text-neutral-500">
+              Ship notes · new platforms · outages
+            </span>
+            <a
+              href="https://x.com/TheV_Stack"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-2 text-sm text-neutral-200 hover:text-emerald-300 transition focus-ring rounded-md px-3 py-1.5 border border-neutral-800 hover:border-emerald-400/40 bg-neutral-950/60"
+            >
+              <svg aria-hidden viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              <span>Follow <strong className="font-semibold">@TheV_Stack</strong> for bounty.index updates</span>
+            </a>
+          </div>
+        </section>
+
         <footer className="border-t border-neutral-900 relative overflow-hidden">
           <div
             className="absolute pointer-events-none inset-x-0 -top-20 h-40 opacity-25"
