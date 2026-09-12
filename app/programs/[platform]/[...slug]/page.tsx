@@ -223,7 +223,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
               <Link
                 href={`/settings/discord?program=${program.id}`}
                 className="focus-ring mono text-xs px-3 py-2 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-1.5"
-                title="Get Discord alerts when this program's scope or reward changes"
+                title="One webhook, this program, forever. Zero emails, because we don't have yours."
               >
                 Discord →
               </Link>

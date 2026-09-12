@@ -57,9 +57,9 @@ export default function McpPage(): React.JSX.Element {
         </h1>
         <p className="mt-4 text-neutral-400 max-w-[62ch] leading-relaxed">
           Wire your agent — Claude Desktop, Cursor, Codex, any Model Context Protocol client — into
-          the same index that powers this site. Eight public read-only tools. No API key, no signup.
-          Same fallback story as the web UI: if Neon is down, the tools still answer from the
-          upstream mirror.
+          the same index that powers this site. Eight public read-only tools. No API key, no signup,
+          no rate-limit email that says &ldquo;you&rsquo;ve exceeded your free tier&rdquo;.
+          Beta — works mostly. If it breaks, tell me and I&rsquo;ll fix it before you finish typing the bug report.
         </p>
       </section>
 

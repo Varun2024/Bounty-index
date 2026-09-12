@@ -66,12 +66,13 @@ function EmptyState({ hasIds }: { hasIds: boolean }) {
   return (
     <div className="border border-neutral-900 rounded-lg p-12 bg-neutral-950/40 text-center">
       <p className="mono text-xs uppercase tracking-widest text-neutral-500">
-        {hasIds ? '— syncing your watchlist —' : '— nothing on the watch yet —'}
+        {hasIds ? '— syncing your watchlist —' : '— your watchlist is emptier than a Tuesday triage queue —'}
       </p>
       {!hasIds && (
         <>
           <p className="mt-3 text-neutral-400 text-sm">
-            Open any program and hit <span className="mono text-amber-300">☆ watch</span> to track its scope and reward changes.
+            Hit <span className="mono text-amber-300">☆ watch</span> on any program. Like Twitter favorites,
+            minus the algorithm, minus the ads, minus the crypto replies.
           </p>
           <Link
             href="/programs"

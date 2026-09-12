@@ -127,7 +127,7 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
         ) : rows.length === 0 ? (
           <div className="border border-neutral-900 rounded-lg p-16 text-center bg-neutral-950/40">
             <p className="mono text-xs text-neutral-500 uppercase tracking-widest">— no programs match —</p>
-            <p className="text-neutral-400 mt-3">try broadening filters or clearing search</p>
+            <p className="text-neutral-400 mt-3">try fewer letters. or an actual company name.</p>
             <p className="mt-6 mono text-[10px] uppercase tracking-widest text-neutral-600">
               <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
               <span className="ml-2">to focus search</span>

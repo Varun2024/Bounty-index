@@ -39,7 +39,7 @@ export async function UserMenu() {
             </button>
             <p className="mono text-[10px] text-neutral-600 text-center mt-2">
               <span className="text-neutral-700">{'// '}</span>
-              sync across devices
+              no emails. we literally don&rsquo;t ask.
             </p>
           </form>
           <ul className="py-1">

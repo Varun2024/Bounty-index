@@ -8,7 +8,7 @@ export function DegradedBanner() {
         <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
         <span>
           <strong className="font-medium">Live data paused.</strong>{' '}
-          Showing cached programs from the upstream mirror. Watchlists, alerts, and change history resume shortly.
+          Neon is grumpy. Programs still load from the upstream mirror; watchlists and alerts are taking a nap.
         </span>
       </div>
     </div>

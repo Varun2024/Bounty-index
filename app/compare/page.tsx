@@ -139,9 +139,10 @@ export default async function ComparePage({ searchParams }: PageProps) {
 function EmptyState() {
   return (
     <div className="border border-neutral-900 rounded-lg p-12 bg-neutral-950/40 text-center">
-      <p className="mono text-xs uppercase tracking-widest text-neutral-500">— no programs picked yet —</p>
+      <p className="mono text-xs uppercase tracking-widest text-neutral-500">— nothing to compare against nothing —</p>
       <p className="mt-3 text-neutral-400 text-sm">
-        Open any program and hit <span className="mono text-emerald-300">+ compare</span> to add it here.
+        Add up to 4 programs with <span className="mono text-emerald-300">+ compare</span>. This page gets
+        interesting after the second one.
       </p>
       <Link
         href="/programs"

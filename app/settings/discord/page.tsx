@@ -119,9 +119,10 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
           <UnavailablePanel what="Subscription list" />
         ) : rows.length === 0 ? (
           <div className="border border-neutral-900 rounded-lg p-8 bg-neutral-950/40 text-center">
-            <p className="mono text-xs uppercase tracking-widest text-neutral-500">— nothing subscribed yet —</p>
+            <p className="mono text-xs uppercase tracking-widest text-neutral-500">— zero webhooks —</p>
             <p className="mt-3 text-sm text-neutral-500">
-              Open a program and hit the <span className="mono text-emerald-400">Discord alerts</span> button, or paste a URL above.
+              The cron still runs. It&rsquo;s just talking to itself. Open a program and hit
+              <span className="mono text-emerald-400"> Discord alerts</span>, or paste a URL above.
             </p>
           </div>
         ) : (
@@ -142,7 +143,8 @@ function SignInPrompt() {
       <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Settings · Discord alerts</p>
       <h1 className="text-2xl font-semibold text-neutral-100">Sign in first</h1>
       <p className="mt-3 text-sm text-neutral-400">
-        Webhook subscriptions live on your account so they follow you between machines.
+        Webhooks need somewhere to live. GitHub OAuth, no email — because we didn&rsquo;t want it.
+        Your subscriptions follow you between machines, not into your inbox.
       </p>
       <Link
         href="/api/auth/signin?callbackUrl=%2Fsettings%2Fdiscord"
