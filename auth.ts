@@ -34,29 +34,67 @@ async function nullOnError<T>(runner: () => unknown): Promise<T | null> {
   }
 }
 
+function log(step: string, extra?: unknown) {
+  // Prefix so it's greppable in Vercel Functions logs.
+  console.log(`[auth-adapter] ${step}`, extra ?? '');
+}
+
 function withOutageCapture(base: Adapter): Adapter {
   return {
     ...base,
-    getUser: base.getUser ? (id) => nullOnError(() => base.getUser!(id)) : undefined,
-    getUserByEmail: base.getUserByEmail ? (email) => nullOnError(() => base.getUserByEmail!(email)) : undefined,
+    getUser: base.getUser
+      ? async (id) => {
+          try {
+            return await base.getUser!(id);
+          } catch (err) {
+            log('getUser threw → null', err instanceof Error ? err.message : err);
+            return null;
+          }
+        }
+      : undefined,
+    getUserByEmail: base.getUserByEmail
+      ? async (email) => {
+          try {
+            return await base.getUserByEmail!(email);
+          } catch (err) {
+            log('getUserByEmail threw → null', err instanceof Error ? err.message : err);
+            return null;
+          }
+        }
+      : undefined,
     getUserByAccount: base.getUserByAccount
-      ? (account) => nullOnError(() => base.getUserByAccount!(account))
+      ? async (account) => {
+          try {
+            return await base.getUserByAccount!(account);
+          } catch (err) {
+            log('getUserByAccount threw → null', err instanceof Error ? err.message : err);
+            return null;
+          }
+        }
       : undefined,
     createUser: base.createUser
       ? async (user) => {
+          log('createUser called', { email: user.email, name: user.name });
           try {
-            return await base.createUser!(user);
+            const result = await base.createUser!(user);
+            log('createUser succeeded');
+            return result;
           } catch (err) {
+            log('createUser threw → enqueue', err instanceof Error ? err.message : err);
             await enqueueFromUser(user, err instanceof Error ? err.message : 'createUser failed');
+            log('enqueue done, re-throwing');
             throw err;
           }
         }
       : undefined,
     linkAccount: base.linkAccount
       ? async (account): Promise<void> => {
+          log('linkAccount called', { provider: account.provider });
           try {
             await base.linkAccount!(account);
+            log('linkAccount succeeded');
           } catch (err) {
+            log('linkAccount threw → enqueue', err instanceof Error ? err.message : err);
             await enqueueSignup({
               githubId: String(account.providerAccountId ?? 'unknown'),
               handle: null,
@@ -65,7 +103,7 @@ function withOutageCapture(base: Adapter): Adapter {
               image: null,
               reason: `linkAccount failed: ${err instanceof Error ? err.message : 'unknown'}`,
               attemptedAt: new Date().toISOString(),
-            }).catch(() => {});
+            }).catch((e) => log('link-enqueue also failed', e));
             throw err;
           }
         }
