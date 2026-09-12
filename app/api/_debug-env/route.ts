@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import { isAdmin } from '@/lib/admin';
+import type { NextRequest } from 'next/server';
 
-// Admin-only sanity check: does the running function see the env vars we expect?
+// Sanity check: does the running function see the env vars we expect?
 // Reports presence and length only — never leaks values. Delete when done debugging.
-export async function GET() {
-  const session = await auth();
-  if (!isAdmin(session)) return new NextResponse('not found', { status: 404 });
+// Gated by CRON_SECRET so we can hit it while signed out (sign-in itself is broken).
+// Usage: GET /api/_debug-env?secret=<CRON_SECRET value>
+export async function GET(req: NextRequest) {
+  const secret = req.nextUrl.searchParams.get('secret');
+  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+    return new NextResponse('not found', { status: 404 });
+  }
 
   const keys = ['DATABASE_URL', 'BLOB_READ_WRITE_TOKEN', 'AUTH_SECRET', 'AUTH_GITHUB_ID', 'AUTH_GITHUB_SECRET'];
   const status: Record<string, { present: boolean; length: number }> = {};
