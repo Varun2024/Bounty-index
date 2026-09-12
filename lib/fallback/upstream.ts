@@ -4,6 +4,7 @@
 // working without a DB. Snapshot-history features (whats-new, feed's firstSeenAt) can't be
 // rebuilt without persisted history and surface a scoped banner instead.
 import { NORMALIZERS, SOURCES, type NormalizedProgram, type Platform } from '@/lib/ingest/bounty-targets';
+import { IMMUNEFI_LIST_URL, IMMUNEFI_UA, parseImmunefiHtml } from '@/lib/ingest/immunefi';
 import type { Program, Scope } from '@/lib/db/schema';
 import type { ProgramFilters } from '@/lib/db/queries';
 // ponytail: type-only imports above break the runtime cycle with queries.ts.
@@ -37,9 +38,41 @@ async function fetchPlatform(platform: Platform): Promise<NormalizedProgram[]> {
   return out;
 }
 
+// Immunefi has no upstream JSON mirror — Stage-1 HTML scrape of the landing page.
+// Stage-2 (per-program detail scrape for scopes) is skipped in fallback: 180 fetches on
+// a cold start blows the request budget. Scope pages will render empty for Immunefi
+// programs during an outage; the tradeoff is that Immunefi listings still appear at all.
+async function fetchImmunefiPrograms(): Promise<NormalizedProgram[]> {
+  const res = await fetch(IMMUNEFI_LIST_URL, {
+    next: { revalidate: 3600 },
+    headers: { 'user-agent': IMMUNEFI_UA },
+  });
+  if (!res.ok) throw new Error(`immunefi: HTTP ${res.status}`);
+  const html = await res.text();
+  const raw = parseImmunefiHtml(html);
+  return raw.map((p) => ({
+    slug: p.slug,
+    handle: p.slug,
+    name: p.project,
+    url: `https://immunefi.com/bug-bounty/${p.slug}/information/`,
+    offersBounty: true,
+    offersSwag: false,
+    managed: p.managed,
+    minBounty: null,
+    maxBounty: p.maxBounty > 0 ? p.maxBounty : null,
+    currency: 'USD',
+    submissionState: null,
+    safeHarbor: p.safeHarbor,
+    scopes: [],
+    raw: { logo: p.logo, launchDate: p.launchDate, kyc: p.kyc },
+  }));
+}
+
 async function buildStore(): Promise<Store> {
   const platforms = Object.keys(SOURCES) as Platform[];
-  const settled = await Promise.allSettled(platforms.map((p) => fetchPlatform(p).then((rows) => ({ p, rows }))));
+  const arkadiyt = platforms.map((p) => fetchPlatform(p).then((rows) => ({ p: p as string, rows })));
+  const immunefi = fetchImmunefiPrograms().then((rows) => ({ p: 'immunefi', rows }));
+  const settled = await Promise.allSettled([...arkadiyt, immunefi]);
 
   const programs: Program[] = [];
   const scopesByProgram = new Map<number, Scope[]>();

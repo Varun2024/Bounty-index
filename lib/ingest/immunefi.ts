@@ -12,7 +12,9 @@ import { createHash } from 'node:crypto';
 // ponytail: HTML scrape, not an API. Fragile if their RSC shape changes. Snapshotting
 // deduplicates unchanged runs, so a bad parse just produces a no-op or one bad program.
 
-const LIST_URL = 'https://immunefi.com/bug-bounty/';
+export const IMMUNEFI_LIST_URL = 'https://immunefi.com/bug-bounty/';
+export const IMMUNEFI_UA = 'bounty.index-ingest/1.0';
+const LIST_URL = IMMUNEFI_LIST_URL;
 const PLATFORM = 'immunefi';
 const DETAIL_BATCH_SIZE = 6; // ~181 programs → 30 batches; keeps total under ~30s.
 const UA = 'bounty.index-ingest/1.0';
@@ -62,7 +64,8 @@ interface SnapshotPayload {
   scopeIdentifiers: string[];
 }
 
-function parseImmunefiHtml(html: string): ImmunefiProgram[] {
+export type { ImmunefiProgram };
+export function parseImmunefiHtml(html: string): ImmunefiProgram[] {
   const seen = new Map<string, ImmunefiProgram>();
   let i = html.indexOf('maxBounty');
   while (i !== -1) {
