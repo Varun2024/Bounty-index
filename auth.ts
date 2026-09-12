@@ -23,6 +23,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // are invalidated by this switch — every user re-signs-in once.
   session: { strategy: 'jwt' },
   trustHost: true,
+  pages: {
+    // Custom error page interprets DB-outage failures as a paused-sign-in state instead
+    // of the default NextAuth stack trace. Existing sessions still work; only new ones fail.
+    error: '/auth/error',
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user?.id) token.sub = user.id;
