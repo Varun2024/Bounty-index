@@ -15,6 +15,7 @@ import {
   programs,
   programSnapshots,
 } from '@/lib/db/schema';
+import { listPendingSignups } from '@/lib/signup-queue';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,6 +75,8 @@ export default async function AdminPage() {
         .limit(10),
     ),
   ]);
+
+  const pendingSignups = await listPendingSignups().catch(() => []);
 
   // Enrich the top-watched list with program names.
   const topWatched = topWatchedRows && topWatchedRows.length
@@ -150,6 +153,42 @@ export default async function AdminPage() {
             ))}
           </ul>
         )}
+      </section>
+
+      <section>
+        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
+          Pending signups <span className="text-neutral-700">· captured during DB outage</span>
+        </h2>
+        {pendingSignups.length === 0 ? (
+          <p className="mono text-xs text-neutral-500">— none —</p>
+        ) : (
+          <ul className="border border-amber-500/20 rounded-lg overflow-hidden bg-amber-500/[0.03] divide-y divide-neutral-900">
+            {pendingSignups.map((s) => (
+              <li key={s.key} className="px-4 py-3 flex items-center gap-3">
+                {s.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={s.image} alt="" width={24} height={24} className="w-6 h-6 rounded-full border border-neutral-800" />
+                ) : (
+                  <span className="w-6 h-6 rounded-full border border-neutral-800 flex items-center justify-center mono text-[10px] text-neutral-500">
+                    {(s.name ?? s.email ?? '?').charAt(0).toUpperCase()}
+                  </span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-neutral-100 truncate">{s.name ?? s.email ?? s.githubId}</p>
+                  <p className="mono text-[11px] text-neutral-500 truncate">
+                    {s.email ?? '(no email)'} · attempted {new Date(s.attemptedAt).toLocaleString()}
+                  </p>
+                </div>
+                <p className="mono text-[10px] text-amber-300/70 truncate max-w-[280px]" title={s.reason}>
+                  {s.reason}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="mt-3 mono text-[10px] text-neutral-600">
+          {'// '}entries are best-effort captures during DB outages. Replay/ping them once Neon is back.
+        </p>
       </section>
 
       <section>
