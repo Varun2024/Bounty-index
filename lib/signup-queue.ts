@@ -1,4 +1,4 @@
-import { put, list, del } from '@vercel/blob';
+import { put, list, del, get } from '@vercel/blob';
 
 // Vercel Blob queue for OAuth signups that arrive while the DB is unreachable.
 // Each entry is a JSON object under prefix `pending-signups/`. When the DB is back,
@@ -34,11 +34,10 @@ export async function enqueueSignup(entry: PendingSignup): Promise<void> {
   const id = safeGithubId(entry.githubId);
   const key = `${PREFIX}${id}-${Date.now()}.json`;
   try {
-    // ponytail: 'public' access — the file URL is unlisted (prefixed dir + random suffix)
-    // and only referenced from the admin page. Private-only stores would need signed
-    // URLs to read back; not worth the complexity for this queue.
+    // Private-store blob: readable only via the SDK's get() with the token,
+    // never via a plain URL. PII (email, name) doesn't want to be public anyway.
     await put(key, JSON.stringify(entry, null, 2), {
-      access: 'public',
+      access: 'private',
       contentType: 'application/json',
       addRandomSuffix: true,
       allowOverwrite: false,
@@ -57,9 +56,11 @@ export async function listPendingSignups(): Promise<StoredPendingSignup[]> {
   const out: StoredPendingSignup[] = [];
   for (const b of blobs) {
     try {
-      const res = await fetch(b.url);
-      if (!res.ok) continue;
-      const parsed = (await res.json()) as PendingSignup;
+      // Private blobs: use get() with the token — a plain fetch(b.url) 403s.
+      const result = await get(b.pathname, { access: 'private', token: process.env.BLOB_READ_WRITE_TOKEN });
+      if (!result?.stream) continue;
+      const text = await new Response(result.stream).text();
+      const parsed = JSON.parse(text) as PendingSignup;
       out.push({ ...parsed, key: b.pathname, url: b.url });
     } catch {
       // skip unreadable
