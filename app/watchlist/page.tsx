@@ -5,6 +5,7 @@ import { formatBounty, platformLabel, PLATFORM_META, relativeTime } from '@/lib/
 import { diffSnapshots, isEmptyDiff } from '@/lib/snapshots';
 import { WatchlistSync } from './sync';
 import { UnwatchButton } from './unwatch-button';
+import { UnavailablePanel } from '@/app/_ui/unavailable-panel';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,10 @@ function parseIds(v: string | string[] | undefined): number[] {
 export default async function WatchlistPage({ searchParams }: PageProps) {
   const sp = await searchParams;
   const ids = parseIds(sp.ids);
-  const entries = ids.length ? await getWatchlist(ids).catch(() => [] as WatchlistEntry[]) : [];
+  // null = load failed (Neon quota etc), [] = no watched programs
+  const entries: WatchlistEntry[] | null = ids.length
+    ? await getWatchlist(ids).catch(() => null)
+    : [];
 
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10">
@@ -43,7 +47,9 @@ export default async function WatchlistPage({ searchParams }: PageProps) {
         </p>
       </header>
 
-      {entries.length === 0 ? (
+      {entries === null ? (
+        <UnavailablePanel what="Watchlist snapshot data" />
+      ) : entries.length === 0 ? (
         <EmptyState hasIds={ids.length > 0} />
       ) : (
         <ul className="space-y-6">

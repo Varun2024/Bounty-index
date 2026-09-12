@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 import { listMyWebhooks } from '@/app/actions/discord';
 import { AddWebhookForm } from './add-webhook-form';
 import { WebhookRow } from './webhook-row';
+import { UnavailablePanel } from '@/app/_ui/unavailable-panel';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,10 +35,12 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
             .from(programs)
             .where(eq(programs.id, prefillProgramId))
             .limit(1)
+            .catch(() => [])
         )[0] ?? null
       : null;
 
-  const rows = await listMyWebhooks();
+  // ponytail: null means the DB read failed (Neon quota etc). Distinguish from empty [].
+  const rows = await listMyWebhooks().catch(() => null);
 
   return (
     <div className="max-w-[900px] mx-auto px-6 py-10">
@@ -109,8 +112,12 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-neutral-100 mb-3">Your subscriptions <span className="mono text-xs text-neutral-500">· {rows.length}</span></h2>
-        {rows.length === 0 ? (
+        <h2 className="text-lg font-semibold text-neutral-100 mb-3">
+          Your subscriptions <span className="mono text-xs text-neutral-500">· {rows?.length ?? '—'}</span>
+        </h2>
+        {rows === null ? (
+          <UnavailablePanel what="Subscription list" />
+        ) : rows.length === 0 ? (
           <div className="border border-neutral-900 rounded-lg p-8 bg-neutral-950/40 text-center">
             <p className="mono text-xs uppercase tracking-widest text-neutral-500">— nothing subscribed yet —</p>
             <p className="mt-3 text-sm text-neutral-500">
