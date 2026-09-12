@@ -6,30 +6,70 @@ import { getDrizzleInstance } from '@/lib/db/client';
 import { users, accounts, sessions, verificationTokens } from '@/lib/db/schema';
 import { enqueueSignup } from '@/lib/signup-queue';
 
-// Wrap the Drizzle adapter so a DB outage during OAuth callback doesn't just drop the
-// user on the floor — we capture their GitHub profile to the Vercel Blob signup queue.
-// createUser and linkAccount both fail during outage; catch both and enqueue once.
+// Wrap the Drizzle adapter so a DB outage during OAuth doesn't just drop the user on
+// the floor — capture the GitHub profile to the Vercel Blob signup queue.
+//
+// NextAuth's sign-in path hits multiple adapter methods before createUser:
+//   getUserByAccount → getUserByEmail → createUser → linkAccount
+// A DB error in any of the read methods bails the whole flow with error=Configuration
+// before we ever reach createUser. So: read methods swallow errors and return null
+// (letting flow fall through to createUser), and createUser is where we enqueue.
+async function enqueueFromUser(user: { id?: string; email?: string | null; name?: string | null; image?: string | null }, reason: string) {
+  await enqueueSignup({
+    githubId: user.id ?? 'unknown',
+    handle: null,
+    email: user.email ?? null,
+    name: user.name ?? null,
+    image: user.image ?? null,
+    reason,
+    attemptedAt: new Date().toISOString(),
+  }).catch(() => {});
+}
+
+async function nullOnError<T>(runner: () => unknown): Promise<T | null> {
+  try {
+    return (await runner()) as T | null;
+  } catch {
+    return null;
+  }
+}
+
 function withOutageCapture(base: Adapter): Adapter {
-  const originalCreateUser = base.createUser?.bind(base);
   return {
     ...base,
-    createUser: async (user) => {
-      if (!originalCreateUser) throw new Error('adapter.createUser missing');
-      try {
-        return await originalCreateUser(user);
-      } catch (err) {
-        await enqueueSignup({
-          githubId: (user as { id?: string }).id ?? 'unknown',
-          handle: null,
-          email: user.email ?? null,
-          name: user.name ?? null,
-          image: user.image ?? null,
-          reason: err instanceof Error ? err.message : 'unknown adapter failure',
-          attemptedAt: new Date().toISOString(),
-        }).catch(() => {});
-        throw err; // still fail the sign-in — user sees the friendly error page
-      }
-    },
+    getUser: base.getUser ? (id) => nullOnError(() => base.getUser!(id)) : undefined,
+    getUserByEmail: base.getUserByEmail ? (email) => nullOnError(() => base.getUserByEmail!(email)) : undefined,
+    getUserByAccount: base.getUserByAccount
+      ? (account) => nullOnError(() => base.getUserByAccount!(account))
+      : undefined,
+    createUser: base.createUser
+      ? async (user) => {
+          try {
+            return await base.createUser!(user);
+          } catch (err) {
+            await enqueueFromUser(user, err instanceof Error ? err.message : 'createUser failed');
+            throw err;
+          }
+        }
+      : undefined,
+    linkAccount: base.linkAccount
+      ? async (account): Promise<void> => {
+          try {
+            await base.linkAccount!(account);
+          } catch (err) {
+            await enqueueSignup({
+              githubId: String(account.providerAccountId ?? 'unknown'),
+              handle: null,
+              email: null,
+              name: null,
+              image: null,
+              reason: `linkAccount failed: ${err instanceof Error ? err.message : 'unknown'}`,
+              attemptedAt: new Date().toISOString(),
+            }).catch(() => {});
+            throw err;
+          }
+        }
+      : undefined,
   };
 }
 
