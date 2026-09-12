@@ -33,17 +33,27 @@ export async function enqueueSignup(entry: PendingSignup): Promise<void> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return; // no blob configured, silently no-op
   const id = safeGithubId(entry.githubId);
   const key = `${PREFIX}${id}-${Date.now()}.json`;
-  await put(key, JSON.stringify(entry, null, 2), {
-    access: 'public',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
+  try {
+    // ponytail: 'public' access — the file URL is unlisted (prefixed dir + random suffix)
+    // and only referenced from the admin page. Private-only stores would need signed
+    // URLs to read back; not worth the complexity for this queue.
+    await put(key, JSON.stringify(entry, null, 2), {
+      access: 'public',
+      contentType: 'application/json',
+      addRandomSuffix: true,
+      allowOverwrite: false,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
+  } catch (err) {
+    // Surface on server logs so a broken Blob config doesn't fail silently.
+    console.error('[signup-queue] enqueue failed:', err instanceof Error ? err.message : err);
+    throw err;
+  }
 }
 
 export async function listPendingSignups(): Promise<StoredPendingSignup[]> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return [];
-  const { blobs } = await list({ prefix: PREFIX, limit: 200 });
+  const { blobs } = await list({ prefix: PREFIX, limit: 200, token: process.env.BLOB_READ_WRITE_TOKEN });
   const out: StoredPendingSignup[] = [];
   for (const b of blobs) {
     try {
@@ -60,5 +70,5 @@ export async function listPendingSignups(): Promise<StoredPendingSignup[]> {
 
 export async function deletePendingSignup(key: string): Promise<void> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return;
-  await del(key);
+  await del(key, { token: process.env.BLOB_READ_WRITE_TOKEN });
 }
