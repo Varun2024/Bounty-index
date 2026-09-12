@@ -26,10 +26,30 @@ export type { ProgramFilters, SnapshotPayloadShape, ProgramSnapshot, WatchlistEn
 // serve reconstructed data from arkadiyt/bounty-targets-data so the site stays browsable.
 // Only wraps read paths that can be rebuilt from upstream; snapshot-history features
 // (whats-new, feed's firstSeenAt) and per-user tables intentionally still throw.
+//
+// Circuit breaker: after 3 consecutive failures, skip the DB for 5min and go straight to
+// fallback. During a Neon quota outage every request otherwise pays for a doomed round-trip.
+// ponytail: module-level state, per-instance. Serverless spawns many instances → each trips
+// independently, which is fine — the breaker's job is p95, not global coordination.
+const BREAKER_THRESHOLD = 3;
+const BREAKER_COOLDOWN_MS = 5 * 60 * 1000;
+let breakerFailures = 0;
+let breakerOpenedAt = 0;
+
+export function isDbDegraded(): boolean {
+  return breakerOpenedAt > 0 && Date.now() - breakerOpenedAt < BREAKER_COOLDOWN_MS;
+}
+
 async function withFallback<T>(primary: () => Promise<T>, fallback: () => Promise<T>, label: string): Promise<T> {
+  if (isDbDegraded()) return fallback();
   try {
-    return await primary();
+    const result = await primary();
+    breakerFailures = 0;
+    breakerOpenedAt = 0;
+    return result;
   } catch (err) {
+    breakerFailures++;
+    if (breakerFailures >= BREAKER_THRESHOLD) breakerOpenedAt = Date.now();
     console.error(`[db-fallback] ${label} → upstream:`, err instanceof Error ? err.message : err);
     return fallback();
   }

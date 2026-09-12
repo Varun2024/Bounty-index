@@ -10,6 +10,7 @@ import { PlatformLogo } from './_ui/platform-logo';
 import { UserMenu } from './_ui/user-menu';
 import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
+import { DegradedBanner } from './_ui/degraded-banner';
 import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -153,6 +154,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </div>
           <div className="h-px bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent" />
         </header>
+        <DegradedBanner />
         <main className="flex-1">{children}</main>
         <GlobalKeyboard />
         <CompareTray />
