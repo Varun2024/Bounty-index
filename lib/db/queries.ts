@@ -1,5 +1,12 @@
+import { unstable_cache } from 'next/cache';
 import { db, schema } from './client';
 import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne } from 'drizzle-orm';
+
+// ponytail: single tag busts every public read cache from the ingest cron.
+// 5min revalidate is the safety net if tag busting ever fails.
+const CACHE_TAG = 'programs-data';
+const CACHE_REVALIDATE = 300;
+export const PROGRAMS_CACHE_TAG = CACHE_TAG;
 import { diffSnapshots, isEmptyDiff } from '../snapshots';
 import { opportunityScoreSql } from '../opportunity';
 import {
@@ -210,59 +217,78 @@ async function statsDb() {
   };
 }
 
-export async function newestPrograms(limit = 50) {
-  return db.select().from(schema.programs).where(isNotNull(schema.programs.firstSeenAt)).orderBy(desc(schema.programs.firstSeenAt)).limit(limit);
-}
+export const newestPrograms = unstable_cache(
+  async (limit = 50) =>
+    db.select().from(schema.programs).where(isNotNull(schema.programs.firstSeenAt)).orderBy(desc(schema.programs.firstSeenAt)).limit(limit),
+  ['newestPrograms'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
 
 // Programs first seen within the last `days` days, most recent first.
-export async function recentlyAdded(limit = 8, days = 14) {
-  return db
-    .select()
-    .from(schema.programs)
-    .where(sql`${schema.programs.firstSeenAt} > now() - ${sql.raw(`interval '${days} days'`)}`)
-    .orderBy(desc(schema.programs.firstSeenAt))
-    .limit(limit);
-}
+export const recentlyAdded = unstable_cache(
+  async (limit = 8, days = 14) =>
+    db
+      .select()
+      .from(schema.programs)
+      .where(sql`${schema.programs.firstSeenAt} > now() - ${sql.raw(`interval '${days} days'`)}`)
+      .orderBy(desc(schema.programs.firstSeenAt))
+      .limit(limit),
+  ['recentlyAdded'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
 
 // "Trending" v1: highest payouts among recent additions. Real trending arrives when snapshot history has ≥ 2 weeks of data.
-export async function trendingNewPayouts(limit = 6, days = 30) {
-  return db
-    .select()
-    .from(schema.programs)
-    .where(
-      and(
-        sql`${schema.programs.firstSeenAt} > now() - ${sql.raw(`interval '${days} days'`)}`,
-        eq(schema.programs.offersBounty, true),
-        isNotNull(schema.programs.maxBounty),
-      ),
-    )
-    .orderBy(sql`${schema.programs.maxBounty} DESC NULLS LAST`)
-    .limit(limit);
-}
+export const trendingNewPayouts = unstable_cache(
+  async (limit = 6, days = 30) =>
+    db
+      .select()
+      .from(schema.programs)
+      .where(
+        and(
+          sql`${schema.programs.firstSeenAt} > now() - ${sql.raw(`interval '${days} days'`)}`,
+          eq(schema.programs.offersBounty, true),
+          isNotNull(schema.programs.maxBounty),
+        ),
+      )
+      .orderBy(sql`${schema.programs.maxBounty} DESC NULLS LAST`)
+      .limit(limit),
+  ['trendingNewPayouts'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
 
 // Distinct platforms + program counts. Used by the MCP `list_platforms` tool. No fallback —
 // callers should tolerate an empty array on DB failure (the tool returns "unavailable" text).
-export async function listPlatformsWithCounts(): Promise<{ platform: string; programs: number }[]> {
-  try {
-    const rows = await db
-      .select({
-        platform: schema.programs.platform,
-        programs: sql<number>`count(*)::int`,
-      })
-      .from(schema.programs)
-      .groupBy(schema.programs.platform)
-      .orderBy(sql`count(*) DESC`);
-    return rows;
-  } catch (err) {
-    console.error('[listPlatformsWithCounts] failing open:', err instanceof Error ? err.message : err);
-    return [];
-  }
-}
+export const listPlatformsWithCounts = unstable_cache(
+  async (): Promise<{ platform: string; programs: number }[]> => {
+    try {
+      const rows = await db
+        .select({
+          platform: schema.programs.platform,
+          programs: sql<number>`count(*)::int`,
+        })
+        .from(schema.programs)
+        .groupBy(schema.programs.platform)
+        .orderBy(sql`count(*) DESC`);
+      return rows;
+    } catch (err) {
+      console.error('[listPlatformsWithCounts] failing open:', err instanceof Error ? err.message : err);
+      return [];
+    }
+  },
+  ['listPlatformsWithCounts'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
 
 // Similar programs by count of shared in-scope identifiers. Naive exact-match count — good
 // enough as a first pass because company-specific identifiers (*.shopify.com etc.) are unique
 // to their owner. If noise creeps in later, filter out identifiers with very high global counts.
-export async function getSimilarPrograms(programId: number, limit = 5): Promise<SimilarProgram[]> {
+export const getSimilarPrograms = unstable_cache(
+  getSimilarProgramsUncached,
+  ['getSimilarPrograms'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+
+async function getSimilarProgramsUncached(programId: number, limit = 5): Promise<SimilarProgram[]> {
   try {
     const ranked = await db
       .select({
@@ -302,7 +328,13 @@ export async function getSimilarPrograms(programId: number, limit = 5): Promise<
   }
 }
 
-export async function getProgramSnapshots(programId: number): Promise<ProgramSnapshot[]> {
+export const getProgramSnapshots = unstable_cache(
+  getProgramSnapshotsUncached,
+  ['getProgramSnapshots'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+
+async function getProgramSnapshotsUncached(programId: number): Promise<ProgramSnapshot[]> {
   const rows = await db
     .select({
       capturedAt: schema.programSnapshots.capturedAt,
@@ -359,7 +391,13 @@ export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
 // the window. Snapshots are sparse (only written when content_hash changes), so any snapshot in
 // the window IS a change — we just need to pair each with its predecessor to compute what
 // actually shifted.
-export async function getRecentChanges(hoursBack = 168, limit = 200): Promise<RecentChange[]> {
+export const getRecentChanges = unstable_cache(
+  getRecentChangesUncached,
+  ['getRecentChanges'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+
+async function getRecentChangesUncached(hoursBack = 168, limit = 200): Promise<RecentChange[]> {
   const cutoff = new Date(Date.now() - hoursBack * 3_600_000);
 
   // 1. Programs with any snapshot inside the window.
@@ -412,14 +450,36 @@ export async function getRecentChanges(hoursBack = 168, limit = 200): Promise<Re
 }
 
 // --- Public read exports: DB first, upstream fallback on any failure. ---
-export const listPrograms = (f: ProgramFilters = {}) =>
-  withFallback(() => listProgramsDb(f), () => listProgramsFallback(f), 'listPrograms');
-export const getProgramsByIds = (ids: number[]) =>
-  withFallback(() => getProgramsByIdsDb(ids), () => getProgramsByIdsFallback(ids), 'getProgramsByIds');
-export const getProgramBySlug = (platform: string, slug: string) =>
-  withFallback(() => getProgramBySlugDb(platform, slug), () => getProgramBySlugFallback(platform, slug), 'getProgramBySlug');
-export const findByDomain = (domain: string) =>
-  withFallback(() => findByDomainDb(domain), () => findByDomainFallback(domain), 'findByDomain');
-export const topPayouts = (limit = 5) =>
-  withFallback(() => topPayoutsDb(limit), () => topPayoutsFallback(limit), 'topPayouts');
-export const stats = () => withFallback(() => statsDb(), () => statsFallback(), 'stats');
+// Each wrapped in unstable_cache so repeated page views don't re-hit the DB.
+// Ingest cron busts via revalidateTag(PROGRAMS_CACHE_TAG) after writes.
+export const listPrograms = unstable_cache(
+  (f: ProgramFilters = {}) => withFallback(() => listProgramsDb(f), () => listProgramsFallback(f), 'listPrograms'),
+  ['listPrograms'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+export const getProgramsByIds = unstable_cache(
+  (ids: number[]) => withFallback(() => getProgramsByIdsDb(ids), () => getProgramsByIdsFallback(ids), 'getProgramsByIds'),
+  ['getProgramsByIds'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+export const getProgramBySlug = unstable_cache(
+  (platform: string, slug: string) =>
+    withFallback(() => getProgramBySlugDb(platform, slug), () => getProgramBySlugFallback(platform, slug), 'getProgramBySlug'),
+  ['getProgramBySlug'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+export const findByDomain = unstable_cache(
+  (domain: string) => withFallback(() => findByDomainDb(domain), () => findByDomainFallback(domain), 'findByDomain'),
+  ['findByDomain'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+export const topPayouts = unstable_cache(
+  (limit = 5) => withFallback(() => topPayoutsDb(limit), () => topPayoutsFallback(limit), 'topPayouts'),
+  ['topPayouts'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+export const stats = unstable_cache(
+  () => withFallback(() => statsDb(), () => statsFallback(), 'stats'),
+  ['stats'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
