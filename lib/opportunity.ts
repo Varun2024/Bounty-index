@@ -33,7 +33,8 @@ export interface OpportunityBreakdown {
 interface ScoreInput {
   maxBounty: number | null;
   offersBounty: boolean;
-  lastUpdatedAt: Date | null;
+  // ponytail: unstable_cache round-trips Date → ISO string. Accept both.
+  lastUpdatedAt: Date | string | null;
 }
 
 function clamp01(x: number): number {
@@ -48,9 +49,11 @@ function payoutAxis(maxBounty: number | null): number {
   return clamp01((Math.log(maxBounty) - lnFloor) / (lnCeil - lnFloor));
 }
 
-function freshnessAxis(lastUpdatedAt: Date | null, now: Date = new Date()): number {
+function freshnessAxis(lastUpdatedAt: Date | string | null, now: Date = new Date()): number {
   if (!lastUpdatedAt) return 0;
-  const days = (now.getTime() - lastUpdatedAt.getTime()) / 86_400_000;
+  const ts = typeof lastUpdatedAt === 'string' ? Date.parse(lastUpdatedAt) : lastUpdatedAt.getTime();
+  if (!Number.isFinite(ts)) return 0;
+  const days = (now.getTime() - ts) / 86_400_000;
   if (days <= FRESH_FULL_DAYS) return 1;
   if (days >= FRESH_ZERO_DAYS) return 0;
   return clamp01(1 - (days - FRESH_FULL_DAYS) / (FRESH_ZERO_DAYS - FRESH_FULL_DAYS));
