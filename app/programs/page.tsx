@@ -5,6 +5,7 @@ import { Pagination } from './pagination';
 import { KeyboardNav } from './keyboard-nav';
 import { ActiveFilters } from './active-filters';
 import { FilterDrawer } from './filter-drawer';
+import { KeyboardHintBanner } from './keyboard-hint-banner';
 import { formatBounty, platformLabel, PLATFORM_META } from '@/lib/format';
 import { opportunityScore } from '@/lib/opportunity';
 
@@ -116,6 +117,7 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
           </div>
         </div>
 
+        <KeyboardHintBanner />
         <ActiveFilters filters={filters} />
 
         {dbError ? (
