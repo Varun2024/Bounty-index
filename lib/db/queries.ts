@@ -7,6 +7,38 @@ import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne } from '
 const CACHE_TAG = 'programs-data';
 const CACHE_REVALIDATE = 300;
 export const PROGRAMS_CACHE_TAG = CACHE_TAG;
+
+// unstable_cache serializes Date → ISO string on cache hit. Walk the return and
+// convert ISO-shaped strings back to Date so consumers can call .getTime() etc.
+// Mutates in place — the cached object isn't shared across requests in a way
+// that matters here (second revive is a no-op since Dates aren't strings).
+const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
+function reviveDates<T>(x: T): T {
+  if (x == null || typeof x !== 'object') return x;
+  if (Array.isArray(x)) {
+    for (let i = 0; i < x.length; i++) {
+      const v = x[i];
+      if (typeof v === 'string' && ISO_RE.test(v)) x[i] = new Date(v);
+      else if (v && typeof v === 'object') reviveDates(v);
+    }
+    return x;
+  }
+  for (const k of Object.keys(x as object)) {
+    const v = (x as Record<string, unknown>)[k];
+    if (typeof v === 'string' && ISO_RE.test(v)) (x as Record<string, unknown>)[k] = new Date(v);
+    else if (v && typeof v === 'object') reviveDates(v);
+  }
+  return x;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function cachedWithDates<Args extends any[], R>(
+  fn: (...args: Args) => Promise<R>,
+  keys: string[],
+  opts: { revalidate: number; tags: string[] },
+): (...args: Args) => Promise<R> {
+  return unstable_cache(async (...args: Args) => reviveDates(await fn(...args)), keys, opts);
+}
 import { diffSnapshots, isEmptyDiff } from '../snapshots';
 import { opportunityScoreSql } from '../opportunity';
 import {
@@ -217,7 +249,7 @@ async function statsDb() {
   };
 }
 
-export const newestPrograms = unstable_cache(
+export const newestPrograms = cachedWithDates(
   async (limit = 50) =>
     db.select().from(schema.programs).where(isNotNull(schema.programs.firstSeenAt)).orderBy(desc(schema.programs.firstSeenAt)).limit(limit),
   ['newestPrograms'],
@@ -225,7 +257,7 @@ export const newestPrograms = unstable_cache(
 );
 
 // Programs first seen within the last `days` days, most recent first.
-export const recentlyAdded = unstable_cache(
+export const recentlyAdded = cachedWithDates(
   async (limit = 8, days = 14) =>
     db
       .select()
@@ -238,7 +270,7 @@ export const recentlyAdded = unstable_cache(
 );
 
 // "Trending" v1: highest payouts among recent additions. Real trending arrives when snapshot history has ≥ 2 weeks of data.
-export const trendingNewPayouts = unstable_cache(
+export const trendingNewPayouts = cachedWithDates(
   async (limit = 6, days = 30) =>
     db
       .select()
@@ -258,7 +290,7 @@ export const trendingNewPayouts = unstable_cache(
 
 // Distinct platforms + program counts. Used by the MCP `list_platforms` tool. No fallback —
 // callers should tolerate an empty array on DB failure (the tool returns "unavailable" text).
-export const listPlatformsWithCounts = unstable_cache(
+export const listPlatformsWithCounts = cachedWithDates(
   async (): Promise<{ platform: string; programs: number }[]> => {
     try {
       const rows = await db
@@ -282,7 +314,7 @@ export const listPlatformsWithCounts = unstable_cache(
 // Similar programs by count of shared in-scope identifiers. Naive exact-match count — good
 // enough as a first pass because company-specific identifiers (*.shopify.com etc.) are unique
 // to their owner. If noise creeps in later, filter out identifiers with very high global counts.
-export const getSimilarPrograms = unstable_cache(
+export const getSimilarPrograms = cachedWithDates(
   getSimilarProgramsUncached,
   ['getSimilarPrograms'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
@@ -328,7 +360,7 @@ async function getSimilarProgramsUncached(programId: number, limit = 5): Promise
   }
 }
 
-export const getProgramSnapshots = unstable_cache(
+export const getProgramSnapshots = cachedWithDates(
   getProgramSnapshotsUncached,
   ['getProgramSnapshots'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
@@ -391,7 +423,7 @@ export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
 // the window. Snapshots are sparse (only written when content_hash changes), so any snapshot in
 // the window IS a change — we just need to pair each with its predecessor to compute what
 // actually shifted.
-export const getRecentChanges = unstable_cache(
+export const getRecentChanges = cachedWithDates(
   getRecentChangesUncached,
   ['getRecentChanges'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
@@ -452,33 +484,33 @@ async function getRecentChangesUncached(hoursBack = 168, limit = 200): Promise<R
 // --- Public read exports: DB first, upstream fallback on any failure. ---
 // Each wrapped in unstable_cache so repeated page views don't re-hit the DB.
 // Ingest cron busts via revalidateTag(PROGRAMS_CACHE_TAG) after writes.
-export const listPrograms = unstable_cache(
+export const listPrograms = cachedWithDates(
   (f: ProgramFilters = {}) => withFallback(() => listProgramsDb(f), () => listProgramsFallback(f), 'listPrograms'),
   ['listPrograms'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
 );
-export const getProgramsByIds = unstable_cache(
+export const getProgramsByIds = cachedWithDates(
   (ids: number[]) => withFallback(() => getProgramsByIdsDb(ids), () => getProgramsByIdsFallback(ids), 'getProgramsByIds'),
   ['getProgramsByIds'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
 );
-export const getProgramBySlug = unstable_cache(
+export const getProgramBySlug = cachedWithDates(
   (platform: string, slug: string) =>
     withFallback(() => getProgramBySlugDb(platform, slug), () => getProgramBySlugFallback(platform, slug), 'getProgramBySlug'),
   ['getProgramBySlug'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
 );
-export const findByDomain = unstable_cache(
+export const findByDomain = cachedWithDates(
   (domain: string) => withFallback(() => findByDomainDb(domain), () => findByDomainFallback(domain), 'findByDomain'),
   ['findByDomain'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
 );
-export const topPayouts = unstable_cache(
+export const topPayouts = cachedWithDates(
   (limit = 5) => withFallback(() => topPayoutsDb(limit), () => topPayoutsFallback(limit), 'topPayouts'),
   ['topPayouts'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
 );
-export const stats = unstable_cache(
+export const stats = cachedWithDates(
   () => withFallback(() => statsDb(), () => statsFallback(), 'stats'),
   ['stats'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
