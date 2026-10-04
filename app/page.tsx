@@ -1,7 +1,6 @@
 import { stats, topPayouts, recentlyAdded, trendingNewPayouts } from '@/lib/db/queries';
 import { Ticker } from '@/app/_ui/ticker';
 import { Hero } from './_home/hero';
-import { HowItWorks } from './_home/how-it-works';
 import { Pulse } from './_home/pulse';
 import { Comparison } from './_home/comparison';
 import { Features } from './_home/features';
@@ -10,6 +9,8 @@ import { SectionOrnament } from './_home/shared';
 
 export const dynamic = 'force-dynamic';
 
+// Order is value-first: pitch → prove with live data → feature detail → why-not-them → convert.
+// HowItWorks lives at /how-it-works for anyone who wants the architecture story.
 export default async function Home() {
   const [s, top, recent, trending] = await Promise.all([
     stats().catch(() => null),
@@ -22,13 +23,11 @@ export default async function Home() {
     <>
       <Hero s={s} top={top} />
       <Ticker />
-      <HowItWorks />
-      <SectionOrnament />
       <Pulse recent={recent} trending={trending} />
       <SectionOrnament />
-      <Comparison />
-      <SectionOrnament />
       <Features s={s} />
+      <SectionOrnament />
+      <Comparison />
       <FinalCTA s={s} />
     </>
   );
