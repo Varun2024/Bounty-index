@@ -26,12 +26,12 @@ export function OpportunityBreakdown({ program }: OpportunityBreakdownProps) {
 
   return (
     <section className="mt-10 border border-neutral-900 rounded-xl bg-neutral-950/50 overflow-hidden reveal reveal-delay-1">
-      <div className="flex items-stretch">
-        <div className="flex flex-col items-center justify-center px-6 py-5 border-r border-neutral-900 bg-neutral-950/60 min-w-[120px]">
-          <div className={`mono text-5xl font-semibold tabular-nums ${tone}`}>{b.total}</div>
-          <div className="mono text-[10px] uppercase tracking-widest text-neutral-500 mt-1">opp score</div>
+      <div className="flex flex-col md:flex-row md:items-stretch">
+        <div className="flex md:flex-col items-center md:justify-center gap-3 md:gap-0 px-5 py-4 md:px-6 md:py-5 border-b md:border-b-0 md:border-r border-neutral-900 bg-neutral-950/60 md:min-w-[120px]">
+          <div className={`mono text-4xl md:text-5xl font-semibold tabular-nums ${tone}`}>{b.total}</div>
+          <div className="mono text-[10px] uppercase tracking-widest text-neutral-500 md:mt-1">opp score</div>
         </div>
-        <div className="flex-1 px-5 py-4 space-y-2.5">
+        <div className="flex-1 px-5 py-4 space-y-2.5 min-w-0">
           <div className="flex items-baseline justify-between gap-4">
             <p className="mono text-[10px] uppercase tracking-widest text-neutral-500">
               Opportunity breakdown

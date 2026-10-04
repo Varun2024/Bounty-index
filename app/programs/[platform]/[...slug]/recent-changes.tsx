@@ -68,12 +68,16 @@ export function RecentChanges({ snapshots, currency, limit = 5 }: RecentChangesP
                 </span>
               </div>
               {(e.added.length > 0 || e.removed.length > 0) && (
-                <ul className="mono text-[11px] mt-1 space-y-0.5">
+                <ul className="mono text-[11px] mt-1 space-y-0.5 min-w-0">
                   {e.added.slice(0, 3).map((id) => (
-                    <li key={`a-${id}`} className="text-neutral-400"><span className="text-emerald-400">+</span> {shortenIdentifier(id, 80)}</li>
+                    <li key={`a-${id}`} className="text-neutral-400 truncate" title={id}>
+                      <span className="text-emerald-400">+</span> {shortenIdentifier(id, 60)}
+                    </li>
                   ))}
                   {e.removed.slice(0, 3).map((id) => (
-                    <li key={`r-${id}`} className="text-neutral-400"><span className="text-amber-400">−</span> {shortenIdentifier(id, 80)}</li>
+                    <li key={`r-${id}`} className="text-neutral-400 truncate" title={id}>
+                      <span className="text-amber-400">−</span> {shortenIdentifier(id, 60)}
+                    </li>
                   ))}
                   {(e.added.length + e.removed.length) > 6 && (
                     <li className="text-neutral-600">…and {e.added.length + e.removed.length - 6} more</li>

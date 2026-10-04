@@ -19,6 +19,7 @@ import { ScopeColumn, Tag } from './scope-columns';
 import { ProgramTimeline } from './timeline';
 import { AtAGlance } from './at-a-glance';
 import { OpportunityBreakdown } from './opportunity-breakdown';
+import { ScopeMixBar } from './scope-mix-bar';
 import { RecentChanges } from './recent-changes';
 import { SimilarPrograms } from './similar-programs';
 import { CopyScope } from './copy-scope';
@@ -264,6 +265,8 @@ export default async function ProgramDetailPage({ params }: PageProps) {
           reportCount={initialReportStats.count}
           lastChangeAt={lastChangeAt}
         />
+
+        <ScopeMixBar mix={assetTypeMix} />
 
         {/* Scope: split columns */}
         <div className="mt-10 reveal reveal-delay-1">

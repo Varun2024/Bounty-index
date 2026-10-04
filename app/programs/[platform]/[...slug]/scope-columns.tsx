@@ -1,6 +1,15 @@
+import Link from 'next/link';
 import { scopeHref, shortenIdentifier } from '@/lib/format';
 import { ExternalIcon } from '@/app/_ui/icons';
 import { SectionHeading } from '@/app/_ui/section-heading';
+
+// Pull a shareable domain root out of a wildcard identifier so each row can link to the
+// cross-program /scope/<domain> index. Narrow by design — only `*.foo.bar` matches, so we
+// never ship broken links from freeform scope strings.
+function wildcardRoot(identifier: string): string | null {
+  const m = identifier.match(/^\*\.([a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+)$/i);
+  return m ? m[1].toLowerCase() : null;
+}
 
 export interface TagProps {
   active?: boolean;
@@ -139,19 +148,37 @@ function ScopeList({ items, kind, showTypeTag }: ScopeListProps) {
 
   const renderRow = (s: ScopeItem, isLast: boolean) => {
     const href = scopeHref(s.identifier);
-    const rowClass = `flex items-center gap-3 px-4 py-3 md:py-2.5 ${isLast ? '' : 'border-b border-neutral-900'} hover:bg-neutral-900/40 active:bg-neutral-900/60 transition group`;
+    const scopeRoot = isIn ? wildcardRoot(s.identifier) : null;
+    const rowClass = `flex items-center gap-3 px-4 py-3 md:py-2.5 ${isLast ? '' : 'border-b border-neutral-900'} hover:bg-neutral-900/40 transition group`;
     const display = shortenIdentifier(s.identifier);
-    const body = (
-      <>
+    const codeClass = `mono text-xs break-all flex-1 ${href ? 'text-neutral-200 group-hover:text-emerald-300' : 'text-neutral-300'}`;
+    const codeTitle = display === s.identifier ? undefined : s.identifier;
+    return (
+      <li key={s.id} className={rowClass}>
         <span className={`mono text-sm ${glyphColor} shrink-0 w-3`}>{glyph}</span>
-        <code
-          title={display === s.identifier ? undefined : s.identifier}
-          className={`mono text-xs break-all flex-1 ${href ? 'text-neutral-200 group-hover:text-emerald-300' : 'text-neutral-300'}`}
-        >
-          {display}
-        </code>
-        {href && (
-          <ExternalIcon size={10} className="text-neutral-700 group-hover:text-emerald-400 shrink-0 transition" />
+        {href ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="flex-1 inline-flex items-center gap-2 min-w-0"
+            title={codeTitle}
+          >
+            <code className={codeClass}>{display}</code>
+            <ExternalIcon size={10} className="text-neutral-700 group-hover:text-emerald-400 shrink-0 transition" />
+          </a>
+        ) : (
+          <code title={codeTitle} className={codeClass}>{display}</code>
+        )}
+        {scopeRoot && (
+          <Link
+            href={`/scope/${encodeURIComponent(scopeRoot)}`}
+            prefetch={false}
+            className="mono text-[10px] uppercase tracking-widest text-neutral-600 hover:text-emerald-300 transition shrink-0 border border-neutral-800 hover:border-emerald-400/40 rounded px-1.5 py-0.5"
+            title={`See all programs touching ${scopeRoot}`}
+          >
+            scope
+          </Link>
         )}
         {showTypeTag && (
           <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 shrink-0">{s.assetType}</span>
@@ -159,14 +186,7 @@ function ScopeList({ items, kind, showTypeTag }: ScopeListProps) {
         {s.severity && (
           <span className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">· {s.severity}</span>
         )}
-      </>
-    );
-    return href ? (
-      <li key={s.id}>
-        <a href={href} target="_blank" rel="noreferrer noopener" className={rowClass}>{body}</a>
       </li>
-    ) : (
-      <li key={s.id} className={rowClass}>{body}</li>
     );
   };
 
