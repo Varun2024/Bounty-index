@@ -43,6 +43,12 @@ export function FinalCTA({ s }: FinalCTAProps) {
             check a domain
           </Link>
         </div>
+        <p className="mt-8 mono text-[11px] uppercase tracking-widest text-neutral-600">
+          curious how it&rsquo;s built?{' '}
+          <Link href="/how-it-works" className="text-neutral-400 hover:text-emerald-300 transition">
+            /how-it-works →
+          </Link>
+        </p>
       </div>
     </section>
   );
