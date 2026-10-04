@@ -49,9 +49,9 @@ export default async function PlatformLandingPage({ params }: PageProps) {
   const label = platformLabel(id);
   const dot = PLATFORM_META[id]?.dot ?? 'bg-neutral-500';
 
-  const [top, allOnPlatform, s] = await Promise.all([
+  // ponytail: listPrograms already returns `total` with the rows. Second count query dropped.
+  const [top, s] = await Promise.all([
     listPrograms({ platform: [id], sort: 'opportunity', pageSize: 10 }).catch(() => ({ rows: [], total: 0 })),
-    listPrograms({ platform: [id], pageSize: 1 }).catch(() => ({ rows: [], total: 0 })),
     stats().catch(() => null),
   ]);
 
@@ -60,7 +60,7 @@ export default async function PlatformLandingPage({ params }: PageProps) {
     .sort((a, b) => (b.maxBounty ?? 0) - (a.maxBounty ?? 0))
     .slice(0, 5);
 
-  const sharePct = s && s.programs > 0 ? Math.round((allOnPlatform.total / s.programs) * 100) : null;
+  const sharePct = s && s.programs > 0 ? Math.round((top.total / s.programs) * 100) : null;
 
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10">
@@ -80,7 +80,7 @@ export default async function PlatformLandingPage({ params }: PageProps) {
       </header>
 
       <section className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Stat label="programs" value={allOnPlatform.total.toLocaleString()} />
+        <Stat label="programs" value={top.total.toLocaleString()} />
         <Stat
           label="share of index"
           value={sharePct === null ? '—' : `${sharePct}%`}
@@ -100,7 +100,7 @@ export default async function PlatformLandingPage({ params }: PageProps) {
             href={`/programs?platform=${id}`}
             className="mono text-xs text-neutral-500 hover:text-emerald-300 transition"
           >
-            all {allOnPlatform.total.toLocaleString()} →
+            all {top.total.toLocaleString()} →
           </Link>
         </div>
         {top.rows.length === 0 ? (
