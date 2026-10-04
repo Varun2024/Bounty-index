@@ -19,12 +19,12 @@ interface SectionEyebrowProps {
 }
 
 export function SectionEyebrow({ n, label, centered }: SectionEyebrowProps) {
+  // ponytail: n intentionally unused now — kept in the props signature so callers don't
+  // need touching. Section numbering + § + / glyph read as AI slop; just the label stays.
+  void n;
   return (
-    <p className={`mono text-[10px] uppercase tracking-widest flex items-center gap-2 ${centered ? 'justify-center' : ''}`}>
-      <span className="text-neutral-700">§</span>
-      <span className="text-emerald-400 tabular-nums">{n}</span>
-      <span className="text-neutral-700">/</span>
-      <span className="text-neutral-500">{label}</span>
+    <p className={`mono text-[10px] uppercase tracking-widest text-neutral-500 ${centered ? 'text-center' : ''}`}>
+      {label}
     </p>
   );
 }

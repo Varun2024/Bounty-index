@@ -107,9 +107,9 @@ function TopPayoutsPanel({ top }: { top: Awaited<ReturnType<typeof topPayouts>> 
 
         <div className="flex items-center justify-between px-4 md:px-5 py-3 border-b border-neutral-900 gap-2">
           <div className="flex items-center gap-2 mono text-[10px] uppercase tracking-widest min-w-0">
-            <span className="text-neutral-600">§</span>
-            <span className="text-emerald-400 tabular-nums">TOP · 05</span>
-            <span className="text-neutral-500 truncate">payouts · right now</span>
+            <span className="text-emerald-400">Top 5 payouts</span>
+            <span className="text-neutral-700">·</span>
+            <span className="text-neutral-500 truncate">right now</span>
           </div>
           <Link href="/programs?sort=reward" className="mono text-[10px] uppercase tracking-widest text-neutral-500 hover:text-emerald-400 transition">
             all →

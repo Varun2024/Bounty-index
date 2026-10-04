@@ -37,7 +37,7 @@ export function Features({ s }: FeaturesProps) {
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent" />
             <div className="flex items-start justify-between">
               <div className="max-w-md">
-                <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">01 · index</p>
+                <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">index</p>
                 <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Unified index</h3>
                 <p className="text-neutral-400 mt-3 leading-relaxed">
                   One table. Six platforms. Sort by max reward or opportunity score, filter by asset type,
@@ -74,7 +74,7 @@ export function Features({ s }: FeaturesProps) {
           {/* Text-only medium card — scope lookup */}
           <Tilt className="col-span-6 md:col-span-2 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
-            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">02 · lookup</p>
+            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">lookup</p>
             <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Scope lookup</h3>
             <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
               Paste a domain. Instant verdict — in-scope somewhere, or not.
@@ -92,7 +92,7 @@ export function Features({ s }: FeaturesProps) {
           {/* Small card — opportunity score */}
           <Tilt className="col-span-6 md:col-span-2 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
-            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">03 · score</p>
+            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">score</p>
             <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Opportunity score</h3>
             <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
               A single 0–100 number. Payout, bounty vs VDP, freshness. The formula is public.
@@ -116,7 +116,7 @@ export function Features({ s }: FeaturesProps) {
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
             <div className="flex items-start justify-between">
               <div className="max-w-md">
-                <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">04 · feed</p>
+                <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">feed</p>
                 <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Log &amp; RSS</h3>
                 <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
                   New programs surface within an hour, grouped as a dated log. Subscribe by RSS or read the web view.

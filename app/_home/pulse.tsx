@@ -13,7 +13,7 @@ export function Pulse({ recent, trending }: PulseProps) {
     <section className="max-w-[1200px] mx-auto px-6 py-24">
       <div className="mb-12 flex items-end justify-between reveal">
         <div>
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">§ 03 · Pulse</p>
+          <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Pulse</p>
           <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What&apos;s moving now.</h2>
         </div>
         <Link
