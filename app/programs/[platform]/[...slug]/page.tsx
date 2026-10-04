@@ -140,7 +140,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Programs', item: `${siteUrl}/programs` },
-      { '@type': 'ListItem', position: 2, name: platformLabel(program.platform), item: `${siteUrl}/programs?platform=${encodedPlatform}` },
+      { '@type': 'ListItem', position: 2, name: platformLabel(program.platform), item: `${siteUrl}/platforms/${encodedPlatform}` },
       { '@type': 'ListItem', position: 3, name: program.name, item: `${siteUrl}/programs/${encodedPlatform}/${encodedSlug}` },
     ],
   };
@@ -156,7 +156,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         <div className="max-w-[1100px] mx-auto px-6 py-4 mono text-xs flex items-center gap-2">
           <Link href="/programs" className="text-neutral-500 hover:text-neutral-300 transition">programs</Link>
           <span className="text-neutral-700">/</span>
-          <Link href={`/programs?platform=${program.platform}`} className="text-neutral-500 hover:text-neutral-300 transition inline-flex items-center gap-1.5">
+          <Link href={`/platforms/${program.platform}`} className="text-neutral-500 hover:text-neutral-300 transition inline-flex items-center gap-1.5">
             <span className={`w-1.5 h-1.5 rounded-full ${platformDot}`} />
             {platformLabel(program.platform)}
           </Link>

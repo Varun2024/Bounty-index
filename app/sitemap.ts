@@ -1,7 +1,11 @@
 import type { MetadataRoute } from 'next';
+import { and, eq, ilike, sql } from 'drizzle-orm';
 import { db, schema } from '@/lib/db/client';
 
 export const revalidate = 3600;
+
+const SCOPE_SITEMAP_LIMIT = 500; // top-N wildcard roots; keeps sitemap under Google's 50k cap
+                                 // ponytail: single number, bump when it stops being enough
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
@@ -21,6 +25,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/mcp`, priority: 0.7 },
     { url: `${base}/compare`, priority: 0.6 },
     { url: `${base}/watchlist`, priority: 0.4 },
+    { url: `${base}/platforms/hackerone`, priority: 0.7 },
+    { url: `${base}/platforms/bugcrowd`, priority: 0.7 },
+    { url: `${base}/platforms/intigriti`, priority: 0.7 },
+    { url: `${base}/platforms/yeswehack`, priority: 0.7 },
+    { url: `${base}/platforms/federacy`, priority: 0.7 },
+    { url: `${base}/platforms/immunefi`, priority: 0.7 },
   ];
 
   try {
@@ -37,7 +47,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: r.updated ?? undefined,
       priority: 0.5,
     }));
-    return [...staticEntries, ...programEntries];
+
+    // Top wildcard roots → /scope/<root>. SQL does the extraction + count so we don't
+    // ship thousands of identifiers back to JS just to group them.
+    const scopeRows = await db
+      .select({
+        root: sql<string>`lower(substring(${schema.scopes.identifier} from 3))`,
+        n: sql<number>`count(*)::int`,
+      })
+      .from(schema.scopes)
+      .where(and(eq(schema.scopes.inScope, true), ilike(schema.scopes.identifier, '*.%')))
+      .groupBy(sql`lower(substring(${schema.scopes.identifier} from 3))`)
+      .orderBy(sql`count(*) DESC`)
+      .limit(SCOPE_SITEMAP_LIMIT);
+    const scopeEntries: MetadataRoute.Sitemap = scopeRows
+      .filter((r) => /^[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+$/.test(r.root))
+      .map((r) => ({ url: `${base}/scope/${encodeURIComponent(r.root)}`, priority: 0.5 }));
+
+    return [...staticEntries, ...programEntries, ...scopeEntries];
   } catch {
     return staticEntries;
   }
