@@ -4,6 +4,7 @@ import { Hero } from './_home/hero';
 import { Pulse } from './_home/pulse';
 import { Comparison } from './_home/comparison';
 import { Features } from './_home/features';
+import { Receipts } from './_home/receipts';
 import { FinalCTA } from './_home/final-cta';
 import { SectionOrnament } from './_home/shared';
 
@@ -28,6 +29,7 @@ export default async function Home() {
       <Features s={s} />
       <SectionOrnament />
       <Comparison />
+      <Receipts s={s} />
       <FinalCTA s={s} />
     </>
   );
