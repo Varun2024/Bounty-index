@@ -22,14 +22,26 @@ export async function UserMenu() {
           </span>
         </summary>
 
-        <div className="absolute right-0 top-full mt-2 w-60 rounded-xl border border-neutral-800 bg-neutral-950/95 backdrop-blur-md shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7)] overflow-hidden z-30">
+        <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-neutral-800 bg-neutral-950/95 backdrop-blur-md shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7)] overflow-hidden z-30">
+          <div className="px-3 pt-3 pb-1">
+            <p className="mono text-[10px] uppercase tracking-widest text-neutral-500">
+              no account needed
+            </p>
+          </div>
+          <ul className="pb-2">
+            <MenuLink href="/watchlist" icon="★" label="Watchlist" />
+            <MenuLink href="/compare" icon="◫" label="Compare" />
+          </ul>
           <form
             action={async () => {
               'use server';
               await signIn('github', { redirectTo: '/' });
             }}
-            className="p-3 border-b border-neutral-900"
+            className="p-3 border-t border-neutral-900"
           >
+            <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">
+              sync across devices
+            </p>
             <button
               type="submit"
               className="w-full mono text-xs px-3 py-2 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition focus-ring inline-flex items-center justify-center gap-2"
@@ -46,10 +58,6 @@ export async function UserMenu() {
               no emails. we literally don&rsquo;t ask.
             </p>
           </form>
-          <ul className="py-1">
-            <MenuLink href="/watchlist" icon="★" label="Watchlist" />
-            <MenuLink href="/compare" icon="◫" label="Compare" />
-          </ul>
         </div>
       </details>
     );
