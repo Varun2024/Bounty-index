@@ -7,6 +7,17 @@ interface FeaturesProps {
   s: Awaited<ReturnType<typeof stats>> | null;
 }
 
+function AxisPreview({ label, pct }: { label: string; pct: number }) {
+  return (
+    <div className="flex items-center gap-2 mono text-[10px] text-neutral-500">
+      <span className="w-10 uppercase tracking-widest">{label}</span>
+      <div className="flex-1 h-1 bg-neutral-900 rounded-full overflow-hidden">
+        <div className="h-full bg-emerald-400/80" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
 export function Features({ s }: FeaturesProps) {
   return (
     <section className="border-t border-neutral-900">
@@ -29,8 +40,8 @@ export function Features({ s }: FeaturesProps) {
                 <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">01 · index</p>
                 <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Unified index</h3>
                 <p className="text-neutral-400 mt-3 leading-relaxed">
-                  One table. Five platforms. Sort by max reward, filter by asset type, jump to the highest
-                  payouts first. {s ? `${s.bountyPrograms.toLocaleString()} of ${s.programs.toLocaleString()} pay in cash right now.` : ''}
+                  One table. Six platforms. Sort by max reward or opportunity score, filter by asset type,
+                  jump to the highest payouts first. {s ? `${s.bountyPrograms.toLocaleString()} of ${s.programs.toLocaleString()} pay in cash right now.` : ''}
                 </p>
               </div>
               <code className="mono text-[11px] text-neutral-600 group-hover:text-emerald-400 transition shrink-0">
@@ -69,35 +80,33 @@ export function Features({ s }: FeaturesProps) {
               Paste a domain. Instant verdict — in-scope somewhere, or not.
             </p>
             <div className="mt-8 mono text-xs">
-              <p className="text-neutral-500">$ lookup tesla.com</p>
+              <p className="text-neutral-500">$ /scope/tesla.com</p>
               <p className="text-emerald-300 mt-1">→ in scope · 2 programs</p>
             </div>
             <code className="mono text-[11px] text-neutral-600 group-hover:text-emerald-400 transition block mt-6">
-              /scope-lookup
+              /scope/&lt;domain&gt;
             </code>
           </div>
           </Tilt>
 
-          {/* Small card — keyboard */}
+          {/* Small card — opportunity score */}
           <Tilt className="col-span-6 md:col-span-2 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
-            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">03 · nav</p>
-            <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Keyboard-first</h3>
-            <div className="mt-6 flex flex-wrap gap-2 mono text-[11px]">
-              {[
-                { k: '/', d: 'search' },
-                { k: 'j k', d: 'move' },
-                { k: '↵', d: 'open' },
-                { k: 'esc', d: 'blur' },
-              ].map((x) => (
-                <span key={x.k} className="inline-flex items-center gap-2">
-                  <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-300">{x.k}</kbd>
-                  <span className="text-neutral-600">{x.d}</span>
-                </span>
-              ))}
+            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">03 · score</p>
+            <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Opportunity score</h3>
+            <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
+              A single 0–100 number. Payout, bounty vs VDP, freshness. The formula is public.
+            </p>
+            <div className="mt-6 flex items-center gap-3">
+              <span className="mono text-4xl font-semibold text-emerald-300 tabular-nums leading-none">87</span>
+              <div className="flex-1 space-y-1.5">
+                <AxisPreview label="payout" pct={85} />
+                <AxisPreview label="bounty" pct={100} />
+                <AxisPreview label="fresh" pct={70} />
+              </div>
             </div>
             <code className="mono text-[11px] text-neutral-600 group-hover:text-emerald-400 transition block mt-6">
-              anywhere
+              /how-scored
             </code>
           </div>
           </Tilt>
