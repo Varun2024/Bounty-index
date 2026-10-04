@@ -37,7 +37,13 @@ function cachedWithDates<Args extends any[], R>(
   keys: string[],
   opts: { revalidate: number; tags: string[] },
 ): (...args: Args) => Promise<R> {
-  return unstable_cache(async (...args: Args) => reviveDates(await fn(...args)), keys, opts);
+  // ponytail: reviver MUST run AFTER unstable_cache. The cache serializes its
+  // return value — Dates become strings in storage. Running revive inside the
+  // cached fn only helps the cache-miss path; cache HITs serve raw strings and
+  // crash the second visit. Wrapping outside makes every call pay the walk and
+  // every call get Dates.
+  const cached = unstable_cache(fn, keys, opts);
+  return async (...args: Args) => reviveDates(await cached(...args));
 }
 import { diffSnapshots, isEmptyDiff } from '../snapshots';
 import { opportunityScoreSql } from '../opportunity';
