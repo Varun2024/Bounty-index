@@ -69,8 +69,8 @@ export function ScopeColumn({ kind, items }: ScopeColumnProps) {
 
   return (
     <section>
-      <SectionHeading title={title}>
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
+      <SectionHeading title={title} variant={isIn ? 'prominent' : 'subtle'}>
+        <span className={`mono text-xs tabular-nums ${isIn ? 'text-neutral-400' : 'text-neutral-600 uppercase tracking-widest text-[10px]'}`}>
           {items.length.toString().padStart(3, '0')}
         </span>
       </SectionHeading>

@@ -18,6 +18,7 @@ import { CommunityReports } from '@/app/_ui/community-reports';
 import { ScopeColumn, Tag } from './scope-columns';
 import { ProgramTimeline } from './timeline';
 import { AtAGlance } from './at-a-glance';
+import { OpportunityBreakdown } from './opportunity-breakdown';
 import { RecentChanges } from './recent-changes';
 import { SimilarPrograms } from './similar-programs';
 import { CopyScope } from './copy-scope';
@@ -246,6 +247,14 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             {program.handle && program.handle !== program.slug && <Tag>@{program.handle}</Tag>}
           </div>
         </section>
+
+        <OpportunityBreakdown
+          program={{
+            maxBounty: program.maxBounty,
+            offersBounty: program.offersBounty,
+            lastUpdatedAt: program.lastUpdatedAt,
+          }}
+        />
 
         <AtAGlance
           inScopeCount={inScope.length}

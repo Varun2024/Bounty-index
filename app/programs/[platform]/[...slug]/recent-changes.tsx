@@ -30,9 +30,9 @@ export function RecentChanges({ snapshots, currency, limit = 5 }: RecentChangesP
 
   return (
     <section className="mt-10">
-      <SectionHeading title="Recent changes">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
-          {events.length.toString().padStart(2, '0')}
+      <SectionHeading title="Recent changes" variant="prominent">
+        <span className="mono text-xs text-neutral-400 tabular-nums">
+          {events.length.toString().padStart(2, '0')} events
         </span>
       </SectionHeading>
       {events.length === 0 ? (
