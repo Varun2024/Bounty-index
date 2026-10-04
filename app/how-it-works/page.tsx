@@ -20,7 +20,7 @@ const STAGES: Stage[] = [
     key: 'extract',
     eyebrow: '01 · extract',
     title: 'Pull',
-    body: 'Five platform JSONs fetched daily from arkadiyt/bounty-targets-data — HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy. One canonical upstream, no scraping.',
+    body: 'Six platform feeds fetched daily — HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy via arkadiyt/bounty-targets-data; Immunefi scraped directly. One pipeline, normalized.',
     detail: 'source · single mirror',
   },
   {
@@ -55,7 +55,7 @@ export default function HowItWorksPage() {
           How it&apos;s built.
         </h1>
         <p className="mt-6 text-neutral-400 text-lg max-w-2xl leading-relaxed">
-          One quiet daily job, indexed for scan speed. Every public bounty program on five platforms flows through
+          One quiet daily job, indexed for scan speed. Every public bounty program on six platforms flows through
           this pipeline into a single searchable index.
         </p>
       </header>
@@ -83,7 +83,7 @@ export default function HowItWorksPage() {
 
       <section className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10 reveal reveal-delay-3">
         <StackCol title="Data" items={[
-          ['arkadiyt/bounty-targets-data', 'upstream JSON mirror of five platforms'],
+          ['arkadiyt/bounty-targets-data', 'upstream JSON mirror of five platforms (+Immunefi scrape)'],
           ['SHA-256 content hashes', 'snapshot dedupe — sparse history'],
           ['program_snapshots', 'JSONB timeline per program'],
         ]} />

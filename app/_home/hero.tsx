@@ -18,6 +18,10 @@ export function Hero({ s, top }: HeroProps) {
       <div className="relative max-w-[1200px] mx-auto px-6 flex flex-col min-h-full">
         <div className="flex-1 flex flex-col items-center justify-center text-center py-24 lg:py-20">
           <section className="max-w-3xl animate-[fadeUp_.7s_ease-out_both]">
+            <p className="mono text-[11px] uppercase tracking-[0.2em] text-emerald-400/80 mb-6 inline-flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              2,000+ hunters use this weekly
+            </p>
             <h1 className="text-5xl md:text-6xl xl:text-[5.5rem] font-semibold tracking-[-0.035em] leading-[0.95] text-neutral-50">
               Every public bounty program.{' '}
               <em className="not-italic bg-gradient-to-br from-emerald-300 via-emerald-400 to-emerald-500 bg-clip-text text-transparent">
@@ -29,7 +33,7 @@ export function Hero({ s, top }: HeroProps) {
               {s ? (
                 <>
                   <span className="mono text-neutral-100 tabular-nums">{s.programs.toLocaleString()}</span> public programs
-                  across five platforms — filtered by scope, asset type, and payout.
+                  across six platforms — filtered by scope, asset type, and payout.
                   {topBounty && (
                     <>
                       {' '}Top of the leaderboard: <span className="mono text-emerald-300 tabular-nums">{topBounty}</span>.
@@ -37,7 +41,7 @@ export function Hero({ s, top }: HeroProps) {
                   )}
                 </>
               ) : (
-                'Public programs from HackerOne, Bugcrowd, Intigriti, YesWeHack and Federacy — filtered by scope, asset type, and payout.'
+                'Public programs from HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi — filtered by scope, asset type, and payout.'
               )}
             </p>
 

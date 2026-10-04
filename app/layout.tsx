@@ -19,14 +19,14 @@ const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin']
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   title: 'Bounty Index — every bug bounty program, filterable',
-  description: 'Every public bug bounty program on HackerOne, Bugcrowd, Intigriti, YesWeHack, and Federacy — filterable by scope, payout, and asset type.',
+  description: 'Every public bug bounty program on HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi — filterable by scope, payout, and asset type.',
   alternates: { canonical: '/' },
   verification: {
     google: 'npK_dP6YyX19gt_ROU1Riz9bMkua551DZF847Yx2xTQ',
   },
   openGraph: {
     title: 'bounty.index — every public bounty, one index',
-    description: 'Every public bug bounty program across five platforms — filterable by scope, payout, and asset type.',
+    description: 'Every public bug bounty program across six platforms — filterable by scope, payout, and asset type.',
     type: 'website',
     siteName: 'bounty.index',
     images: [{ url: '/og.jpg', width: 1200, height: 630, alt: 'bounty.index — every public bounty, one index' }],
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'bounty.index — every public bounty, one index',
-    description: 'Every public bug bounty program across five platforms.',
+    description: 'Every public bug bounty program across six platforms.',
     images: ['/og.jpg'],
   },
 };
@@ -46,7 +46,7 @@ const WEBSITE_LD = {
   '@type': 'WebSite',
   name: 'bounty.index',
   url: SITE_URL,
-  description: 'Aggregated index of every public bug bounty program across HackerOne, Bugcrowd, Intigriti, YesWeHack, and Federacy.',
+  description: 'Aggregated index of every public bug bounty program across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi.',
   potentialAction: {
     '@type': 'SearchAction',
     target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/programs?q={search_term_string}` },

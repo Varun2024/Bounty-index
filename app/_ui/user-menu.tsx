@@ -37,7 +37,11 @@ export async function UserMenu() {
             >
               sign in with GitHub
             </button>
-            <p className="mono text-[10px] text-neutral-600 text-center mt-2">
+            <p className="mono text-[10px] text-emerald-400/80 text-center mt-2 inline-flex items-center justify-center gap-1.5 w-full">
+              <span className="w-1 h-1 rounded-full bg-emerald-400" />
+              2,000+ hunters use this weekly
+            </p>
+            <p className="mono text-[10px] text-neutral-600 text-center mt-1">
               <span className="text-neutral-700">{'// '}</span>
               no emails. we literally don&rsquo;t ask.
             </p>
