@@ -47,9 +47,9 @@ export function Hero({ s, top }: HeroProps) {
               )}
             </div>
 
-            <h1 className="text-[2.75rem] sm:text-5xl md:text-6xl xl:text-[4.75rem] font-semibold tracking-[-0.035em] leading-[0.95] text-neutral-50">
+            <h1 className="normal-case text-[2.75rem] sm:text-5xl md:text-6xl xl:text-[4.75rem] font-semibold tracking-[-0.035em] leading-[0.95] text-neutral-50" style={{ textTransform: 'none', fontVariant: 'normal' }}>
               Every public bounty program.{' '}
-              <span className="font-light text-emerald-300">One index.</span>
+              <span className="font-light text-emerald-300" style={{ textTransform: 'none' }}>One index.</span>
             </h1>
 
             <p className="mt-8 text-base md:text-lg text-neutral-300 max-w-xl leading-relaxed">
