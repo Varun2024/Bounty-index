@@ -16,10 +16,22 @@ export function Hero({ s, top }: HeroProps) {
     <div className="relative overflow-hidden lg:min-h-[calc(100vh-3.5rem)]">
       <div className="parallax-slow absolute inset-0"><BackdropGrid /></div>
 
-      <div className="relative max-w-[1200px] mx-auto px-6 flex flex-col min-h-full">
-        <div className="flex-1 flex flex-col items-center text-center py-20 lg:py-16">
-          <section className="w-full max-w-3xl animate-[fadeUp_.7s_ease-out_both]">
-            <div className="flex items-center justify-center gap-3 mb-7 flex-wrap">
+      <div className="relative max-w-[1280px] mx-auto px-6 flex flex-col min-h-full">
+        <div className="flex-1 grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-14 items-center py-20 lg:py-16">
+          {/* LEFT — copy rail */}
+          <section className="relative animate-[fadeUp_.7s_ease-out_both]">
+            {/* Editorial side rail: thin vertical rule + tick marks, left-aligned */}
+            <div
+              aria-hidden
+              className="hidden lg:block absolute -left-6 top-2 bottom-2 w-px bg-neutral-900"
+            >
+              <span className="absolute -left-[3px] top-0 w-[7px] h-px bg-emerald-400" />
+              <span className="absolute -left-[2px] top-1/3 w-[5px] h-px bg-neutral-700" />
+              <span className="absolute -left-[2px] top-2/3 w-[5px] h-px bg-neutral-700" />
+              <span className="absolute -left-[3px] bottom-0 w-[7px] h-px bg-emerald-400" />
+            </div>
+
+            <div className="flex items-center gap-3 mb-7">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50 animate-ping" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
@@ -35,12 +47,12 @@ export function Hero({ s, top }: HeroProps) {
               )}
             </div>
 
-            <h1 className="text-[2.5rem] sm:text-5xl md:text-6xl xl:text-[4.5rem] font-medium tracking-[-0.025em] leading-[1.02] text-neutral-50">
+            <h1 className="text-[2.75rem] sm:text-5xl md:text-6xl xl:text-[4.75rem] font-semibold tracking-[-0.035em] leading-[0.95] text-neutral-50">
               Every public bounty program.{' '}
               <span className="font-light text-emerald-300">One index.</span>
             </h1>
 
-            <p className="mt-8 text-base md:text-lg text-neutral-300 max-w-xl mx-auto leading-relaxed">
+            <p className="mt-8 text-base md:text-lg text-neutral-300 max-w-xl leading-relaxed">
               {s ? (
                 <>
                   <span className="mono text-neutral-100 tabular-nums">{s.programs.toLocaleString()}</span> public programs
@@ -56,7 +68,7 @@ export function Hero({ s, top }: HeroProps) {
               )}
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-3 justify-center">
+            <div className="mt-9 flex flex-wrap gap-3">
               <Link
                 href="/programs"
                 className="cta-arrow mono text-sm px-5 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition focus-ring"
@@ -71,7 +83,8 @@ export function Hero({ s, top }: HeroProps) {
               </Link>
             </div>
 
-            <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-neutral-500">
+            {/* Micro-trust row — three concrete anchors, no padding filler */}
+            <ul className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-neutral-500">
               <li className="inline-flex items-center gap-2">
                 <span className="w-1 h-1 rounded-full bg-emerald-400/70" />
                 <span>free, no signup</span>
@@ -87,8 +100,9 @@ export function Hero({ s, top }: HeroProps) {
             </ul>
           </section>
 
+          {/* RIGHT — compact payouts board */}
           {top.length > 0 && (
-            <div className="mt-14 w-full max-w-2xl animate-[fadeUp_.9s_ease-out_.15s_both]">
+            <div className="w-full max-w-md lg:max-w-none lg:ml-auto lg:w-[26rem] xl:w-[28rem] animate-[fadeUp_.9s_ease-out_.15s_both]">
               <TopPayoutsPanel top={top} />
             </div>
           )}
