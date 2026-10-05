@@ -13,7 +13,7 @@ export function Pulse({ recent, trending }: PulseProps) {
     <section className="max-w-[1200px] mx-auto px-6 py-24">
       <div className="mb-12 flex items-end justify-between reveal">
         <div>
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Pulse</p>
+          <p className="text-sm text-neutral-500 mb-2">Pulse</p>
           <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What&apos;s moving now.</h2>
         </div>
         <Link
@@ -61,8 +61,8 @@ function PulsePanel({ eyebrow, hint, empty, children }: PulsePanelProps) {
   return (
     <div className="border border-neutral-900 rounded-xl bg-neutral-950/50 overflow-hidden reveal reveal-delay-1">
       <div className="flex items-center justify-between px-5 py-3 border-b border-neutral-900 bg-neutral-950/70">
-        <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">{eyebrow}</p>
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-600">{hint}</p>
+        <p className="text-xs text-emerald-300">{eyebrow}</p>
+        <p className="text-xs text-neutral-500">{hint}</p>
       </div>
       {items.length === 0 ? (
         <div className="p-6 mono text-xs text-neutral-600">— {empty} —</div>

@@ -9,10 +9,6 @@ interface FinalCTAProps {
 export function FinalCTA({ s }: FinalCTAProps) {
   return (
     <section className="border-t border-neutral-900 relative overflow-hidden">
-      <div
-        className="absolute pointer-events-none inset-x-0 -bottom-40 h-80 opacity-30"
-        style={{ background: 'radial-gradient(ellipse 60% 100% at 50% 100%, #34d399 0%, transparent 70%)' }}
-      />
       <div className="relative max-w-[1200px] mx-auto px-6 py-28 text-center">
         <SectionEyebrow n="04" label="Start hunting" centered />
         <h2 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight text-neutral-50 max-w-3xl mx-auto leading-[1]">
@@ -26,7 +22,7 @@ export function FinalCTA({ s }: FinalCTAProps) {
             'Start hunting.'
           )}
         </h2>
-        <p className="text-neutral-400 mt-8 max-w-lg mx-auto">
+        <p className="text-neutral-300 mt-8 max-w-lg mx-auto">
           Filter the list, save an RSS, find the ones that fit your stack.
         </p>
         <div className="mt-10 flex flex-wrap gap-3 justify-center">
@@ -43,10 +39,10 @@ export function FinalCTA({ s }: FinalCTAProps) {
             check a domain
           </Link>
         </div>
-        <p className="mt-8 mono text-[11px] uppercase tracking-widest text-neutral-600">
-          curious how it&rsquo;s built?{' '}
-          <Link href="/how-it-works" className="text-neutral-400 hover:text-emerald-300 transition">
-            /how-it-works →
+        <p className="mt-8 text-sm text-neutral-400">
+          Curious how it&rsquo;s built?{' '}
+          <Link href="/how-it-works" className="text-neutral-200 hover:text-emerald-300 transition underline underline-offset-4 decoration-neutral-700">
+            how it works →
           </Link>
         </p>
       </div>

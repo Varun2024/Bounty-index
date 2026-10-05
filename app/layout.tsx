@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import Link from 'next/link';
 import Image from 'next/image';
 import './globals.css';
@@ -12,9 +11,6 @@ import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
 import { DegradedBanner } from './_ui/degraded-banner';
 import { Analytics } from '@vercel/analytics/next';
-
-const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
-const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
@@ -69,7 +65,7 @@ interface RootLayoutProps {
 function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-4">{title}</p>
+      <p className="text-sm text-neutral-400 mb-4">{title}</p>
       <ul className="space-y-2.5">{children}</ul>
     </div>
   );
@@ -114,7 +110,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
+    <html lang="en" className="h-full antialiased dark">
       <body className="min-h-full flex flex-col bg-[#0a0a0b] text-neutral-200 font-sans">
         <script
           type="application/ld+json"
@@ -164,7 +160,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         {/* Featured-on strip. Keeps badges out of the footer, breathes on all screen sizes. */}
         <section className="border-t border-neutral-900 bg-neutral-950/40">
           <div className="max-w-[1400px] mx-auto px-6 py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">
+            <p className="text-sm text-neutral-400 shrink-0">
               Featured on
             </p>
             <div className="flex flex-wrap items-center gap-x-8 gap-y-4 md:justify-end">
@@ -220,7 +216,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         {/* Follow strip: single-line CTA for updates. Kept above the footer grid so it doesn't compete with the nav columns. */}
         <section className="border-t border-neutral-900 bg-gradient-to-b from-neutral-950/60 to-transparent">
           <div className="max-w-[1400px] mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-3 text-center">
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-500">
+            <span className="text-sm text-neutral-400">
               Ship notes · new platforms · outages
             </span>
             <a
@@ -238,10 +234,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </section>
 
         <footer className="border-t border-neutral-900 relative overflow-hidden">
-          <div
-            className="absolute pointer-events-none inset-x-0 -top-20 h-40 opacity-25"
-            style={{ background: 'radial-gradient(ellipse 50% 100% at 50% 0%, #34d399 0%, transparent 70%)' }}
-          />
           <div className="relative max-w-[1400px] mx-auto px-6 pt-16 pb-10">
             <div className="grid grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-10">
               <div>

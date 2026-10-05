@@ -16,20 +16,18 @@ export function Hero({ s, top }: HeroProps) {
       <div className="parallax-fast absolute inset-0"><BackdropGlow /></div>
 
       <div className="relative max-w-[1200px] mx-auto px-6 flex flex-col min-h-full">
-        <div className="flex-1 flex flex-col items-center justify-center text-center py-24 lg:py-20">
+        <div className="flex-1 flex flex-col items-start justify-center py-24 lg:py-20">
           <section className="max-w-3xl animate-[fadeUp_.7s_ease-out_both]">
-            <p className="mono text-[11px] uppercase tracking-[0.2em] text-emerald-400/80 mb-6 inline-flex items-center gap-2">
+            <p className="text-sm text-emerald-300 mb-6 inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               2,000+ hunters use this weekly
             </p>
             <h1 className="text-5xl md:text-6xl xl:text-[5.5rem] font-semibold tracking-[-0.035em] leading-[0.95] text-neutral-50">
               Every public bounty program.{' '}
-              <em className="not-italic bg-gradient-to-br from-emerald-300 via-emerald-400 to-emerald-500 bg-clip-text text-transparent">
-                One index.
-              </em>
+              <span className="font-light text-emerald-300">One index.</span>
             </h1>
 
-            <p className="mt-10 text-base md:text-lg text-neutral-400 max-w-xl mx-auto leading-relaxed">
+            <p className="mt-10 text-base md:text-lg text-neutral-300 max-w-xl leading-relaxed">
               {s ? (
                 <>
                   <span className="mono text-neutral-100 tabular-nums">{s.programs.toLocaleString()}</span> public programs
@@ -45,7 +43,7 @@ export function Hero({ s, top }: HeroProps) {
               )}
             </p>
 
-            <div className="mt-10 flex flex-wrap gap-3 justify-center">
+            <div className="mt-10 flex flex-wrap gap-3">
               <Link
                 href="/programs"
                 className="cta-arrow mono text-sm px-5 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition shadow-[0_0_50px_-8px] shadow-emerald-400/70 focus-ring"
@@ -62,7 +60,7 @@ export function Hero({ s, top }: HeroProps) {
           </section>
 
           {top.length > 0 && (
-            <div className="mt-16 w-full max-w-4xl animate-[fadeUp_.9s_ease-out_.15s_both]">
+            <div className="mt-16 w-full max-w-4xl self-stretch animate-[fadeUp_.9s_ease-out_.15s_both]">
               <TopPayoutsPanel top={top} />
             </div>
           )}
@@ -106,12 +104,12 @@ function TopPayoutsPanel({ top }: { top: Awaited<ReturnType<typeof topPayouts>> 
         <div className="absolute inset-x-0 top-[38px] h-px bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent" />
 
         <div className="flex items-center justify-between px-4 md:px-5 py-3 border-b border-neutral-900 gap-2">
-          <div className="flex items-center gap-2 mono text-[10px] uppercase tracking-widest min-w-0">
-            <span className="text-emerald-400">Top 5 payouts</span>
+          <div className="flex items-center gap-2 text-xs min-w-0">
+            <span className="text-emerald-300">Top 5 payouts</span>
             <span className="text-neutral-700">·</span>
-            <span className="text-neutral-500 truncate">right now</span>
+            <span className="text-neutral-400 truncate">right now</span>
           </div>
-          <Link href="/programs?sort=reward" className="mono text-[10px] uppercase tracking-widest text-neutral-500 hover:text-emerald-400 transition">
+          <Link href="/programs?sort=reward" className="text-xs text-neutral-400 hover:text-emerald-300 transition">
             all →
           </Link>
         </div>

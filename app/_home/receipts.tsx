@@ -13,13 +13,11 @@ export function Receipts({ s }: ReceiptsProps) {
     <section className="border-t border-neutral-900">
       <div className="max-w-[1200px] mx-auto px-6 py-24">
         <div className="reveal">
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
-            Receipts
-          </p>
+          <p className="text-sm text-neutral-500 mb-3">Receipts</p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50 max-w-2xl">
             Why trust this.
           </h2>
-          <p className="text-neutral-400 mt-4 max-w-xl leading-relaxed">
+          <p className="text-neutral-300 mt-4 max-w-xl leading-relaxed">
             No funnel, no VC, no dark pattern. Everything load-bearing is public and verifiable.
           </p>
         </div>
@@ -55,9 +53,7 @@ export function Receipts({ s }: ReceiptsProps) {
         <div className="mt-16 border border-neutral-900 rounded-2xl bg-neutral-950/40 p-6 md:p-8 reveal reveal-delay-2">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="max-w-xl">
-              <p className="mono text-[10px] uppercase tracking-widest text-emerald-400 mb-2">
-                Who runs this
-              </p>
+              <p className="text-sm text-emerald-300 mb-2">Who runs this</p>
               <p className="text-neutral-200 leading-relaxed">
                 Built and maintained by{' '}
                 <a
@@ -117,8 +113,8 @@ function Row({ label, value, desc, href, external }: RowProps) {
   const inner = (
     <div className="border border-neutral-900 rounded-xl bg-neutral-950/40 hover:border-neutral-800 transition group p-6 h-full">
       <div className="flex items-baseline justify-between gap-4 mb-3">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-500">{label}</span>
-        <span className="mono text-[11px] text-emerald-400/80 group-hover:text-emerald-300 transition truncate">
+        <span className="text-xs text-neutral-400">{label}</span>
+        <span className="mono text-[11px] text-emerald-300 group-hover:text-emerald-200 transition truncate">
           {value}
         </span>
       </div>

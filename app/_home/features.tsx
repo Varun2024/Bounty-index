@@ -9,8 +9,8 @@ interface FeaturesProps {
 
 function AxisPreview({ label, pct }: { label: string; pct: number }) {
   return (
-    <div className="flex items-center gap-2 mono text-[10px] text-neutral-500">
-      <span className="w-10 uppercase tracking-widest">{label}</span>
+    <div className="flex items-center gap-2 text-xs text-neutral-400">
+      <span className="w-10">{label}</span>
       <div className="flex-1 h-1 bg-neutral-900 rounded-full overflow-hidden">
         <div className="h-full bg-emerald-400/80" style={{ width: `${pct}%` }} />
       </div>
@@ -37,7 +37,7 @@ export function Features({ s }: FeaturesProps) {
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent" />
             <div className="flex items-start justify-between">
               <div className="max-w-md">
-                <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">index</p>
+                <p className="text-sm text-emerald-300">Index</p>
                 <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Unified index</h3>
                 <p className="text-neutral-400 mt-3 leading-relaxed">
                   One table. Six platforms. Sort by max reward or opportunity score, filter by asset type,
@@ -50,7 +50,7 @@ export function Features({ s }: FeaturesProps) {
             </div>
             {/* Mini table preview */}
             <div className="mt-6 border border-neutral-900 rounded-lg bg-neutral-950/60 overflow-hidden">
-              <div className="mono text-[10px] uppercase tracking-widest text-neutral-600 px-4 py-2 border-b border-neutral-900 flex justify-between">
+              <div className="text-xs text-neutral-500 px-4 py-2 border-b border-neutral-900 flex justify-between">
                 <span>Program</span>
                 <span>Max reward</span>
               </div>
@@ -74,7 +74,7 @@ export function Features({ s }: FeaturesProps) {
           {/* Text-only medium card — scope lookup */}
           <Tilt className="col-span-6 md:col-span-2 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
-            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">lookup</p>
+            <p className="text-sm text-emerald-300">Lookup</p>
             <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Scope lookup</h3>
             <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
               Paste a domain. Instant verdict — in-scope somewhere, or not.
@@ -92,7 +92,7 @@ export function Features({ s }: FeaturesProps) {
           {/* Small card — opportunity score */}
           <Tilt className="col-span-6 md:col-span-2 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
-            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">score</p>
+            <p className="text-sm text-emerald-300">Score</p>
             <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Opportunity score</h3>
             <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
               A single 0–100 number. Payout, bounty vs VDP, freshness. The formula is public.
@@ -116,7 +116,7 @@ export function Features({ s }: FeaturesProps) {
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
             <div className="flex items-start justify-between">
               <div className="max-w-md">
-                <p className="mono text-[10px] uppercase tracking-widest text-emerald-400">feed</p>
+                <p className="text-sm text-emerald-300">Feed</p>
                 <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Log &amp; RSS</h3>
                 <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
                   New programs surface within an hour, grouped as a dated log. Subscribe by RSS or read the web view.

@@ -19,11 +19,9 @@ interface SectionEyebrowProps {
 }
 
 export function SectionEyebrow({ n, label, centered }: SectionEyebrowProps) {
-  // ponytail: n intentionally unused now — kept in the props signature so callers don't
-  // need touching. Section numbering + § + / glyph read as AI slop; just the label stays.
   void n;
   return (
-    <p className={`mono text-[10px] uppercase tracking-widest text-neutral-500 ${centered ? 'text-center' : ''}`}>
+    <p className={`text-sm text-neutral-500 ${centered ? 'text-center' : ''}`}>
       {label}
     </p>
   );
@@ -66,16 +64,6 @@ export function BackdropGrid() {
 }
 
 export function BackdropGlow() {
-  return (
-    <>
-      <div
-        className="absolute pointer-events-none -top-32 -left-20 w-[640px] h-[640px] rounded-full opacity-[0.22] blur-[130px]"
-        style={{ background: 'radial-gradient(circle, #34d399 0%, transparent 60%)' }}
-      />
-      <div
-        className="absolute pointer-events-none top-32 right-0 w-[560px] h-[560px] rounded-full opacity-[0.08] blur-[140px]"
-        style={{ background: 'radial-gradient(circle, #34d399 0%, transparent 65%)' }}
-      />
-    </>
-  );
+  // ponytail: aurora blobs removed per slop audit. Grid backdrop carries the atmosphere now.
+  return null;
 }
