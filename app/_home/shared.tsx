@@ -52,10 +52,10 @@ export function Stat({ label, value, accent, muted }: StatProps) {
 export function BackdropGrid() {
   return (
     <div
-      className="absolute inset-0 pointer-events-none opacity-[0.4]"
+      className="absolute inset-0 pointer-events-none opacity-[0.5] [--grid-line:rgba(255,255,255,0.03)] [@media(prefers-color-scheme:light)]:[--grid-line:rgba(0,0,0,0.045)]"
       style={{
         backgroundImage:
-          'linear-gradient(to right, rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.028) 1px, transparent 1px)',
+          'linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px)',
         backgroundSize: '56px 56px',
         maskImage: 'radial-gradient(ellipse 80% 55% at 40% 30%, black 30%, transparent 100%)',
       }}

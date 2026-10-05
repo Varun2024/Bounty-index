@@ -110,8 +110,8 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className="h-full antialiased dark">
-      <body className="min-h-full flex flex-col bg-[#0a0a0b] text-neutral-200 font-sans">
+    <html lang="en" className="h-full antialiased">
+      <body className="min-h-full flex flex-col bg-background text-neutral-200 font-sans">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }}
@@ -121,7 +121,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_LD) }}
         />
         <SessionProvider>
-        <header className="sticky top-0 z-20 backdrop-blur-md bg-[#0a0a0b]/80 border-b border-neutral-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <header className="sticky top-0 z-20 backdrop-blur-md bg-background/80 border-b border-neutral-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
             <Link href="/" className="mono text-sm tracking-tight flex items-center gap-2.5 group focus-ring rounded-md py-1 -my-1">
               <Logo size={22} className="text-neutral-500 group-hover:text-neutral-300 transition" />

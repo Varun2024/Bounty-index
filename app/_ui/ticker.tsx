@@ -15,8 +15,8 @@ export async function Ticker() {
 
   return (
     <div className="border-y border-neutral-900 bg-neutral-950/60 overflow-hidden relative">
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-[#0a0a0b] to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-[#0a0a0b] to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-background to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-background to-transparent" />
       <div className="flex items-center gap-4 md:gap-6 px-4 md:px-8 py-4 md:py-5 mono text-xs text-neutral-500">
         <span className="mono text-[10px] uppercase tracking-widest text-emerald-400 shrink-0 inline-flex items-center gap-2">
           <span className="relative flex h-1.5 w-1.5">
