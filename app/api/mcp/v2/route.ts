@@ -184,30 +184,35 @@ const handler = createMcpHandler(
         description:
           'Sort by opportunity score to surface high-payout, broad-scope programs matching an asset type.',
         argsSchema: z.object({
-          minReward: z.number().int().nonnegative().describe('Minimum max-bounty in USD, e.g. 10000.'),
+          // Prompt args are strings on the wire; coerce.
+          minReward: z.string().describe('Minimum max-bounty in USD, e.g. "10000".'),
           assetType: z.string().optional().describe('Optional, e.g. "wildcard", "api", "smart_contract".'),
-          limit: z.number().int().positive().max(50).optional(),
+          limit: z.string().optional().describe('Max results. Default "10", max "50".'),
         }),
       },
-      ({ minReward, assetType, limit }) => ({
-        messages: [
-          {
-            role: 'user' as const,
-            content: {
-              type: 'text' as const,
-              text:
-                `Find high-paying programs with search_programs. Use:\n` +
-                `  minReward: ${minReward}\n` +
-                `  hasBounty: true\n` +
-                (assetType ? `  assetType: ["${assetType}"]\n` : '') +
-                `  sort: "opportunity"\n` +
-                `  pageSize: ${limit ?? 10}\n\n` +
-                `Return a ranked list: name · platform · max bounty · safe-harbor · bountyIndexUrl. ` +
-                `Then call get_program on the top 3 and summarize their in-scope wildcards.`,
+      ({ minReward, assetType, limit }) => {
+        const min = Math.max(0, parseInt(minReward, 10) || 0);
+        const n = Math.min(50, Math.max(1, parseInt(limit ?? '10', 10) || 10));
+        return {
+          messages: [
+            {
+              role: 'user' as const,
+              content: {
+                type: 'text' as const,
+                text:
+                  `Find high-paying programs with search_programs. Use:\n` +
+                  `  minReward: ${min}\n` +
+                  `  hasBounty: true\n` +
+                  (assetType ? `  assetType: ["${assetType}"]\n` : '') +
+                  `  sort: "opportunity"\n` +
+                  `  pageSize: ${n}\n\n` +
+                  `Return a ranked list: name · platform · max bounty · safe-harbor · bountyIndexUrl. ` +
+                  `Then call get_program on the top 3 and summarize their in-scope wildcards.`,
+              },
             },
-          },
-        ],
-      }),
+          ],
+        };
+      },
     );
 
     server.registerPrompt(
@@ -217,11 +222,11 @@ const handler = createMcpHandler(
         description:
           'Summarize scope / reward / safe-harbor changes over a rolling window, grouped by platform.',
         argsSchema: z.object({
-          days: z.number().int().positive().max(30).optional().describe('Window in days. Default 7.'),
+          days: z.string().optional().describe('Window in days. Default "7", max "30".'),
         }),
       },
       ({ days }) => {
-        const d = days ?? 7;
+        const d = Math.min(30, Math.max(1, parseInt(days ?? '7', 10) || 7));
         return {
           messages: [
             {
