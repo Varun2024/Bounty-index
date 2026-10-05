@@ -5,7 +5,6 @@ import { Pulse } from './_home/pulse';
 import { Comparison } from './_home/comparison';
 import { Features } from './_home/features';
 import { Receipts } from './_home/receipts';
-import { HowItWorks } from './_home/how-it-works';
 import { FinalCTA } from './_home/final-cta';
 import { SectionOrnament } from './_home/shared';
 
@@ -30,7 +29,6 @@ export default async function Home() {
       <SectionOrnament />
       <Comparison />
       <Receipts s={s} />
-      <HowItWorks />
       <FinalCTA s={s} />
     </>
   );

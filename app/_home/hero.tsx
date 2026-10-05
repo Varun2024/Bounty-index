@@ -17,7 +17,8 @@ export function Hero({ s, top }: HeroProps) {
       <div className="parallax-slow absolute inset-0"><BackdropGrid /></div>
 
       <div className="relative max-w-[1280px] mx-auto px-6 flex flex-col min-h-full">
-        <div className="flex-1 grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-14 items-center justify-items-center lg:justify-items-stretch py-20 lg:py-16">
+        <div className="flex-1 flex items-center py-20 lg:py-24">
+        <div className="w-full grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-14 items-center justify-items-center lg:justify-items-stretch">
           <section className="relative text-center lg:text-left animate-[fadeUp_.7s_ease-out_both]">
             <div className="flex items-center justify-center lg:justify-start gap-3 mb-7 flex-wrap">
               <span className="relative flex h-2 w-2">
@@ -94,9 +95,10 @@ export function Hero({ s, top }: HeroProps) {
             </div>
           )}
         </div>
+        </div>
 
         {s && (
-          <div className="pb-12 pt-8 border-t border-neutral-900/70 animate-[fadeUp_1.1s_ease-out_.3s_both]">
+          <div className="pb-16 pt-10 border-t border-neutral-900/70 animate-[fadeUp_1.1s_ease-out_.3s_both]">
             <dl className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-6 text-left">
               <Stat label="Programs" value={s.programs.toLocaleString()} />
               <Stat label="Paying bounties" value={s.bountyPrograms.toLocaleString()} accent />
