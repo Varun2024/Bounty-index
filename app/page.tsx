@@ -5,13 +5,13 @@ import { Pulse } from './_home/pulse';
 import { Comparison } from './_home/comparison';
 import { Features } from './_home/features';
 import { Receipts } from './_home/receipts';
+import { HowItWorks } from './_home/how-it-works';
 import { FinalCTA } from './_home/final-cta';
 import { SectionOrnament } from './_home/shared';
 
 export const dynamic = 'force-dynamic';
 
-// Order is value-first: pitch → prove with live data → feature detail → why-not-them → convert.
-// HowItWorks lives at /how-it-works for anyone who wants the architecture story.
+// Order is value-first: pitch → prove with live data → feature detail → why-not-them → trust → how → convert.
 export default async function Home() {
   const [s, top, recent, trending] = await Promise.all([
     stats().catch(() => null),
@@ -30,6 +30,7 @@ export default async function Home() {
       <SectionOrnament />
       <Comparison />
       <Receipts s={s} />
+      <HowItWorks />
       <FinalCTA s={s} />
     </>
   );

@@ -11,6 +11,9 @@ import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
 import { DegradedBanner } from './_ui/degraded-banner';
 import { Analytics } from '@vercel/analytics/next';
+import { ThemeToggle } from './_ui/theme-toggle';
+
+const THEME_INIT = `(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'){document.documentElement.classList.add(t);}}catch(e){}})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
@@ -111,6 +114,9 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="h-full antialiased">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-neutral-200 font-sans">
         <script
           type="application/ld+json"
@@ -143,7 +149,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
                 <span>to search</span>
               </span>
-              <span className="ml-1.5 md:ml-3 md:pl-3 md:border-l md:border-neutral-800 inline-flex items-center">
+              <span className="ml-1.5 md:ml-3 md:pl-3 md:border-l md:border-neutral-800 inline-flex items-center gap-2">
+                <ThemeToggle />
                 <UserMenu />
               </span>
             </div>

@@ -20,12 +20,42 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 }
 
-/* Light mode via system preference. We invert the neutral palette so every
-   bg-neutral-950 / text-neutral-50 utility flips to its light counterpart
-   without touching 833 occurrences across the codebase. Emerald accent
-   darkens for contrast on white. */
+/* Light-mode palette. Invert the neutral scale so every bg-neutral-950 /
+   text-neutral-50 utility flips without touching 833 call sites.
+   Applies when the user explicitly picks `.light`, OR when the system
+   prefers light and the user hasn't explicitly picked `.dark`. */
+html { color-scheme: light dark; }
+
+html.light,
+html:not(.dark):where([data-system-light]) {
+  /* placeholder — rules below set it. The actual trigger is html.light
+     or the @media block. We keep this selector so the group reads clearly. */
+}
+
+html.light {
+  --background: #fafaf9;
+  --foreground: #171717;
+  --accent: #059669;
+  --accent-strong: #047857;
+  --border: #e5e5e5;
+
+  --color-neutral-50:  #0a0a0a;
+  --color-neutral-100: #171717;
+  --color-neutral-200: #262626;
+  --color-neutral-300: #404040;
+  --color-neutral-400: #525252;
+  --color-neutral-600: #a3a3a3;
+  --color-neutral-700: #d4d4d4;
+  --color-neutral-800: #e5e5e5;
+  --color-neutral-900: #ececec;
+  --color-neutral-950: #f5f5f4;
+
+  --color-emerald-200: #065f46;
+  --color-emerald-300: #047857;
+  --color-emerald-400: #059669;
+}
 @media (prefers-color-scheme: light) {
-  :root {
+  html:not(.dark) {
     --background: #fafaf9;
     --foreground: #171717;
     --accent: #059669;
@@ -47,7 +77,6 @@
     --color-emerald-300: #047857;
     --color-emerald-400: #059669;
   }
-  ::selection { background: rgba(5, 150, 105, 0.22); color: #0a0a0a; }
 }
 
 html, body {

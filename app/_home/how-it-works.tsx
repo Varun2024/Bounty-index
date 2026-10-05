@@ -49,7 +49,7 @@ export function HowItWorks() {
                   <div className={rightAligned ? 'md:col-start-2 md:pl-16' : 'md:pr-16'}>
                     <div className="flex items-baseline gap-3 mb-4">
                       <span className="mono text-5xl md:text-6xl text-neutral-800 tabular-nums font-semibold">{step.n}</span>
-                      <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">step</span>
+                      <span className="text-xs text-neutral-500">step</span>
                     </div>
                     <h3 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">{step.title}</h3>
                     <p className="text-neutral-400 mt-4 max-w-md leading-relaxed">{step.body}</p>
