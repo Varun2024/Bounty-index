@@ -34,7 +34,6 @@ export function Features({ s }: FeaturesProps) {
           {/* Big card — unified index */}
           <Tilt className="col-span-6 md:col-span-4 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition relative overflow-hidden group h-full">
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent" />
             <div className="flex items-start justify-between">
               <div className="max-w-md">
                 <p className="text-sm text-emerald-300">Index</p>
@@ -130,17 +129,17 @@ export function Features({ s }: FeaturesProps) {
               <div className="flex items-center gap-3 text-neutral-500">
                 <span className="text-neutral-700">2026-08-03</span>
                 <span className="text-neutral-300">OpenSea</span>
-                <span className="text-emerald-300 text-[10px] uppercase tracking-widest">new</span>
+                <span className="text-emerald-300 text-[11px]">new</span>
               </div>
               <div className="flex items-center gap-3 text-neutral-500">
                 <span className="text-neutral-700">2026-08-03</span>
                 <span className="text-neutral-300">Fireblocks MPC</span>
-                <span className="text-emerald-300 text-[10px] uppercase tracking-widest">new</span>
+                <span className="text-emerald-300 text-[11px]">new</span>
               </div>
               <div className="flex items-center gap-3 text-neutral-500">
                 <span className="text-neutral-700">2026-08-02</span>
                 <span className="text-neutral-300">Twilio</span>
-                <span className="text-neutral-600 text-[10px] uppercase tracking-widest">scope+</span>
+                <span className="text-neutral-600 text-[11px]">scope+</span>
               </div>
             </div>
           </div>

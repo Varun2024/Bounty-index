@@ -1,15 +1,9 @@
 // Shared bits used by multiple landing sections. Extracted from the old monolithic page.tsx.
 
 export function SectionOrnament() {
-  return (
-    <div className="relative h-0 pointer-events-none">
-      <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3">
-        <span className="block w-16 h-px bg-gradient-to-l from-neutral-800 to-transparent" />
-        <span className="w-1.5 h-1.5 rotate-45 bg-emerald-400/60 shadow-[0_0_12px] shadow-emerald-400/60" />
-        <span className="block w-16 h-px bg-gradient-to-r from-neutral-800 to-transparent" />
-      </div>
-    </div>
-  );
+  // ponytail: removed per slop audit — gradient hairlines + colored shadow.
+  // The section borders already carry the separation.
+  return null;
 }
 
 interface SectionEyebrowProps {
@@ -37,7 +31,7 @@ interface StatProps {
 export function Stat({ label, value, accent, muted }: StatProps) {
   return (
     <div>
-      <dt className="mono text-[10px] uppercase tracking-widest text-neutral-500">{label}</dt>
+      <dt className="text-xs text-neutral-400">{label}</dt>
       <dd
         className={`text-xl md:text-2xl font-semibold mt-1.5 mono tabular-nums ${
           accent ? 'text-emerald-400' : muted ? 'text-neutral-400' : 'text-neutral-100'

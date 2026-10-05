@@ -20,13 +20,6 @@ export function Comparison() {
   ];
   return (
     <section className="border-t border-neutral-900 bg-neutral-950/40 relative">
-      <div
-        className="absolute pointer-events-none inset-0 opacity-30"
-        style={{
-          backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px)',
-          backgroundSize: '80px 80px',
-        }}
-      />
       <div className="relative max-w-[1200px] mx-auto px-6 py-28">
         <div className="reveal">
           <SectionEyebrow n="02" label="Why this exists" />
@@ -65,7 +58,7 @@ export function Comparison() {
                   { k: 'Keyboard nav', v: r.keyboard },
                 ].map((cell) => (
                   <div key={cell.k} className="flex items-center justify-between px-4 py-2.5">
-                    <dt className="mono text-[10px] uppercase tracking-widest text-neutral-500">{cell.k}</dt>
+                    <dt className="text-xs text-neutral-400">{cell.k}</dt>
                     <dd className={`mono text-xs ${cellColor(cell.v, r.active)}`}>{cell.v}</dd>
                   </div>
                 ))}
@@ -76,7 +69,7 @@ export function Comparison() {
 
         {/* Desktop: table */}
         <div className="mt-14 border border-neutral-900 rounded-xl overflow-hidden bg-neutral-950/60 hidden md:block">
-          <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_1.1fr_1fr] mono text-[10px] uppercase tracking-widest text-neutral-500 border-b border-neutral-900 bg-neutral-950">
+          <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_1.1fr_1fr] text-xs text-neutral-400 border-b border-neutral-900 bg-neutral-950">
             <div className="px-5 py-3.5">Source</div>
             <div className="px-4 py-3.5">Coverage</div>
             <div className="px-4 py-3.5">Sort by payout</div>

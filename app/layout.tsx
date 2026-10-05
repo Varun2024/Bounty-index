@@ -155,7 +155,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </span>
             </div>
           </div>
-          <div className="h-px bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent" />
         </header>
         <DegradedBanner />
         <main className="flex-1">{children}</main>
@@ -221,7 +220,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </section>
 
         {/* Follow strip: single-line CTA for updates. Kept above the footer grid so it doesn't compete with the nav columns. */}
-        <section className="border-t border-neutral-900 bg-gradient-to-b from-neutral-950/60 to-transparent">
+        <section className="border-t border-neutral-900 bg-neutral-950/40">
           <div className="max-w-[1400px] mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-3 text-center">
             <span className="text-sm text-neutral-400">
               Ship notes · new platforms · outages

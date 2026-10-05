@@ -28,7 +28,7 @@ export function FinalCTA({ s }: FinalCTAProps) {
         <div className="mt-10 flex flex-wrap gap-3 justify-center">
           <Link
             href="/programs?hasBounty=1&sort=reward"
-            className="cta-arrow mono text-sm px-5 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition shadow-[0_0_50px_-8px] shadow-emerald-400/70 focus-ring"
+            className="cta-arrow mono text-sm px-5 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition focus-ring"
           >
             browse paying programs <span className="arrow">→</span>
           </Link>

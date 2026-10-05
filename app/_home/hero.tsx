@@ -71,7 +71,7 @@ export function Hero({ s, top }: HeroProps) {
             <div className="mt-9 flex flex-wrap gap-3">
               <Link
                 href="/programs"
-                className="cta-arrow mono text-sm px-5 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition shadow-[0_8px_24px_-10px_rgba(52,211,153,0.6)] focus-ring"
+                className="cta-arrow mono text-sm px-5 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition focus-ring"
               >
                 browse programs <span className="arrow">→</span>
               </Link>
@@ -160,8 +160,6 @@ function TopPayoutsPanel({ top }: { top: Awaited<ReturnType<typeof topPayouts>> 
             bounty.index/programs?sort=reward
           </div>
         </div>
-
-        <div className="absolute inset-x-0 top-[31px] h-px bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent" />
 
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-neutral-900 gap-2">
           <div className="flex items-center gap-2 text-xs min-w-0">

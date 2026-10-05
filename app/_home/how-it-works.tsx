@@ -35,8 +35,7 @@ export function HowItWorks() {
         </div>
 
         <div className="relative mt-20">
-          {/* Connecting hairline */}
-          <div className="absolute left-1/2 top-6 bottom-6 w-px bg-gradient-to-b from-transparent via-neutral-800 to-transparent hidden md:block" />
+          <div className="absolute left-1/2 top-6 bottom-6 w-px bg-neutral-900 hidden md:block" />
 
           <div className="space-y-16 md:space-y-24">
             {steps.map((step, i) => {
@@ -47,10 +46,6 @@ export function HowItWorks() {
                   className={`grid md:grid-cols-2 gap-6 md:gap-16 items-center ${rightAligned ? '' : ''}`}
                 >
                   <div className={rightAligned ? 'md:col-start-2 md:pl-16' : 'md:pr-16'}>
-                    <div className="flex items-baseline gap-3 mb-4">
-                      <span className="mono text-5xl md:text-6xl text-neutral-800 tabular-nums font-semibold">{step.n}</span>
-                      <span className="text-xs text-neutral-500">step</span>
-                    </div>
                     <h3 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">{step.title}</h3>
                     <p className="text-neutral-400 mt-4 max-w-md leading-relaxed">{step.body}</p>
                     <p className="mono text-[11px] text-neutral-500 mt-5 pt-4 border-t border-neutral-900 max-w-md">
@@ -79,15 +74,8 @@ function StepVisual({ index }: { index: number }) {
 function FilterDiagram() {
   return (
     <div className="relative border border-neutral-900 rounded-xl bg-neutral-950/60 aspect-[4/3] overflow-hidden hover:border-neutral-800 transition group">
-      <div
-        className="absolute inset-0 pointer-events-none opacity-30"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)',
-          backgroundSize: '18px 18px',
-        }}
-      />
-      <p className="absolute top-4 left-5 mono text-[10px] uppercase tracking-widest text-neutral-600">$ filter</p>
-      <p className="absolute top-4 right-5 mono text-[10px] uppercase tracking-widest text-emerald-400 tabular-nums">→ 42</p>
+<p className="absolute top-4 left-5 mono text-[11px] text-neutral-500">$ filter</p>
+      <p className="absolute top-4 right-5 mono text-[11px] text-emerald-300 tabular-nums">→ 42</p>
 
       <svg viewBox="0 0 400 300" className="absolute inset-0 w-full h-full">
         <defs>
@@ -134,15 +122,8 @@ function FilterDiagram() {
 function HuntDiagram() {
   return (
     <div className="relative border border-neutral-900 rounded-xl bg-neutral-950/60 aspect-[4/3] overflow-hidden hover:border-neutral-800 transition group">
-      <div
-        className="absolute inset-0 pointer-events-none opacity-30"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)',
-          backgroundSize: '18px 18px',
-        }}
-      />
-      <p className="absolute top-4 left-5 mono text-[10px] uppercase tracking-widest text-neutral-600">$ open shopify</p>
-      <span className="absolute top-4 right-5 mono text-[10px] uppercase tracking-widest text-emerald-400">↗ submit</span>
+<p className="absolute top-4 left-5 mono text-[11px] text-neutral-500">$ open shopify</p>
+      <span className="absolute top-4 right-5 mono text-[11px] text-emerald-300">↗ submit</span>
 
       <div className="absolute inset-x-6 top-14 bottom-6 rounded-lg border border-neutral-800 bg-neutral-950 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] overflow-hidden">
         <div className="px-4 py-2.5 border-b border-neutral-900 flex items-center gap-2">
@@ -160,7 +141,7 @@ function HuntDiagram() {
             <div key={r.t} className="flex items-center gap-2">
               <span className={r.g === '+' ? 'text-emerald-400' : 'text-neutral-600'}>{r.g}</span>
               <span className="text-neutral-300 flex-1 truncate">{r.t}</span>
-              <span className="text-neutral-600 text-[10px] uppercase tracking-widest">{r.l}</span>
+              <span className="text-neutral-500 text-[11px]">{r.l}</span>
             </div>
           ))}
         </div>
@@ -180,16 +161,8 @@ function AggregateDiagram() {
   const total = platforms.reduce((n, p) => n + p.count, 0);
   return (
     <div className="relative border border-neutral-900 rounded-xl bg-neutral-950/60 aspect-[4/3] overflow-hidden hover:border-neutral-800 transition group">
-      <div
-        className="absolute inset-0 pointer-events-none opacity-30"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)',
-          backgroundSize: '18px 18px',
-        }}
-      />
-      <p className="absolute top-4 left-5 mono text-[10px] uppercase tracking-widest text-neutral-600">$ ingest --all</p>
-      <p className="absolute top-4 right-5 mono text-[10px] uppercase tracking-widest text-emerald-400 tabular-nums">
+<p className="absolute top-4 left-5 mono text-[11px] text-neutral-500">$ ingest --all</p>
+      <p className="absolute top-4 right-5 mono text-[11px] text-emerald-300 tabular-nums">
         Σ {total.toLocaleString()}
       </p>
 

@@ -100,7 +100,7 @@ function PulseRow({ p, showRelative, showPayout }: PulseRowProps) {
             {formatBounty(p.maxBounty, p.currency ?? 'USD')}
           </span>
         ) : showRelative && p.firstSeenAt ? (
-          <span className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">
+          <span className="text-xs text-neutral-400 shrink-0">
             {relativeTime(p.firstSeenAt)}
           </span>
         ) : null}
