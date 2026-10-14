@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { stats, topPayouts } from '@/lib/db/queries';
 import { formatBounty, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
-import { BackdropGrid, Stat } from './shared';
+import { BackdropGrid } from './shared';
 
 interface HeroProps {
   s: Awaited<ReturnType<typeof stats>> | null;
@@ -11,110 +11,170 @@ interface HeroProps {
 export function Hero({ s, top }: HeroProps) {
   const topBounty = s && top[0]?.maxBounty ? `$${top[0].maxBounty.toLocaleString()}` : null;
   const lastIngest = s?.lastIngestAt ? relativeTime(s.lastIngestAt) : null;
+  const programCount = s?.programs.toLocaleString() ?? null;
+  const payingCount = s?.bountyPrograms.toLocaleString() ?? null;
+  const assetCount = s?.inScopeAssets.toLocaleString() ?? null;
+  const platformCount = s?.platforms ?? 6;
 
   return (
     <div className="relative overflow-hidden lg:min-h-[calc(100vh-3.5rem)]">
-      <div className="parallax-slow absolute inset-0"><BackdropGrid /></div>
+      <div className="parallax-slow absolute inset-0" aria-hidden><BackdropGrid /></div>
 
       <div className="relative max-w-[1280px] mx-auto px-6 flex flex-col min-h-full">
-        <div className="flex-1 flex items-center py-20 lg:py-24">
-        <div className="w-full grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-14 items-center justify-items-center lg:justify-items-stretch">
-          <section className="relative text-center lg:text-left animate-[fadeUp_.7s_ease-out_both]">
-            <div className="flex items-center justify-center lg:justify-start gap-3 mb-7 flex-wrap">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50 animate-ping" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-              </span>
-              <span className="text-sm text-emerald-300">2,000+ hunters use this weekly</span>
-              {lastIngest && (
-                <>
-                  <span className="text-neutral-700">·</span>
-                  <span className="text-sm text-neutral-400">
-                    indexed <span className="text-neutral-200">{lastIngest}</span>
-                  </span>
-                </>
-              )}
-            </div>
-
-            <h1 className="lowercase text-[2.75rem] sm:text-5xl md:text-6xl xl:text-[4.75rem] font-medium tracking-[-0.03em] leading-[1] text-neutral-50">
-              every public bounty program.{' '}
-              <span className="font-light text-emerald-300">one index.</span>
+        <div className="flex-1 grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-16 items-start pt-24 pb-20 lg:pt-28 lg:pb-24">
+          <section className="animate-[fadeUp_.7s_ease-out_both]">
+            <h1 className="lowercase text-[2.75rem] sm:text-5xl md:text-6xl xl:text-[4.5rem] font-medium tracking-[-0.035em] leading-[0.98] text-neutral-50">
+              every public bounty program, one index.
             </h1>
 
-            <p className="mt-8 text-base md:text-lg text-neutral-300 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              {s ? (
+            <p className="mt-8 text-lg md:text-xl text-neutral-300 leading-snug max-w-xl">
+              {programCount ? (
                 <>
-                  <span className="mono text-neutral-100 tabular-nums">{s.programs.toLocaleString()}</span> public programs
-                  across six platforms — filtered by scope, asset type, and payout.
+                  <span className="mono text-neutral-100 tabular-nums">{programCount}</span> programs across six platforms.
+                  Filter by scope, asset, payout.
                   {topBounty && (
-                    <>
-                      {' '}Top of the leaderboard: <span className="mono text-emerald-300 tabular-nums">{topBounty}</span>.
-                    </>
+                    <> Highest live today: <span className="mono text-neutral-100 tabular-nums">{topBounty}</span>.</>
                   )}
                 </>
               ) : (
-                'Public programs from HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi — filtered by scope, asset type, and payout.'
+                'Public programs from HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi.'
               )}
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-3 justify-center lg:justify-start">
-              <Link
-                href="/programs"
-                className="cta-arrow mono text-sm px-5 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition focus-ring"
-              >
-                browse programs <span className="arrow">→</span>
-              </Link>
-              <Link
-                href="/scope-lookup"
-                className="mono text-sm px-5 py-2.5 border border-neutral-800 bg-neutral-950/60 rounded-md hover:border-neutral-600 hover:bg-neutral-900 transition"
-              >
-                check a domain
-              </Link>
-            </div>
+            {/* The live thing: a real search form. GETs to /programs?q=... */}
+            <form
+              method="GET"
+              action="/programs"
+              role="search"
+              className="mt-12 max-w-xl"
+              aria-label="Search bounty programs"
+            >
+              <label htmlFor="hero-q" className="sr-only">Search a company, domain, or asset</label>
+              <div className="group flex items-center h-14 pl-5 pr-1.5 rounded-xl bg-neutral-950/70 border border-neutral-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] focus-within:border-emerald-400/60 focus-within:shadow-[0_0_0_4px_rgba(52,211,153,0.08),inset_0_1px_0_rgba(255,255,255,0.02)] transition duration-200">
+                <span className="shrink-0 text-neutral-400 group-focus-within:text-emerald-300 transition" aria-hidden>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3.5-3.5" />
+                  </svg>
+                </span>
+                <input
+                  id="hero-q"
+                  type="search"
+                  name="q"
+                  autoComplete="off"
+                  placeholder="search a company, domain, or asset"
+                  className="flex-1 min-w-0 bg-transparent h-full px-4 text-base md:text-[17px] text-neutral-50 placeholder:text-neutral-500 outline-none"
+                />
+                <kbd className="hidden md:inline-flex items-center justify-center mono text-[10px] text-neutral-400 h-6 px-1.5 mr-2 rounded border border-neutral-800 bg-neutral-900/80 pointer-events-none">
+                  /
+                </kbd>
+                <button
+                  type="submit"
+                  className="mono text-sm h-11 px-5 rounded-lg bg-emerald-400 text-neutral-950 font-medium hover:bg-emerald-300 active:bg-emerald-500 transition focus-ring"
+                >
+                  search
+                </button>
+              </div>
+              <p className="mt-4 text-sm text-neutral-400 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                <span className="text-neutral-500">try</span>
+                <ExampleQuery q="tesla" />
+                <ExampleQuery q="ethereum" />
+                <ExampleQuery q="*.google.com" />
+                <span aria-hidden className="text-neutral-700">·</span>
+                <Link href="/programs" className="text-neutral-300 hover:text-emerald-300 transition underline decoration-neutral-700 underline-offset-4 hover:decoration-emerald-400">
+                  or browse all {programCount && <span className="mono tabular-nums">{programCount}</span>}
+                </Link>
+              </p>
+            </form>
 
-            <ul className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-neutral-500">
-              <li className="inline-flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-emerald-400/70" />
-                <span>free, no signup</span>
-              </li>
-              <li className="inline-flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-emerald-400/70" />
-                <span>daily data refresh</span>
-              </li>
-              <li className="inline-flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-emerald-400/70" />
-                <span>MCP endpoint for agents</span>
-              </li>
-            </ul>
+            <p className="mt-12 text-sm text-neutral-400 max-w-xl">
+              Used weekly by 2,000+ hunters. Free, no signup.
+              {lastIngest && <> Index refreshed {lastIngest}.</>}{' '}
+              <Link href="/mcp" className="text-neutral-300 hover:text-emerald-300 transition underline decoration-neutral-700 underline-offset-4 hover:decoration-emerald-400">
+                MCP endpoint
+              </Link>{' '}
+              for agents.
+            </p>
           </section>
 
-          {/* RIGHT — compact payouts board */}
           {top.length > 0 && (
-            <div className="w-full max-w-md lg:max-w-none lg:ml-auto lg:w-[26rem] xl:w-[28rem] animate-[fadeUp_.9s_ease-out_.15s_both]">
-              <TopPayoutsPanel top={top} />
-            </div>
+            <aside
+              aria-label="Highest-paying programs right now"
+              className="lg:mt-6 lg:sticky lg:top-24"
+            >
+              <div className="flex items-baseline justify-between mb-4">
+                <p className="text-sm text-neutral-400">paying the most, right now</p>
+                <Link
+                  href="/programs?sort=reward"
+                  className="mono text-xs text-neutral-400 hover:text-emerald-300 transition focus-ring rounded"
+                >
+                  leaderboard
+                </Link>
+              </div>
+              <ol className="divide-y divide-neutral-900">
+                {top.slice(0, 5).map((p) => (
+                  <li key={p.id}>
+                    <Link
+                      href={`/programs/${p.platform}/${p.slug}`}
+                      className="flex items-center gap-3 py-3 group focus-ring rounded-md -mx-2 px-2 hover:bg-neutral-900/40 transition"
+                    >
+                      <span
+                        aria-hidden
+                        className={`shrink-0 w-1.5 h-1.5 rounded-full ${PLATFORM_META[p.platform]?.dot ?? 'bg-neutral-500'}`}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm text-neutral-100 truncate group-hover:text-emerald-300 transition">
+                          {p.name}
+                        </p>
+                        <p className="mono text-[11px] text-neutral-400 mt-0.5">{platformLabel(p.platform)}</p>
+                      </div>
+                      <p className="mono text-sm text-neutral-100 shrink-0 tabular-nums">
+                        up to {formatBounty(p.maxBounty, p.currency ?? 'USD')}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+            </aside>
           )}
-        </div>
         </div>
 
         {s && (
-          <div className="pb-16 pt-10 border-t border-neutral-900/70 animate-[fadeUp_1.1s_ease-out_.3s_both]">
-            <dl className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-6 text-left">
-              <Stat label="Programs" value={s.programs.toLocaleString()} />
-              <Stat label="Paying bounties" value={s.bountyPrograms.toLocaleString()} accent />
-              <Stat label="In-scope assets" value={s.inScopeAssets.toLocaleString()} />
-              <Stat label="Platforms" value={String(s.platforms)} />
-              <Stat label="Ingest" value={relativeTime(s.lastIngestAt)} muted />
-            </dl>
-          </div>
+          <dl className="pb-16 grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-8">
+            <StatInline label="programs" value={programCount!} />
+            <StatInline label="paying bounties" value={payingCount!} accent />
+            <StatInline label="in-scope assets" value={assetCount!} />
+            <StatInline label="platforms" value={String(platformCount)} />
+          </dl>
         )}
       </div>
 
-      {/* Corner frame markers — editorial detail, not decorative glow */}
       <CornerMark position="top-left" />
       <CornerMark position="top-right" />
       <CornerMark position="bottom-left" />
       <CornerMark position="bottom-right" />
+    </div>
+  );
+}
+
+function ExampleQuery({ q }: { q: string }) {
+  return (
+    <Link
+      href={`/programs?q=${encodeURIComponent(q)}`}
+      className="mono text-xs px-2.5 py-1 rounded-md border border-neutral-800 text-neutral-300 hover:border-emerald-400/50 hover:text-emerald-300 hover:bg-emerald-400/[0.04] transition focus-ring"
+    >
+      {q}
+    </Link>
+  );
+}
+
+function StatInline({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div>
+      <dd className={`mono tabular-nums text-2xl md:text-3xl font-medium ${accent ? 'text-emerald-300' : 'text-neutral-50'}`}>
+        {value}
+      </dd>
+      <dt className="mt-1 text-xs text-neutral-400">{label}</dt>
     </div>
   );
 }
@@ -131,56 +191,5 @@ function CornerMark({ position }: { position: 'top-left' | 'top-right' | 'bottom
       aria-hidden
       className={`hidden md:block absolute w-5 h-5 pointer-events-none border-neutral-800 ${map[position]}`}
     />
-  );
-}
-
-function TopPayoutsPanel({ top }: { top: Awaited<ReturnType<typeof topPayouts>> }) {
-  return (
-    <div className="relative">
-      <div className="relative border border-neutral-800 bg-neutral-950/80 rounded-xl backdrop-blur-md overflow-hidden shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.04)]">
-        {/* Browser chrome */}
-        <div className="flex items-center gap-2.5 px-3.5 py-2 border-b border-neutral-900 bg-neutral-950/90">
-          <div className="flex gap-1">
-            <span className="w-2 h-2 rounded-full bg-neutral-800 border border-neutral-700" />
-            <span className="w-2 h-2 rounded-full bg-neutral-800 border border-neutral-700" />
-            <span className="w-2 h-2 rounded-full bg-neutral-800 border border-neutral-700" />
-          </div>
-          <div className="flex-1 mono text-[10px] text-neutral-500 truncate px-2 py-0.5 bg-neutral-900/60 border border-neutral-900 rounded text-center">
-            bounty.index/programs?sort=reward
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-neutral-900 gap-2">
-          <div className="flex items-center gap-2 text-xs min-w-0">
-            <span className="text-emerald-300">Top 5 payouts</span>
-            <span className="text-neutral-700">·</span>
-            <span className="text-neutral-400 truncate">right now</span>
-          </div>
-          <Link href="/programs?sort=reward" className="text-xs text-neutral-400 hover:text-emerald-300 transition">
-            all →
-          </Link>
-        </div>
-        <ol>
-          {top.map((p, i) => (
-            <li key={p.id} className={i === top.length - 1 ? '' : 'border-b border-neutral-900'}>
-              <Link
-                href={`/programs/${p.platform}/${p.slug}`}
-                className="flex items-center gap-3 px-4 py-2.5 hover:bg-neutral-900/60 active:bg-neutral-900/80 transition group"
-              >
-                <span className="mono text-[10px] text-neutral-600 w-3.5 tabular-nums shrink-0">{String(i + 1).padStart(2, '0')}</span>
-                <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${PLATFORM_META[p.platform]?.dot ?? 'bg-neutral-500'}`} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm text-neutral-100 truncate group-hover:text-emerald-400 transition">{p.name}</p>
-                  <p className="mono text-[10px] text-neutral-500 mt-0.5">{platformLabel(p.platform)}</p>
-                </div>
-                <p className="mono text-sm text-neutral-100 shrink-0 tabular-nums font-medium">
-                  {formatBounty(p.maxBounty, p.currency ?? 'USD')}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </div>
   );
 }

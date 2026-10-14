@@ -119,6 +119,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-neutral-200 font-sans">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-3 focus:py-1.5 focus:rounded-md focus:bg-emerald-400 focus:text-neutral-950 focus:text-sm focus:font-medium focus:shadow-lg"
+        >
+          Skip to content
+        </a>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }}
@@ -159,7 +165,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </header>
         <DegradedBanner />
         <RestoredBanner />
-        <main className="flex-1">{children}</main>
+        <main id="main" className="flex-1">{children}</main>
         <GlobalKeyboard />
         <CompareTray />
         <AuthSync />
@@ -249,7 +255,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   <Logo size={22} className="text-neutral-500 group-hover:text-neutral-300 transition" />
                   <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
                 </Link>
-                <p className="mt-4 text-sm text-neutral-500 leading-relaxed max-w-xs">
+                <p className="mt-4 text-sm text-neutral-400 leading-relaxed max-w-xs">
                   The bug bounty market, live-indexed. Every public program across six platforms, filterable in one view.
                 </p>
                 <a
@@ -295,7 +301,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </FooterCol>
             </div>
 
-            <div className="mt-16 pt-6 border-t border-neutral-900 flex flex-wrap items-center justify-between gap-4 mono text-xs text-neutral-600">
+            <div className="mt-16 pt-6 border-t border-neutral-900 flex flex-wrap items-center justify-between gap-4 mono text-xs text-neutral-400">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60" />
                 <span>© 2026 bounty.index</span>
