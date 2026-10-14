@@ -1,6 +1,7 @@
 import { db, schema } from '@/lib/db/client';
 import { eq, desc, and, inArray } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
+import { upsertScopes } from './upsert-scopes';
 
 // Immunefi ingest — two-stage HTML scrape of first-party RSC payloads.
 //
@@ -339,16 +340,7 @@ export async function ingestImmunefi(): Promise<Result> {
         .returning({ id: schema.programs.id });
       programsUpserted++;
 
-      // Replace scopes for this program
-      await db.delete(schema.scopes).where(eq(schema.scopes.programId, prog.id));
-      if (scopes.length > 0) {
-        const rows = scopes.map((s) => ({ programId: prog.id, ...s }));
-        const CHUNK = 500;
-        for (let i = 0; i < rows.length; i += CHUNK) {
-          await db.insert(schema.scopes).values(rows.slice(i, i + CHUNK));
-        }
-        scopesUpserted += scopes.length;
-      }
+      scopesUpserted += await upsertScopes(prog.id, scopes);
 
       const wrote = await maybeSnapshot(prog.id, run.id, buildSnapshotPayload(p, url, scopes));
       if (wrote) snapshotsWritten++;

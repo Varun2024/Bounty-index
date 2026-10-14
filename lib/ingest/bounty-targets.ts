@@ -1,6 +1,7 @@
 import { db, schema } from '@/lib/db/client';
 import { eq, desc } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
+import { upsertScopes } from './upsert-scopes';
 
 const BASE = 'https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/main/data';
 
@@ -435,16 +436,7 @@ export async function ingestPlatform(platform: Platform) {
         .returning({ id: schema.programs.id });
       programsUpserted++;
 
-      await db.delete(schema.scopes).where(eq(schema.scopes.programId, prog.id));
-      if (norm.scopes.length) {
-        const rows = norm.scopes.map((s) => ({ programId: prog.id, ...s }));
-        // ponytail: PG bind limit is 65535 params. Scopes have 7 cols → 500 rows/chunk keeps us well under.
-        const CHUNK = 500;
-        for (let i = 0; i < rows.length; i += CHUNK) {
-          await db.insert(schema.scopes).values(rows.slice(i, i + CHUNK));
-        }
-        scopesUpserted += norm.scopes.length;
-      }
+      scopesUpserted += await upsertScopes(prog.id, norm.scopes);
 
       const wrote = await maybeSnapshot(prog.id, run.id, buildSnapshotPayload(norm, programType));
       if (wrote) snapshotsWritten++;

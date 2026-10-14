@@ -49,6 +49,9 @@ export const scopes = pgTable(
     programIdx: index('scopes_program_idx').on(t.programId),
     identifierIdx: index('scopes_identifier_idx').on(t.identifier),
     assetTypeIdx: index('scopes_asset_type_idx').on(t.assetType),
+    // Natural key for ingest upsert. Replaces the daily DELETE+INSERT pattern that was
+    // burning ~95% of our WAL. See scripts/dedup-scopes.mjs for the one-time dedup.
+    naturalKey: uniqueIndex('scopes_program_identifier_asset_uq').on(t.programId, t.identifier, t.assetType),
   }),
 );
 
