@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
-import { saveNote } from '@/app/actions/notes';
+import { getNote, saveNote } from '@/app/actions/notes';
 import { NOTE_MAX_LEN, type NoteResult } from '@/lib/notes';
 import { SectionHeading } from './section-heading';
 import { relativeTime } from '@/lib/format';
@@ -68,6 +68,20 @@ export function ProgramNotes({ programId, initialNote }: ProgramNotesProps) {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
+
+  // Page HTML is ISR-cached and shared across viewers, so the server can't bake in this user's
+  // note without leaking it. Hydrate it once the session resolves.
+  useEffect(() => {
+    if (!isAuthed) return;
+    let cancelled = false;
+    void getNote(programId).then((n) => {
+      if (cancelled) return;
+      setContent(n.content);
+      setUpdatedAt(n.updatedAt);
+      savedRef.current = n.content;
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [isAuthed, programId]);
 
   return (
     <section className="mt-14 reveal reveal-delay-1">

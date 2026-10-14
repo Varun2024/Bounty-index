@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProgramBySlug, getProgramSnapshots, getSimilarPrograms, type ProgramSnapshot, type SimilarProgram } from '@/lib/db/queries';
-import { getNote } from '@/app/actions/notes';
-import { getUserReport, getProgramReportStats } from '@/app/actions/reports';
+import { getProgramReportStats } from '@/app/actions/reports';
 import { diffSnapshots, isEmptyDiff } from '@/lib/snapshots';
 import { formatPayoutRange, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 import { summarizeActivity } from '@/lib/snapshots';
@@ -24,7 +23,10 @@ import { RecentChanges } from './recent-changes';
 import { SimilarPrograms } from './similar-programs';
 import { CopyScope } from './copy-scope';
 
-export const dynamic = 'force-dynamic';
+// ISR: program data changes once a day via ingest. Serve the shell from CDN for an hour.
+// Per-user bits (note, user's own report) are fetched client-side inside their components;
+// they never land in the cached HTML. Global report stats are cacheable so they stay here.
+export const revalidate = 3600;
 
 interface PageProps {
   params: Promise<{ platform: string; slug: string[] }>;
@@ -102,13 +104,16 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const result = await getProgramBySlug(platform, fullSlug);
   if (!result) notFound();
   const { program, scopes } = result;
-  const [snapshots, initialNote, initialReportStats, initialUserReport, similar] = await Promise.all([
+  // ponytail: only cacheable (program-global) data runs server-side under ISR. Per-user bits
+  // (note, user's own report) are hydrated client-side inside ProgramNotes / CommunityReports
+  // so we never bake one viewer's state into another viewer's cached HTML.
+  const [snapshots, initialReportStats, similar] = await Promise.all([
     getProgramSnapshots(program.id).catch(() => [] as ProgramSnapshot[]),
-    getNote(program.id).catch(() => ({ content: '', updatedAt: null })),
     getProgramReportStats(program.id).catch(() => ({ count: 0, waitingCount: 0, medianFirstResponseDays: null })),
-    getUserReport(program.id).catch(() => null),
     getSimilarPrograms(program.id, 5).catch(() => [] as SimilarProgram[]),
   ]);
+  const initialNote = { content: '', updatedAt: null };
+  const initialUserReport = null;
   const inScope = scopes.filter((s) => s.inScope);
   const outOfScope = scopes.filter((s) => !s.inScope);
   const platformDot = PLATFORM_META[program.platform]?.dot ?? 'bg-neutral-500';

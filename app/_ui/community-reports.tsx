@@ -1,7 +1,8 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
+import { getUserReport } from '@/app/actions/reports';
 import { type UserReport, type ProgramReportStats } from '@/lib/reports';
 import { SectionHeading } from './section-heading';
 import { ReportDialog } from './report-dialog';
@@ -19,6 +20,17 @@ export function CommunityReports({ programId, programName, initialStats, initial
   const [stats, setStats] = useState(initialStats);
   const [userReport, setUserReport] = useState<UserReport | null>(initialUserReport);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Page is ISR-cached and shared across viewers — hydrate this user's own report on the client
+  // so one viewer's report never shows up to another.
+  useEffect(() => {
+    if (!isAuthed) return;
+    let cancelled = false;
+    void getUserReport(programId).then((r) => {
+      if (!cancelled) setUserReport(r);
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [isAuthed, programId]);
 
   const openDialog = useCallback(() => {
     if (!isAuthed) {
