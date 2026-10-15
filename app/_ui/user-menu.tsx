@@ -1,13 +1,32 @@
+'use client';
+
 import Link from 'next/link';
-import { auth, signIn, signOut } from '@/auth';
-import { isAdmin } from '@/lib/admin';
+import { useEffect, useState } from 'react';
+import { signIn, signOut, useSession } from 'next-auth/react';
+import { checkIsAdmin } from '@/app/actions/admin';
 
-// Server component. Native <details> dropdown when signed in — no JS bundle, no
-// custom outside-click handler; menu closes when the user picks a link
-// (navigation swaps the tree) or clicks the summary again.
+// Client component. Was server-side (await auth()) which read cookies and forced the entire
+// app to dynamic rendering — defeating ISR on every page. Native <details> dropdown still, no
+// extra click-outside logic needed. Session is hydrated via next-auth/react.
 
-export async function UserMenu() {
-  const session = await auth();
+export function UserMenu() {
+  const { data: session, status } = useSession();
+  const [admin, setAdmin] = useState(false);
+
+  useEffect(() => {
+    if (status !== 'authenticated') {
+      setAdmin(false);
+      return;
+    }
+    let cancelled = false;
+    void checkIsAdmin().then((ok) => { if (!cancelled) setAdmin(ok); }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [status]);
+
+  // Avoid an auth-state flash while NextAuth hydrates. Fixed-size placeholder keeps header layout stable.
+  if (status === 'loading') {
+    return <span aria-hidden className="inline-block w-7 h-7 rounded-full border border-neutral-800" />;
+  }
 
   if (!session?.user) {
     return (
@@ -32,18 +51,13 @@ export async function UserMenu() {
             <MenuLink href="/watchlist" icon="★" label="Watchlist" />
             <MenuLink href="/compare" icon="◫" label="Compare" />
           </ul>
-          <form
-            action={async () => {
-              'use server';
-              await signIn('github', { redirectTo: '/' });
-            }}
-            className="p-3 border-t border-neutral-900"
-          >
+          <div className="p-3 border-t border-neutral-900">
             <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">
               sync across devices
             </p>
             <button
-              type="submit"
+              type="button"
+              onClick={() => void signIn('github', { callbackUrl: '/' })}
               className="w-full mono text-xs px-3 py-2 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition focus-ring inline-flex items-center justify-center gap-2"
               title="Sign in with GitHub"
             >
@@ -57,7 +71,7 @@ export async function UserMenu() {
               <span className="text-neutral-700">{'// '}</span>
               no emails. we literally don&rsquo;t ask.
             </p>
-          </form>
+          </div>
         </div>
       </details>
     );
@@ -101,24 +115,18 @@ export async function UserMenu() {
           <MenuLink href="/watchlist" icon="★" label="Watchlist" />
           <MenuLink href="/compare" icon="◫" label="Compare" />
           <MenuLink href="/settings/discord" icon="◈" label="Discord alerts" />
-          {isAdmin(session) && <MenuLink href="/admin" icon="⚙" label="Admin" />}
+          {admin && <MenuLink href="/admin" icon="⚙" label="Admin" />}
         </ul>
 
         <div className="border-t border-neutral-900 py-1">
-          <form
-            action={async () => {
-              'use server';
-              await signOut({ redirectTo: '/' });
-            }}
+          <button
+            type="button"
+            onClick={() => void signOut({ callbackUrl: '/' })}
+            className="w-full text-left px-4 py-2 text-sm text-neutral-400 hover:text-neutral-100 hover:bg-neutral-900 transition focus-ring inline-flex items-center gap-3"
           >
-            <button
-              type="submit"
-              className="w-full text-left px-4 py-2 text-sm text-neutral-400 hover:text-neutral-100 hover:bg-neutral-900 transition focus-ring inline-flex items-center gap-3"
-            >
-              <span aria-hidden className="text-neutral-600 w-4 text-center">↩</span>
-              sign out
-            </button>
-          </form>
+            <span aria-hidden className="text-neutral-600 w-4 text-center">↩</span>
+            sign out
+          </button>
         </div>
       </div>
     </details>
