@@ -39,7 +39,7 @@ export function Receipts({ s }: ReceiptsProps) {
           <Row
             label="freshness"
             value={`ingested ${lastIngest}`}
-            desc="Daily snapshot cadence. Scope and reward changes diffed into history — see /whats-new and /reward-changes for the live log."
+            desc="Daily snapshot cadence. Scope and reward changes diffed into history. See /whats-new and /reward-changes for the live log."
             href="/whats-new"
           />
           <Row
@@ -73,7 +73,7 @@ export function Receipts({ s }: ReceiptsProps) {
                 >
                   open an issue
                 </a>{' '}
-                — I actually read them.
+                . I actually read them.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 shrink-0">

@@ -28,9 +28,7 @@ export function RestoredBanner() {
     setShow(false);
     try {
       localStorage.setItem(BANNER_ID, 'dismissed');
-    } catch {
-      // ignore
-    }
+    } catch {}
   };
 
   return (

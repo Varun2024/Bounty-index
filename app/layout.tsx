@@ -18,22 +18,22 @@ const THEME_INIT = `(function(){try{var t=localStorage.getItem('theme');if(t==='
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
-  title: 'Bounty Index — every bug bounty program, filterable',
-  description: 'Every public bug bounty program on HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi — filterable by scope, payout, and asset type.',
+  title: 'Bounty Index: every bug bounty program, filterable',
+  description: 'Every public bug bounty program on HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi, filterable by scope, payout, and asset type.',
   alternates: { canonical: '/' },
   verification: {
     google: 'npK_dP6YyX19gt_ROU1Riz9bMkua551DZF847Yx2xTQ',
   },
   openGraph: {
-    title: 'bounty.index — every public bounty, one index',
-    description: 'Every public bug bounty program across six platforms — filterable by scope, payout, and asset type.',
+    title: 'bounty.index: every public bounty, one index',
+    description: 'Every public bug bounty program across six platforms, filterable by scope, payout, and asset type.',
     type: 'website',
     siteName: 'bounty.index',
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'bounty.index — every public bounty, one index' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'bounty.index: every public bounty, one index' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'bounty.index — every public bounty, one index',
+    title: 'bounty.index: every public bounty, one index',
     description: 'Every public bug bounty program across six platforms.',
     images: ['/og.png'],
   },

@@ -119,7 +119,6 @@ function normalizeScopes(t: RawTargets, offersBounty: boolean): NormalizedScope[
   return out;
 }
 
-// ---- Per-platform normalizers ----
 
 interface HackerOneRecord {
   handle?: string;
@@ -298,7 +297,6 @@ export const NORMALIZERS: Record<Platform, (r: unknown) => NormalizedProgram | n
   federacy: (r) => normalizeFederacy(r as FederacyRecord),
 };
 
-// ---- Fetch + persist ----
 
 async function fetchSource(platform: Platform): Promise<unknown[]> {
   const res = await fetch(SOURCES[platform], { cache: 'no-store' });

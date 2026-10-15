@@ -29,7 +29,7 @@ export function Comparison() {
           <p className="mt-5 text-neutral-400 max-w-2xl leading-relaxed">
             Each platform shows its own programs. Directories are stale or policy-only. Raw JSON is fine
             if you enjoy <code className="mono text-neutral-300">jq</code>. And none of them speak
-            <code className="mono text-neutral-300"> MCP</code>. This is the one built for scanning — by you or your agent.
+            <code className="mono text-neutral-300"> MCP</code>. This is the one built for scanning, by you or your agent.
           </p>
         </div>
 

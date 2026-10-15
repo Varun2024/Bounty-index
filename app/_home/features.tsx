@@ -31,7 +31,6 @@ export function Features({ s }: FeaturesProps) {
         </div>
 
         <div className="mt-16 grid grid-cols-6 gap-4 [perspective:1200px]">
-          {/* Big card — unified index */}
           <Tilt className="col-span-6 md:col-span-4 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition relative overflow-hidden group h-full">
             <div className="flex items-start justify-between">
@@ -70,13 +69,12 @@ export function Features({ s }: FeaturesProps) {
           </div>
           </Tilt>
 
-          {/* Text-only medium card — scope lookup */}
           <Tilt className="col-span-6 md:col-span-2 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
             <p className="text-sm text-emerald-300">Lookup</p>
             <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Scope lookup</h3>
             <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
-              Paste a domain. Instant verdict — in-scope somewhere, or not.
+              Paste a domain. Instant verdict: in-scope somewhere, or not.
             </p>
             <div className="mt-8 mono text-xs">
               <p className="text-neutral-500">$ /scope/tesla.com</p>
@@ -88,7 +86,6 @@ export function Features({ s }: FeaturesProps) {
           </div>
           </Tilt>
 
-          {/* Small card — opportunity score */}
           <Tilt className="col-span-6 md:col-span-2 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
             <p className="text-sm text-emerald-300">Score</p>
@@ -110,7 +107,6 @@ export function Features({ s }: FeaturesProps) {
           </div>
           </Tilt>
 
-          {/* Wide card — RSS */}
           <Tilt className="col-span-6 md:col-span-4 rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
             <div className="flex items-start justify-between">

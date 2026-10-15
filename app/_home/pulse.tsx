@@ -65,7 +65,7 @@ function PulsePanel({ eyebrow, hint, empty, children }: PulsePanelProps) {
         <p className="text-xs text-neutral-500">{hint}</p>
       </div>
       {items.length === 0 ? (
-        <div className="p-6 mono text-xs text-neutral-600">— {empty} —</div>
+        <div className="p-6 mono text-xs text-neutral-600">{empty}</div>
       ) : (
         <ul>{children}</ul>
       )}
