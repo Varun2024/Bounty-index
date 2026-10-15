@@ -69,16 +69,15 @@ export async function upsertScopes(programId: number, incoming: readonly Incomin
       });
   }
 
-  // Delete scopes that disappeared from upstream. We can't use a tuple IN clause with Drizzle
-  // cleanly, so filter by identifier-not-in and asset-type-not-in separately via raw SQL.
-  const keepIdents = rows.map((r) => r.identifier);
-  const keepTypes = rows.map((r) => r.assetType);
+  // Delete scopes that disappeared from upstream. Drizzle's sql template serializes JS arrays
+  // as individual bind params (not a single text[]), so unnest(array[], array[]) blows up with
+  // "cannot cast row to array". Build a tuple-list for NOT IN instead — each (ident, type) pair
+  // gets its own placeholders.
+  const tuples = rows.map((r) => sql`(${r.identifier}, ${r.assetType})`);
   await db.execute(sql`
     DELETE FROM scopes
     WHERE program_id = ${programId}
-      AND (identifier, asset_type) NOT IN (
-        SELECT * FROM unnest(${keepIdents}::text[], ${keepTypes}::text[])
-      )
+      AND (identifier, asset_type) NOT IN (${sql.join(tuples, sql`, `)})
   `);
 
   return rows.length;
