@@ -1,5 +1,5 @@
 import { db, schema } from '@/lib/db/client';
-import { and, eq, notInArray, sql } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 
 export interface IncomingScope {
   identifier: string;
@@ -69,16 +69,22 @@ export async function upsertScopes(programId: number, incoming: readonly Incomin
       });
   }
 
-  // Delete scopes that disappeared from upstream. Drizzle's sql template serializes JS arrays
-  // as individual bind params (not a single text[]), so unnest(array[], array[]) blows up with
-  // "cannot cast row to array". Build a tuple-list for NOT IN instead — each (ident, type) pair
-  // gets its own placeholders.
-  const tuples = rows.map((r) => sql`(${r.identifier}, ${r.assetType})`);
-  await db.execute(sql`
-    DELETE FROM scopes
-    WHERE program_id = ${programId}
-      AND (identifier, asset_type) NOT IN (${sql.join(tuples, sql`, `)})
-  `);
+  // Delete scopes that disappeared from upstream. We tried `NOT IN (tuple-list)` first — works
+  // for most programs, but Postgres' planner chokes on huge tuple lists (hackerone has one
+  // program with ~500 scopes). Lazy robust fix: read existing (id, identifier, asset_type) for
+  // this program, compute to-delete locally, delete by primary key. One small SELECT (~41 rows
+  // avg per program) + one bounded DELETE. Works for any program size.
+  const existing = await db
+    .select({ id: schema.scopes.id, identifier: schema.scopes.identifier, assetType: schema.scopes.assetType })
+    .from(schema.scopes)
+    .where(eq(schema.scopes.programId, programId));
+  const keep = new Set(rows.map((r) => `${r.identifier}\x00${r.assetType}`));
+  const toDelete = existing
+    .filter((e) => !keep.has(`${e.identifier}\x00${e.assetType}`))
+    .map((e) => e.id);
+  if (toDelete.length) {
+    await db.delete(schema.scopes).where(inArray(schema.scopes.id, toDelete));
+  }
 
   return rows.length;
 }
