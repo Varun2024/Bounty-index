@@ -8,7 +8,10 @@ import { Receipts } from './_home/receipts';
 import { FinalCTA } from './_home/final-cta';
 import { SectionOrnament } from './_home/shared';
 
-export const dynamic = 'force-dynamic';
+// ISR: home data (stats, top payouts, recently added, trending) refreshes once an hour,
+// the ingest cron revalidates the PROGRAMS_CACHE_TAG when it runs, and the only user-specific
+// surface in the shared layout (UserMenu) is now client-hydrated — so the shell caches cleanly.
+export const revalidate = 3600;
 
 // Order is value-first: pitch → prove with live data → feature detail → why-not-them → trust → how → convert.
 export default async function Home() {
