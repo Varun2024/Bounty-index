@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { db, schema } from './client';
 import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne } from 'drizzle-orm';
+import type { ProgramReportStats } from '../reports';
 
 // ponytail: single tag busts every public read cache from the ingest cron.
 // 5min revalidate is the safety net if tag busting ever fails.
@@ -521,3 +522,28 @@ export const stats = cachedWithDates(
   ['stats'],
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
 );
+
+// Public read-only aggregate. Kept here (not in app/actions/reports.ts which is 'use server')
+// so a server-component page can import it without the whole page becoming a server-action
+// consumer — which Next.js opts out of static/ISR rendering.
+export async function getProgramReportStats(programId: number): Promise<ProgramReportStats> {
+  const MIN_STATS_SAMPLE = 3;
+  const [row] = await db
+    .select({
+      count: sql<number>`count(*)::int`,
+      waiting: sql<number>`count(*) filter (where ${schema.userReports.firstResponseAt} is null)::int`,
+      answered: sql<number>`count(*) filter (where ${schema.userReports.firstResponseAt} is not null)::int`,
+      median: sql<number | null>`percentile_cont(0.5) within group (order by extract(epoch from ${schema.userReports.firstResponseAt} - ${schema.userReports.submittedAt}) / 86400) filter (where ${schema.userReports.firstResponseAt} is not null)`,
+    })
+    .from(schema.userReports)
+    .where(eq(schema.userReports.programId, programId));
+
+  const answered = row?.answered ?? 0;
+  const median = row?.median ?? null;
+  return {
+    count: row?.count ?? 0,
+    waitingCount: row?.waiting ?? 0,
+    medianFirstResponseDays:
+      answered >= MIN_STATS_SAMPLE && median !== null ? Math.round(median * 10) / 10 : null,
+  };
+}

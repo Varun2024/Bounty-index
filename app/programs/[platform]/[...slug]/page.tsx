@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProgramBySlug, getProgramSnapshots, getSimilarPrograms, type ProgramSnapshot, type SimilarProgram } from '@/lib/db/queries';
-import { getProgramReportStats } from '@/app/actions/reports';
+import { getProgramBySlug, getProgramSnapshots, getSimilarPrograms, getProgramReportStats, type ProgramSnapshot, type SimilarProgram } from '@/lib/db/queries';
 import { diffSnapshots, isEmptyDiff } from '@/lib/snapshots';
 import { formatPayoutRange, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 import { summarizeActivity } from '@/lib/snapshots';
