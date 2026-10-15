@@ -25,7 +25,7 @@ import { CopyScope } from './copy-scope';
 // ISR: program data changes once a day via ingest. Serve the shell from CDN for an hour.
 // Per-user bits (note, user's own report) are fetched client-side inside their components;
 // they never land in the cached HTML. Global report stats are cacheable so they stay here.
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 interface PageProps {
   params: Promise<{ platform: string; slug: string[] }>;

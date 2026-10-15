@@ -4,17 +4,7 @@ import { desc, sql } from 'drizzle-orm';
 import { auth } from '@/auth';
 import { isAdmin } from '@/lib/admin';
 import { db } from '@/lib/db/client';
-import {
-  users,
-  userWatchlist,
-  userCompare,
-  userNotes,
-  userReports,
-  userSavedFilters,
-  discordWebhooks,
-  programs,
-  programSnapshots,
-} from '@/lib/db/schema';
+import { users, userWatchlist, programs } from '@/lib/db/schema';
 import { listPendingSignups } from '@/lib/signup-queue';
 
 export const dynamic = 'force-dynamic';
@@ -28,34 +18,29 @@ export default async function AdminPage() {
   const session = await auth();
   if (!isAdmin(session)) notFound();
 
-  // Every metric is a single count query — the whole page is O(metrics), not O(rows).
-  // allSettled so one dead query (Neon quota, cold-start) doesn't 500 the whole page.
-  // Failed metrics render as "—" instead of crashing.
+  // One round-trip for every count (neon-http = 1 HTTPS request per query).
+  // allSettled-style: a dead counts query renders tiles as "—" instead of 500ing the page.
   const settle = <T,>(p: Promise<T>): Promise<T | null> => p.catch(() => null);
-  const [
-    totalUsers,
-    totalWatchlist,
-    totalCompare,
-    totalNotes,
-    totalReports,
-    totalSavedFilters,
-    totalWebhooks,
-    brokenWebhooks,
-    totalPrograms,
-    totalSnapshots,
-    recentUsers,
-    topWatchedRows,
-  ] = await Promise.all([
-    settle(db.$count(users)),
-    settle(db.$count(userWatchlist)),
-    settle(db.$count(userCompare)),
-    settle(db.$count(userNotes)),
-    settle(db.$count(userReports)),
-    settle(db.$count(userSavedFilters)),
-    settle(db.$count(discordWebhooks)),
-    settle(db.$count(discordWebhooks, sql`${discordWebhooks.brokenAt} IS NOT NULL`)),
-    settle(db.$count(programs)),
-    settle(db.$count(programSnapshots)),
+  type Counts = {
+    total_users: number; total_watchlist: number; total_compare: number;
+    total_notes: number; total_reports: number; total_saved_filters: number;
+    total_webhooks: number; broken_webhooks: number;
+    total_programs: number; total_snapshots: number;
+  };
+  const [countsRows, recentUsers, topWatchedRows] = await Promise.all([
+    settle(db.execute<Counts>(sql`
+      SELECT
+        (SELECT count(*) FROM "user")::int               AS total_users,
+        (SELECT count(*) FROM user_watchlist)::int       AS total_watchlist,
+        (SELECT count(*) FROM user_compare)::int         AS total_compare,
+        (SELECT count(*) FROM user_notes)::int           AS total_notes,
+        (SELECT count(*) FROM user_reports)::int         AS total_reports,
+        (SELECT count(*) FROM user_saved_filters)::int   AS total_saved_filters,
+        (SELECT count(*) FROM discord_webhooks)::int     AS total_webhooks,
+        (SELECT count(*) FROM discord_webhooks WHERE broken_at IS NOT NULL)::int AS broken_webhooks,
+        (SELECT count(*) FROM programs)::int             AS total_programs,
+        (SELECT count(*) FROM program_snapshots)::int    AS total_snapshots
+    `)),
     settle(
       db
         .select({ id: users.id, name: users.name, email: users.email, image: users.image })
@@ -75,6 +60,18 @@ export default async function AdminPage() {
         .limit(10),
     ),
   ]);
+
+  const c = (countsRows as unknown as { rows?: Counts[] } | null)?.rows?.[0] ?? null;
+  const totalUsers         = c?.total_users         ?? null;
+  const totalWatchlist     = c?.total_watchlist     ?? null;
+  const totalCompare       = c?.total_compare       ?? null;
+  const totalNotes         = c?.total_notes         ?? null;
+  const totalReports       = c?.total_reports       ?? null;
+  const totalSavedFilters  = c?.total_saved_filters ?? null;
+  const totalWebhooks      = c?.total_webhooks      ?? null;
+  const brokenWebhooks     = c?.broken_webhooks     ?? null;
+  const totalPrograms      = c?.total_programs      ?? null;
+  const totalSnapshots     = c?.total_snapshots     ?? null;
 
   const pendingSignups = await listPendingSignups().catch(() => []);
 
