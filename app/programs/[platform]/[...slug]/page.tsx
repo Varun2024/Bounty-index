@@ -258,11 +258,24 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             {program.handle && program.handle !== program.slug && <Tag>@{program.handle}</Tag>}
           </div>
 
-          <nav aria-label="On this page" className="mt-6 flex flex-wrap gap-x-5 gap-y-1.5 mono text-[10px] uppercase tracking-widest text-neutral-500">
-            <a href="#scope" className="hover:text-emerald-300 transition focus-ring rounded">Scope</a>
-            <a href="#changes" className="hover:text-emerald-300 transition focus-ring rounded">Changes</a>
-            <a href="#community" className="hover:text-emerald-300 transition focus-ring rounded">Community</a>
-            <a href="#notes" className="hover:text-emerald-300 transition focus-ring rounded">Notes</a>
+          {/* Underlined links + an explicit label so this reads as navigation, not another
+              metadata row (it sits right under the tags, which look similar). */}
+          <nav aria-label="On this page" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
+            <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">On this page</span>
+            {[
+              { href: '#scope', label: 'Scope' },
+              { href: '#changes', label: 'Changes' },
+              { href: '#community', label: 'Community' },
+              { href: '#notes', label: 'Notes' },
+            ].map((s) => (
+              <a
+                key={s.href}
+                href={s.href}
+                className="focus-ring rounded text-neutral-300 hover:text-emerald-300 underline decoration-neutral-700 underline-offset-4 hover:decoration-emerald-400 transition"
+              >
+                {s.label}
+              </a>
+            ))}
           </nav>
         </section>
 
