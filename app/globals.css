@@ -26,6 +26,11 @@
    prefers light and the user hasn't explicitly picked `.dark`. */
 html { color-scheme: light dark; }
 
+/* Body copy was reading a touch small. Bump the root from the 16px default so rem-based text
+   (text-sm / text-base / text-lg and headings) grows ~1px. The px-based micro-labels
+   (text-[10px]/[11px]) are unaffected, so mono metadata stays crisp. */
+html { font-size: 17px; }
+
 html.light,
 html:not(.dark):where([data-system-light]) {
   /* placeholder — rules below set it. The actual trigger is html.light

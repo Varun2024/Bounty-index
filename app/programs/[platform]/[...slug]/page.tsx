@@ -22,6 +22,7 @@ import { ScopeMixBar } from './scope-mix-bar';
 import { RecentChanges } from './recent-changes';
 import { SimilarPrograms } from './similar-programs';
 import { CopyScope } from './copy-scope';
+import { SectionNav } from './section-nav';
 
 // ISR: program data changes once a day via ingest. Serve the shell from CDN for an hour.
 // Per-user bits (note, user's own report) are fetched client-side inside their components;
@@ -257,27 +258,9 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             {program.submissionState && <Tag>{program.submissionState}</Tag>}
             {program.handle && program.handle !== program.slug && <Tag>@{program.handle}</Tag>}
           </div>
-
-          {/* Underlined links + an explicit label so this reads as navigation, not another
-              metadata row (it sits right under the tags, which look similar). */}
-          <nav aria-label="On this page" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">On this page</span>
-            {[
-              { href: '#scope', label: 'Scope' },
-              { href: '#changes', label: 'Changes' },
-              { href: '#community', label: 'Community' },
-              { href: '#notes', label: 'Notes' },
-            ].map((s) => (
-              <a
-                key={s.href}
-                href={s.href}
-                className="focus-ring rounded text-neutral-300 hover:text-emerald-300 underline decoration-neutral-700 underline-offset-4 hover:decoration-emerald-400 transition"
-              >
-                {s.label}
-              </a>
-            ))}
-          </nav>
         </section>
+
+        <SectionNav />
 
         <OpportunityBreakdown
           program={{
@@ -299,7 +282,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         <ScopeMixBar mix={assetTypeMix} />
 
         {/* Scope: split columns */}
-        <div id="scope" className="mt-10 scroll-mt-20 reveal reveal-delay-1">
+        <div id="scope" className="mt-10 scroll-mt-28 reveal reveal-delay-1">
           <SectionHeading title="Scope" variant="prominent">
             <CopyScope identifiers={inScopeIdentifiers} />
           </SectionHeading>
@@ -309,11 +292,11 @@ export default async function ProgramDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        <div id="changes" className="scroll-mt-20">
+        <div id="changes" className="scroll-mt-28">
           <RecentChanges snapshots={snapshots} currency={program.currency ?? 'USD'} />
         </div>
 
-        <div id="community" className="scroll-mt-20">
+        <div id="community" className="scroll-mt-28">
           <CommunityReports
             programId={program.id}
             programName={program.name}
@@ -324,7 +307,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
 
         <SimilarPrograms items={similar} />
 
-        <div id="notes" className="scroll-mt-20">
+        <div id="notes" className="scroll-mt-28">
           <ProgramNotes programId={program.id} initialNote={initialNote} />
         </div>
 
