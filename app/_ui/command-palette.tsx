@@ -130,6 +130,7 @@ export function CommandPalette() {
         window.dispatchEvent(new CustomEvent('shortcuts:open'));
         return;
       }
+      window.dispatchEvent(new CustomEvent('navprogress:start'));
       router.push(item.href);
     },
     [close, router],

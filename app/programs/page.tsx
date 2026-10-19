@@ -253,5 +253,15 @@ function OpportunityBadge({ program }: OpportunityBadgeProps) {
         : total >= 25
           ? 'text-neutral-300'
           : 'text-neutral-600';
-  return <span className={tone} title={`Opportunity score · see /how-scored`}>{total}</span>;
+  const bar =
+    total >= 75 ? 'bg-emerald-300' : total >= 50 ? 'bg-emerald-400/70' : total >= 25 ? 'bg-neutral-500' : 'bg-neutral-700';
+  // Number plus a tiny gauge so the flagship score reads as a level, not a bare digit.
+  return (
+    <span className="inline-flex flex-col items-end gap-1" title={`Opportunity score ${total}/100 · see /how-scored`}>
+      <span className={tone}>{total}</span>
+      <span className="block w-9 h-[3px] rounded-full bg-neutral-900 overflow-hidden">
+        <span className={`block h-full rounded-full ${bar}`} style={{ width: `${total}%` }} />
+      </span>
+    </span>
+  );
 }

@@ -41,7 +41,10 @@ export function KeyboardNav() {
       } else if (e.key === 'Enter') {
         const rows = getRows();
         const href = rows[indexRef.current]?.dataset.rowHref;
-        if (href) router.push(href);
+        if (href) {
+          window.dispatchEvent(new CustomEvent('navprogress:start'));
+          router.push(href);
+        }
       } else if (e.key === 'Escape') {
         (document.activeElement as HTMLElement | null)?.blur();
       }

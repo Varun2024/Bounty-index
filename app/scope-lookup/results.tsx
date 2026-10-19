@@ -29,7 +29,8 @@ export function ScopeResults({ domain, matches }: ScopeResultsProps) {
 
       {verdict === 'none' && (
         <p className="mono text-xs text-neutral-500 mt-6">
-          try a broader query — e.g. drop the subdomain, or use the parent domain
+          Try a broader query (drop the subdomain, or use the parent domain), or{' '}
+          <Link href="/programs" className="text-emerald-300 hover:text-emerald-200 transition">browse the full index</Link>.
         </p>
       )}
 
@@ -101,7 +102,7 @@ function Verdict({ domain, verdict, inScopePrograms, outOfScopePrograms, inScope
                 <>
                   <span className="text-neutral-700"> · </span>
                   <span className="mono text-amber-300 tabular-nums">{outOfScopePrograms}</span>
-                  <span className="text-neutral-400"> also list it as out-of-scope — see below</span>
+                  <span className="text-neutral-400"> also list it as out-of-scope (see below)</span>
                 </>
               )}
             </>
@@ -119,7 +120,7 @@ function Verdict({ domain, verdict, inScopePrograms, outOfScopePrograms, inScope
           {verdict === 'none' && (
             <>
               <code className={`mono ${style.domainColor}`}>{domain}</code>
-              <span className="text-neutral-400"> — not listed by any indexed program</span>
+              <span className="text-neutral-400"> is not listed by any indexed program</span>
             </>
           )}
         </p>

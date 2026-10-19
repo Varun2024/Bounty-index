@@ -76,6 +76,13 @@ export function NavProgress() {
     return () => document.removeEventListener('click', onClick, true);
   }, [start]);
 
+  // Programmatic navigations (command palette, keyboard-nav) dispatch this since they don't
+  // go through an anchor click.
+  useEffect(() => {
+    window.addEventListener('navprogress:start', start);
+    return () => window.removeEventListener('navprogress:start', start);
+  }, [start]);
+
   // Route committed: finish. Deferred out of the effect body so it isn't a synchronous setState.
   useEffect(() => {
     if (firstRef.current) {
