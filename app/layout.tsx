@@ -7,6 +7,7 @@ import { GlobalKeyboard } from './_ui/global-keyboard';
 import { CompareTray } from './_ui/compare-tray';
 import { PlatformLogo } from './_ui/platform-logo';
 import { UserMenu } from './_ui/user-menu';
+import { SiteNav } from './_ui/nav-menu';
 import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
 import { DegradedBanner } from './_ui/degraded-banner';
@@ -101,17 +102,6 @@ function FooterLink({
   );
 }
 
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="nav-underline px-2 md:px-3 py-1.5 rounded-md text-neutral-400 hover:text-neutral-100 hover:bg-neutral-900 transition focus-ring text-xs md:text-sm whitespace-nowrap"
-    >
-      {children}
-    </Link>
-  );
-}
-
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="h-full antialiased">
@@ -141,18 +131,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
             </Link>
             <div className="flex items-center gap-1 md:gap-2 text-sm">
-              <nav className="flex items-center gap-0.5 md:gap-1">
-                <NavLink href="/programs">Programs</NavLink>
-                <NavLink href="/scope-lookup"><span className="hidden sm:inline">Scope lookup</span><span className="sm:hidden">Scope</span></NavLink>
-                <NavLink href="/whats-new">What&rsquo;s new</NavLink>
-                <NavLink href="/mcp">
-                  <span className="inline-flex items-center gap-1.5">
-                    MCP
-                    <span className="mono text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300">beta</span>
-                  </span>
-                </NavLink>
-              </nav>
-              <span className="ml-2 mono text-[10px] uppercase tracking-widest text-neutral-600 hidden md:inline-flex items-center gap-1.5">
+              <SiteNav />
+              <span className="ml-2 mono text-[10px] uppercase tracking-widest text-neutral-600 hidden lg:inline-flex items-center gap-1.5">
                 <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
                 <span>to search</span>
               </span>

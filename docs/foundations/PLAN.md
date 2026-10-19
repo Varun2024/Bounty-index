@@ -65,6 +65,10 @@ lib/db/                   schema, queries
 - 2026-08-03 — Shipped: min-reward filter, keyboard shortcuts (`/`, `j`/`k`, `↵`, `Esc`), OG/Twitter meta on program detail via `generateMetadata`.
 
 ## Next up
+
+> **Superseded (2026-10-19):** every box below shipped back in the kickoff week. The live
+> roadmap is `docs/roadmap/ROADMAP.md` and the per-feature log is `docs/progress.md`.
+
 - [ ] Connect Neon Postgres → set `DATABASE_URL` in `.env`
 - [ ] `npm run db:push` to create tables
 - [ ] `npm run ingest` for first data pull

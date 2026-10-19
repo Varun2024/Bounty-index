@@ -26,6 +26,28 @@ Phase list:
 
 ---
 
+## 2026-10-19 — Feature discoverability: grouped nav + honest landing
+
+The two surfaces every visitor sees were advertising ~4 of ~15 shipped features. Fixed both.
+New `SiteNav` client component (`app/_ui/nav-menu.tsx`) replaces the flat 4-link header with
+`Programs · Explore ▾ · Track ▾ · Tools ▾`, each dropdown item carrying a one-line description
+(the real payoff: people learn what a feature does, not just its name). Collapses to a hamburger
+panel below `md`. Everything that used to be footer-only (Watchlist, Compare, Reward changes,
+Discord alerts, Opportunity score, How it works, MCP) now lives on a persistent surface.
+
+Landing `Features` section: killed the "Four things. Done properly." headline that undersold the
+product, made the four hero cards real links, and added an "And once you are hunting" directory
+surfacing the tracking + evaluate features. Verified with Playwright: dropdowns open/close on
+click, Escape, and outside-click; mobile panel has no overflow at 375px; nav items navigate.
+
+Also reconciled the stale `phases.md` / `PLAN.md` (they still claimed Phase 1; project is at the
+tail of Phase 3) and marked ROADMAP Now items 1-3 shipped (they had been built but never ticked).
+
+**For blog:** the "you shipped 15 features and advertise 4" problem every solo product grows into,
+and why discoverability is a nav-and-landing edit, not a new features page nobody visits.
+
+---
+
 ## 2026-09-01 — MCP server v1 (read-only, public beta)
 
 Shipped `POST /api/mcp` via `mcp-handler` (Apache-2.0; the successor to `@vercel/mcp-adapter`) in stateless Streamable-HTTP mode. Zero paid add-ons, no KV, no session store. Eight public tools: `search_programs`, `get_program`, `list_scope`, `scope_lookup`, `whats_new`, `similar_programs`, `program_timeline`, `list_platforms` — all reusing the same fallback-wrapped query functions the web UI runs, so the MCP surface stays live during Neon quota outages the same way `/programs` does. `get_program` takes an `include_raw` flag (default false).

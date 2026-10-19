@@ -11,11 +11,8 @@ Last updated: 2026-08-08 (after the bbradar.io competitive pass)
 
 Pick 2-3. Keep it real.
 
-Ranked by ROI × leverage of existing code. Items 1-3 close visible gaps against bbradar.io using data we already have; item 4 is where they're most ahead.
+Items 1-3 shipped (verified 2026-10-19, roadmap had gone stale). Coverage expansion is the real next step.
 
-- [ ] **Public activity counts on program pages** — surface `+N scopes added / -M removed in the last 7 days` on each program detail page. Data already lives in `program_snapshots`; we just don't render it. Zero new infra, closes the biggest visible gap where bbradar looks smarter. ~1 hr.
-- [ ] **Company logos on program pages** — replace platform-only dot with the actual company logo. Two paths: (a) `logo.dev` API by domain, (b) scrape favicon/OG image from `program.url` and cache. Small visual polish, big perception jump. ~2 hrs.
-- [ ] **Per-program scope-change RSS** — `/programs/[platform]/[slug]/feed.xml` emitting each snapshot diff as an RSS `<item>`. Free version of bbradar Pro's scope-alerts. Uses existing snapshot data. ~2 hrs.
 - [ ] **Coverage expansion (Immunefi first)** — Immunefi is DeFi/crypto bug bounties, 6-7 figure payouts. Highest-value niche where bbradar has the field to themselves. Own ingest since it's not in `arkadiyt/bounty-targets-data`. ~4-6 hrs including normalizer.
 
 ## Next — queued after Now empties
@@ -57,6 +54,11 @@ Kept here so we don't re-litigate.
 ## Shipped
 
 Ordered newest first. Commit hashes for archaeology.
+
+### Built since Aug (found unchecked 2026-10-19)
+- Public activity counts on program pages — hero `+N / −M · 7d` badge + full "Recent changes" section (`lib/snapshots.ts`, `recent-changes.tsx`)
+- Company logos on program pages — Google s2 favicon + monogram fallback (`company-logo.tsx`)
+- Per-program scope-change RSS — `app/rss/programs/[platform]/[...slug]/route.ts`
 
 ### 2026-08-07 (SEO + domain + XML fixes)
 - Sitemap/RSS/BreadcrumbList URL-encoded to handle slugs with `&` etc. (`4d9ba6f`)

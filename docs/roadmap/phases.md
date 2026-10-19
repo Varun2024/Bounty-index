@@ -1,5 +1,10 @@
 # Phases
 
+> **Status note (2026-10-19):** the per-checkbox state below is stale. Phases 0 through 2
+> are fully shipped and Phase 3 is mostly shipped (see `progress.md` for the live record).
+> The project is effectively at the tail of Phase 3; Phase 4 (monetization) is not started,
+> by design. The checkboxes are left as written for history rather than re-ticked by hand.
+
 ## Phase 0 — Scaffold ✅
 - Next.js 16 + Tailwind 4 + TS
 - Drizzle + Postgres + Zod deps
@@ -8,7 +13,7 @@
 - Pages: `/`, `/programs`, `/programs/[p]/[s]`, `/scope-lookup`, `/feed`
 - URL-driven filters, dark editorial UI
 
-## Phase 1 — MVP live (current)
+## Phase 1 — MVP live ✅
 **Goal:** Public site that's actually useful for someone hunting bounties.
 
 - [ ] Neon Postgres connected + `db:push`
@@ -24,7 +29,7 @@
 
 **Definition of done:** A hacker can visit, filter by "hackerone + wildcard + bounty", find a program, and click through to submit — in under 30 seconds.
 
-## Phase 2 — Accounts + alerts
+## Phase 2 — Accounts + alerts ✅
 **Trigger:** ≥ 50 daily unique visitors or repeat traffic from bug-bounty communities.
 
 - [ ] Auth (NextAuth, GitHub OAuth — audience overlaps heavily)
@@ -35,7 +40,7 @@
 - [ ] "New programs since I last checked" indicator
 - [ ] "Match my stack" — user picks tech tags, ranked programs
 
-## Phase 3 — Signal layer
+## Phase 3 — Signal layer (mostly ✅)
 **Trigger:** Accounts working, users engaging with alerts.
 
 - [ ] Payout stats from public disclosures (Hacktivity, Bugcrowd)
