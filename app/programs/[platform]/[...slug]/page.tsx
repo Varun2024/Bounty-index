@@ -6,7 +6,8 @@ import { diffSnapshots, isEmptyDiff } from '@/lib/snapshots';
 import { formatPayoutRange, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 import { summarizeActivity } from '@/lib/snapshots';
 import { extractCompanyDomain } from '@/lib/program-domain';
-import { ExternalIcon } from '@/app/_ui/icons';
+import { ExternalIcon, RssIcon } from '@/app/_ui/icons';
+import { SectionHeading } from '@/app/_ui/section-heading';
 import { CompareButton } from '@/app/_ui/compare-button';
 import { WatchButton } from '@/app/_ui/watch-button';
 import { PlatformLogo } from '@/app/_ui/platform-logo';
@@ -190,6 +191,12 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                     </>
                   ) : null}
                   <span>{inScope.length} in-scope · {outOfScope.length} out</span>
+                  {program.safeHarbor && (
+                    <>
+                      <span className="text-neutral-700">·</span>
+                      <SafeHarborChip value={program.safeHarbor} />
+                    </>
+                  )}
                   {program.lastUpdatedAt && (
                     <>
                       <span className="text-neutral-700">·</span>
@@ -211,19 +218,11 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                       </span>
                     </>
                   )}
-                  <span className="text-neutral-700">·</span>
-                  <a
-                    href={`/rss/programs/${program.platform}/${program.slug}`}
-                    className="text-neutral-400 hover:text-emerald-300 transition-colors"
-                    title="RSS feed of scope changes"
-                  >
-                    RSS
-                  </a>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto md:shrink-0">
               <WatchButton programId={program.id} />
               <CompareButton programId={program.id} />
               <Link
@@ -234,10 +233,17 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                 Discord →
               </Link>
               <a
+                href={`/rss/programs/${program.platform}/${program.slug}`}
+                className="focus-ring mono text-xs px-3 py-2 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-1.5"
+                title="RSS feed of this program's scope and reward changes"
+              >
+                <RssIcon size={12} /> RSS
+              </a>
+              <a
                 href={program.url}
                 target="_blank"
                 rel="noreferrer"
-                className="focus-ring cta-arrow mono text-sm px-4 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition shadow-[0_0_40px_-10px] shadow-emerald-400/70 inline-flex items-center gap-2"
+                className="focus-ring cta-arrow mono text-sm px-4 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition shadow-[0_0_40px_-10px] shadow-emerald-400/70 inline-flex items-center gap-2 ml-auto md:ml-0"
               >
                 open program <ExternalIcon size={12} className="arrow" />
               </a>
@@ -251,6 +257,13 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             {program.submissionState && <Tag>{program.submissionState}</Tag>}
             {program.handle && program.handle !== program.slug && <Tag>@{program.handle}</Tag>}
           </div>
+
+          <nav aria-label="On this page" className="mt-6 flex flex-wrap gap-x-5 gap-y-1.5 mono text-[10px] uppercase tracking-widest text-neutral-500">
+            <a href="#scope" className="hover:text-emerald-300 transition focus-ring rounded">Scope</a>
+            <a href="#changes" className="hover:text-emerald-300 transition focus-ring rounded">Changes</a>
+            <a href="#community" className="hover:text-emerald-300 transition focus-ring rounded">Community</a>
+            <a href="#notes" className="hover:text-emerald-300 transition focus-ring rounded">Notes</a>
+          </nav>
         </section>
 
         <OpportunityBreakdown
@@ -273,28 +286,34 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         <ScopeMixBar mix={assetTypeMix} />
 
         {/* Scope: split columns */}
-        <div className="mt-10 reveal reveal-delay-1">
-          <div className="flex items-center justify-end mb-2">
+        <div id="scope" className="mt-10 scroll-mt-20 reveal reveal-delay-1">
+          <SectionHeading title="Scope" variant="prominent">
             <CopyScope identifiers={inScopeIdentifiers} />
-          </div>
+          </SectionHeading>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <ScopeColumn kind="in" items={inScope} />
             <ScopeColumn kind="out" items={outOfScope} />
           </div>
         </div>
 
-        <RecentChanges snapshots={snapshots} currency={program.currency ?? 'USD'} />
+        <div id="changes" className="scroll-mt-20">
+          <RecentChanges snapshots={snapshots} currency={program.currency ?? 'USD'} />
+        </div>
 
-        <CommunityReports
-          programId={program.id}
-          programName={program.name}
-          initialStats={initialReportStats}
-          initialUserReport={initialUserReport}
-        />
+        <div id="community" className="scroll-mt-20">
+          <CommunityReports
+            programId={program.id}
+            programName={program.name}
+            initialStats={initialReportStats}
+            initialUserReport={initialUserReport}
+          />
+        </div>
 
         <SimilarPrograms items={similar} />
 
-        <ProgramNotes programId={program.id} initialNote={initialNote} />
+        <div id="notes" className="scroll-mt-20">
+          <ProgramNotes programId={program.id} initialNote={initialNote} />
+        </div>
 
         <ProgramTimeline snapshots={snapshots} currency={program.currency ?? 'USD'} />
 
@@ -312,6 +331,25 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         )}
       </div>
     </div>
+  );
+}
+
+// Safe harbor is a top decision signal for hunters (legal protection for good-faith research),
+// so it gets the accent treatment. Only rendered when the platform actually publishes it.
+function SafeHarborChip({ value }: { value: string }) {
+  const tone =
+    value === 'full'
+      ? 'border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300'
+      : value === 'partial'
+        ? 'border-amber-400/30 bg-amber-400/[0.06] text-amber-300'
+        : 'border-red-500/30 bg-red-500/[0.06] text-red-400';
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded border ${tone}`}
+      title="Safe harbor: whether the program offers legal protection for good-faith research"
+    >
+      safe harbor: {value}
+    </span>
   );
 }
 
