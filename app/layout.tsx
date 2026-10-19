@@ -10,6 +10,8 @@ import { UserMenu } from './_ui/user-menu';
 import { SiteNav } from './_ui/nav-menu';
 import { CommandPalette } from './_ui/command-palette';
 import { ShortcutsHelp } from './_ui/shortcuts-help';
+import { NavProgress } from './_ui/nav-progress';
+import { Suspense } from 'react';
 import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
 import { DegradedBanner } from './_ui/degraded-banner';
@@ -126,6 +128,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_LD) }}
         />
         <SessionProvider>
+        <Suspense fallback={null}><NavProgress /></Suspense>
         <header className="sticky top-0 z-20 backdrop-blur-md bg-background/80 border-b border-neutral-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
             <Link href="/" className="mono text-sm tracking-tight flex items-center gap-2.5 group focus-ring rounded-md py-1 -my-1">
