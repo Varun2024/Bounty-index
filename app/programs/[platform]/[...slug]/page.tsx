@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProgramBySlug, getProgramSnapshots, getSimilarPrograms, getProgramReportStats, type ProgramSnapshot, type SimilarProgram } from '@/lib/db/queries';
-import { diffSnapshots, isEmptyDiff } from '@/lib/snapshots';
 import { formatPayoutRange, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 import { summarizeActivity } from '@/lib/snapshots';
 import { extractCompanyDomain } from '@/lib/program-domain';
@@ -16,7 +15,6 @@ import { ProgramNotes } from '@/app/_ui/program-notes';
 import { CommunityReports } from '@/app/_ui/community-reports';
 import { ScopeColumn, Tag } from './scope-columns';
 import { ProgramTimeline } from './timeline';
-import { AtAGlance } from './at-a-glance';
 import { OpportunityBreakdown } from './opportunity-breakdown';
 import { ScopeMixBar } from './scope-mix-bar';
 import { RecentChanges } from './recent-changes';
@@ -129,13 +127,6 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const assetTypeMix = [...mixBuckets.entries()]
     .map(([type, count]) => ({ type, count }))
     .sort((a, b) => b.count - a.count);
-  const lastChangeAt = (() => {
-    for (let i = snapshots.length - 1; i > 0; i--) {
-      const d = diffSnapshots(snapshots[i - 1].payload, snapshots[i].payload);
-      if (d && !isEmptyDiff(d)) return snapshots[i].capturedAt;
-    }
-    return null;
-  })();
   const inScopeIdentifiers = inScope.map((s) => s.identifier);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.bountyindex.in';
@@ -172,91 +163,110 @@ export default async function ProgramDetailPage({ params }: PageProps) {
       </div>
 
       <div className="max-w-[1100px] mx-auto px-6 py-10">
-        {/* Hero */}
+        {/* Hero: identity on the left, a compact key-facts card + primary CTA on the right. */}
         <section className="border-b border-neutral-900 pb-8 reveal">
-          <div className="flex items-start justify-between gap-6 flex-wrap">
-            <div className="min-w-0 flex items-start gap-4">
-              <CompanyLogo domain={companyDomain} name={program.name} size={48} className="mt-1" />
-              <div className="min-w-0">
-                <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-50 break-words">{program.name}</h1>
-                <div className="mt-3 mono text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <span className="inline-flex items-center gap-2">
-                    <PlatformLogo platform={program.platform} size="sm" />
-                    {platformLabel(program.platform)}
-                  </span>
-                  <span className="text-neutral-700">·</span>
-                  {payout ? (
-                    <>
-                      <span className="text-emerald-300">{payout.label} {payout.value}</span>
-                      <span className="text-neutral-700">·</span>
-                    </>
-                  ) : null}
-                  <span>{inScope.length} in-scope · {outOfScope.length} out</span>
-                  {program.safeHarbor && (
-                    <>
-                      <span className="text-neutral-700">·</span>
-                      <SafeHarborChip value={program.safeHarbor} />
-                    </>
-                  )}
-                  {program.lastUpdatedAt && (
-                    <>
-                      <span className="text-neutral-700">·</span>
-                      <span>updated {relativeTime(program.lastUpdatedAt)}</span>
-                    </>
-                  )}
-                  {hasActivity && (
-                    <>
-                      <span className="text-neutral-700">·</span>
-                      <span
-                        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300"
-                        title={`Scope changes in the last ${activity.windowDays} days`}
-                      >
-                        <span className="w-1 h-1 rounded-full bg-emerald-400" />
-                        {activity.addedCount > 0 && <span>+{activity.addedCount}</span>}
-                        {activity.removedCount > 0 && <span className="text-amber-300">−{activity.removedCount}</span>}
-                        {activity.rewardChanged && <span>reward</span>}
-                        <span className="text-neutral-500">· {activity.windowDays}d</span>
-                      </span>
-                    </>
-                  )}
+          <div className="grid lg:grid-cols-[1fr_300px] gap-6 lg:gap-10 items-start">
+            {/* Identity */}
+            <div className="min-w-0">
+              <div className="flex items-start gap-4">
+                <CompanyLogo domain={companyDomain} name={program.name} size={48} className="mt-1 shrink-0" />
+                <div className="min-w-0">
+                  <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-50 break-words">{program.name}</h1>
+                  <div className="mt-3 mono text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="inline-flex items-center gap-2">
+                      <PlatformLogo platform={program.platform} size="sm" />
+                      {platformLabel(program.platform)}
+                    </span>
+                    {program.lastUpdatedAt && (
+                      <>
+                        <span className="text-neutral-700">·</span>
+                        <span>updated {relativeTime(program.lastUpdatedAt)}</span>
+                      </>
+                    )}
+                    {hasActivity && (
+                      <>
+                        <span className="text-neutral-700">·</span>
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300"
+                          title={`Scope changes in the last ${activity.windowDays} days`}
+                        >
+                          <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                          {activity.addedCount > 0 && <span>+{activity.addedCount}</span>}
+                          {activity.removedCount > 0 && <span className="text-amber-300">−{activity.removedCount}</span>}
+                          {activity.rewardChanged && <span>reward</span>}
+                          <span className="text-neutral-500">· {activity.windowDays}d</span>
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-2 mono text-[11px]">
+                <Tag active={program.offersBounty}>{program.programType}</Tag>
+                {program.offersSwag && <Tag>swag</Tag>}
+                {program.managed && <Tag>managed</Tag>}
+                {program.submissionState && <Tag>{program.submissionState}</Tag>}
+                {program.handle && program.handle !== program.slug && <Tag>@{program.handle}</Tag>}
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                <WatchButton programId={program.id} />
+                <CompareButton programId={program.id} />
+                <Link
+                  href={`/settings/discord?program=${program.id}`}
+                  className="focus-ring mono text-xs px-3 py-2 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-1.5"
+                  title="One webhook, this program, forever. Zero emails, because we don't have yours."
+                >
+                  Discord →
+                </Link>
+                <a
+                  href={`/rss/programs/${program.platform}/${program.slug}`}
+                  className="focus-ring mono text-xs px-3 py-2 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-1.5"
+                  title="RSS feed of this program's scope and reward changes"
+                >
+                  <RssIcon size={12} /> RSS
+                </a>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto md:shrink-0">
-              <WatchButton programId={program.id} />
-              <CompareButton programId={program.id} />
-              <Link
-                href={`/settings/discord?program=${program.id}`}
-                className="focus-ring mono text-xs px-3 py-2 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-1.5"
-                title="One webhook, this program, forever. Zero emails, because we don't have yours."
-              >
-                Discord →
-              </Link>
-              <a
-                href={`/rss/programs/${program.platform}/${program.slug}`}
-                className="focus-ring mono text-xs px-3 py-2 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-1.5"
-                title="RSS feed of this program's scope and reward changes"
-              >
-                <RssIcon size={12} /> RSS
-              </a>
+            {/* Key facts */}
+            <div className="w-full">
+              <dl className="rounded-xl border border-neutral-900 bg-neutral-950/60 divide-y divide-neutral-900 overflow-hidden">
+                <KeyFact label="payout">
+                  {payout ? (
+                    <span className="text-emerald-300">{payout.value}</span>
+                  ) : (
+                    <span className="text-neutral-600">no bounty</span>
+                  )}
+                </KeyFact>
+                <KeyFact label="scope">
+                  <span className="text-neutral-200">{inScope.length} in</span>
+                  <span className="text-neutral-600"> · {outOfScope.length} out</span>
+                </KeyFact>
+                <KeyFact label="safe harbor">
+                  <SafeHarborValue value={program.safeHarbor} />
+                </KeyFact>
+                <KeyFact label="response">
+                  {initialReportStats.medianFirstResponseDays === null ? (
+                    <span className="text-neutral-600">no reports</span>
+                  ) : (
+                    <>
+                      <span className="text-neutral-200">{formatResponseDays(initialReportStats.medianFirstResponseDays)}</span>
+                      <span className="text-neutral-500"> median</span>
+                    </>
+                  )}
+                </KeyFact>
+              </dl>
               <a
                 href={program.url}
                 target="_blank"
                 rel="noreferrer"
-                className="focus-ring cta-arrow mono text-sm px-4 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition shadow-[0_0_40px_-10px] shadow-emerald-400/70 inline-flex items-center gap-2 ml-auto md:ml-0"
+                className="mt-3 w-full focus-ring cta-arrow mono text-sm px-4 py-2.5 bg-emerald-400 text-neutral-950 rounded-md hover:bg-emerald-300 transition shadow-[0_0_40px_-10px] shadow-emerald-400/70 inline-flex items-center justify-center gap-2"
               >
                 open program <ExternalIcon size={12} className="arrow" />
               </a>
             </div>
-          </div>
-
-          <div className="mt-5 flex flex-wrap gap-2 mono text-[11px]">
-            <Tag active={program.offersBounty}>{program.programType}</Tag>
-            {program.offersSwag && <Tag>swag</Tag>}
-            {program.managed && <Tag>managed</Tag>}
-            {program.submissionState && <Tag>{program.submissionState}</Tag>}
-            {program.handle && program.handle !== program.slug && <Tag>@{program.handle}</Tag>}
           </div>
         </section>
 
@@ -268,15 +278,6 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             offersBounty: program.offersBounty,
             lastUpdatedAt: program.lastUpdatedAt,
           }}
-        />
-
-        <AtAGlance
-          inScopeCount={inScope.length}
-          outOfScopeCount={outOfScope.length}
-          assetTypeMix={assetTypeMix}
-          medianFirstResponseDays={initialReportStats.medianFirstResponseDays}
-          reportCount={initialReportStats.count}
-          lastChangeAt={lastChangeAt}
         />
 
         <ScopeMixBar mix={assetTypeMix} />
@@ -330,22 +331,27 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   );
 }
 
-// Safe harbor is a top decision signal for hunters (legal protection for good-faith research),
-// so it gets the accent treatment. Only rendered when the platform actually publishes it.
-function SafeHarborChip({ value }: { value: string }) {
-  const tone =
-    value === 'full'
-      ? 'border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300'
-      : value === 'partial'
-        ? 'border-amber-400/30 bg-amber-400/[0.06] text-amber-300'
-        : 'border-red-500/30 bg-red-500/[0.06] text-red-400';
+// One row in the key-facts card: muted label on the left, value on the right.
+function KeyFact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded border ${tone}`}
-      title="Safe harbor: whether the program offers legal protection for good-faith research"
-    >
-      safe harbor: {value}
-    </span>
+    <div className="flex items-center justify-between gap-3 px-4 py-3">
+      <dt className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">{label}</dt>
+      <dd className="mono text-sm text-right tabular-nums truncate">{children}</dd>
+    </div>
   );
+}
+
+// Safe harbor (legal protection for good-faith research) is a top decision signal, so it gets
+// a color. Null means the platform doesn't publish it structurally yet.
+function SafeHarborValue({ value }: { value: string | null }) {
+  if (!value) return <span className="text-neutral-600">unknown</span>;
+  const tone = value === 'full' ? 'text-emerald-300' : value === 'partial' ? 'text-amber-300' : 'text-red-400';
+  return <span className={tone}>{value}</span>;
+}
+
+function formatResponseDays(d: number): string {
+  if (d < 1) return '<1d';
+  if (d < 10) return `${d.toFixed(1)}d`;
+  return `${Math.round(d)}d`;
 }
 
