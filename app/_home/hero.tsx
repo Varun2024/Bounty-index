@@ -23,8 +23,11 @@ export function Hero({ s, top }: HeroProps) {
       <div className="relative max-w-[1280px] mx-auto px-6 flex flex-col min-h-full">
         <div className="flex-1 grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-16 items-start pt-24 pb-20 lg:pt-28 lg:pb-24">
           <section className="animate-[fadeUp_.7s_ease-out_both]">
+            {/* Bright/dim split: "every" (completeness) and "one index" (unification) carry the
+                pitch, so they stay neutral-50; the descriptive middle drops to neutral-500 so the
+                load-bearing words land first. neutral-500 on the bg clears WCAG AA for large text. */}
             <h1 className="lowercase text-[2.75rem] sm:text-5xl md:text-6xl xl:text-[4.5rem] font-medium tracking-[-0.035em] leading-[0.98] text-neutral-50">
-              every public bounty program, one index.
+              every <span className="text-neutral-500">public bounty program,</span> one index.
             </h1>
 
             <p className="mt-8 text-lg md:text-xl text-neutral-300 leading-snug max-w-xl">

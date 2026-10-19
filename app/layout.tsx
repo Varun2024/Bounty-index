@@ -8,6 +8,7 @@ import { CompareTray } from './_ui/compare-tray';
 import { PlatformLogo } from './_ui/platform-logo';
 import { UserMenu } from './_ui/user-menu';
 import { SiteNav } from './_ui/nav-menu';
+import { CommandPalette } from './_ui/command-palette';
 import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
 import { DegradedBanner } from './_ui/degraded-banner';
@@ -132,9 +133,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </Link>
             <div className="flex items-center gap-1 md:gap-2 text-sm">
               <SiteNav />
-              <span className="ml-2 mono text-[10px] uppercase tracking-widest text-neutral-600 hidden lg:inline-flex items-center gap-1.5">
-                <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
-                <span>to search</span>
+              <span className="ml-1 md:ml-2">
+                <CommandPalette />
               </span>
               <span className="ml-1.5 md:ml-3 md:pl-3 md:border-l md:border-neutral-800 inline-flex items-center gap-2">
                 <ThemeToggle />

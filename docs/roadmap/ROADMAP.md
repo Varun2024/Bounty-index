@@ -11,9 +11,14 @@ Last updated: 2026-08-08 (after the bbradar.io competitive pass)
 
 Pick 2-3. Keep it real.
 
-Items 1-3 shipped (verified 2026-10-19, roadmap had gone stale). Coverage expansion is the real next step.
+**Theme: feature discoverability.** You ship ~15 features; visitors were only meeting ~4. Nav
+and landing are fixed (2026-10-19); the rest below finishes the job. Coverage items (Immunefi,
+opportunity score) already shipped.
 
-- [ ] **Coverage expansion (Immunefi first)** — Immunefi is DeFi/crypto bug bounties, 6-7 figure payouts. Highest-value niche where bbradar has the field to themselves. Own ingest since it's not in `arkadiyt/bounty-targets-data`. ~4-6 hrs including normalizer.
+- [x] **Grouped nav + honest landing** — header dropdowns (Explore/Track/Tools) + landing feature directory. Shipped 2026-10-19.
+- [ ] **Command palette (⌘K)** — jump to any page, program, or action from one keystroke. The global discovery surface. Next up.
+- [ ] **Keyboard-shortcut help overlay (`?`)** — the `/ j k ↵ esc f` model exists but only `/` is hinted; a `?` overlay makes it visible. Pairs with ⌘K (one keyboard-surface sweep).
+- [ ] **Better empty states** — `/watchlist`, `/compare`, `/scope-lookup`, saved-filters-empty. Teach how to fill them + cross-link. Discovery at the point of need.
 
 ## Next — queued after Now empties
 
