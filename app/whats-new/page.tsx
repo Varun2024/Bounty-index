@@ -52,8 +52,8 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
 
   return (
     <div className="max-w-[1000px] mx-auto px-6 py-10">
-      <div className="flex items-end justify-between border-b border-neutral-900 pb-6 reveal">
-        <div>
+      <div className="flex items-end justify-between gap-4 border-b border-neutral-900 pb-6 reveal">
+        <div className="min-w-0">
           <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Changelog</p>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">What&rsquo;s new</h1>
           <p className="text-neutral-400 mt-2">
@@ -63,7 +63,7 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
         </div>
         <a
           href="/whats-new.xml"
-          className="focus-ring mono text-xs px-3 py-1.5 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-2"
+          className="focus-ring shrink-0 mono text-xs px-3 py-1.5 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-2"
         >
           <RssIcon size={12} />
           RSS
@@ -91,14 +91,14 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
       ) : (
         <div className="mt-10 space-y-10">
           {[...groups.entries()].map(([date, entries]) => (
-            <section key={date} className="md:grid md:grid-cols-[92px_1fr] md:gap-6">
+            <section key={date} className="md:grid md:grid-cols-[92px_minmax(0,1fr)] md:gap-6">
               <div className="mb-3 md:mb-0 md:pt-1 flex md:block items-baseline gap-3">
                 <p className="mono text-xs text-neutral-500 tabular-nums">{date}</p>
                 <p className="mono text-[10px] uppercase tracking-widest text-neutral-700 md:mt-1">
                   {entries.length} {entries.length === 1 ? 'change' : 'changes'}
                 </p>
               </div>
-              <ul>
+              <ul className="min-w-0">
                 {entries.map((c, i) => (
                   <li
                     key={`${c.program.id}-${c.capturedAt.getTime()}`}
