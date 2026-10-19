@@ -16,9 +16,9 @@ and landing are fixed (2026-10-19); the rest below finishes the job. Coverage it
 opportunity score) already shipped.
 
 - [x] **Grouped nav + honest landing** — header dropdowns (Explore/Track/Tools) + landing feature directory. Shipped 2026-10-19.
-- [ ] **Command palette (⌘K)** — jump to any page, program, or action from one keystroke. The global discovery surface. Next up.
-- [ ] **Keyboard-shortcut help overlay (`?`)** — the `/ j k ↵ esc f` model exists but only `/` is hinted; a `?` overlay makes it visible. Pairs with ⌘K (one keyboard-surface sweep).
-- [ ] **Better empty states** — `/watchlist`, `/compare`, `/scope-lookup`, saved-filters-empty. Teach how to fill them + cross-link. Discovery at the point of need.
+- [x] **Command palette (⌘K)** — jump to any page, action, or program (live search) from one keystroke, with a visible ⌘K header trigger. Shipped 2026-10-19.
+- [x] **Keyboard-shortcut help overlay (`?`)** — the `/ j k ↵ esc` model + ⌘K are now listed in a `?` overlay (also reachable from the command menu). Shipped 2026-10-19.
+- [ ] **Better empty states** — `/watchlist`, `/compare`, `/scope-lookup`, saved-filters-empty. Teach how to fill them + cross-link. Discovery at the point of need. Next up.
 
 ## Next — queued after Now empties
 

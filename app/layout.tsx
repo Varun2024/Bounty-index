@@ -9,6 +9,7 @@ import { PlatformLogo } from './_ui/platform-logo';
 import { UserMenu } from './_ui/user-menu';
 import { SiteNav } from './_ui/nav-menu';
 import { CommandPalette } from './_ui/command-palette';
+import { ShortcutsHelp } from './_ui/shortcuts-help';
 import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
 import { DegradedBanner } from './_ui/degraded-banner';
@@ -147,6 +148,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <RestoredBanner />
         <main id="main" className="flex-1">{children}</main>
         <GlobalKeyboard />
+        <ShortcutsHelp />
         <CompareTray />
         <AuthSync />
         <Analytics />

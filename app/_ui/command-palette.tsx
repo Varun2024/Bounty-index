@@ -25,6 +25,7 @@ const COMMANDS: Command[] = [
   { label: 'Opportunity score', href: '/how-scored', hint: 'the 0-100 formula', keywords: 'ranking rank formula' },
   { label: 'How it works', href: '/how-it-works', hint: 'data + cadence', keywords: 'about source faq' },
   { label: 'MCP server', href: '/mcp', hint: 'query from AI tools', keywords: 'claude cursor agent api', beta: true },
+  { label: 'Keyboard shortcuts', href: '#shortcuts', hint: 'press ?', keywords: 'keys hotkeys help' },
 ];
 
 interface ProgramRow {
@@ -124,6 +125,11 @@ export function CommandPalette() {
     (item: Item | undefined) => {
       if (!item) return;
       close();
+      // Sentinel: open the shortcuts overlay instead of navigating.
+      if (item.href === '#shortcuts') {
+        window.dispatchEvent(new CustomEvent('shortcuts:open'));
+        return;
+      }
       router.push(item.href);
     },
     [close, router],
