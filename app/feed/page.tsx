@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { newestPrograms } from '@/lib/db/queries';
 import { formatBounty, platformLabel, PLATFORM_META } from '@/lib/format';
 import { RssIcon } from '@/app/_ui/icons';
+import { EmptyState } from '@/app/_ui/empty-state';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,15 +31,15 @@ export default async function FeedPage() {
 
   return (
     <div className="max-w-[1000px] mx-auto px-6 py-10">
-      <div className="flex items-end justify-between border-b border-neutral-900 pb-6 reveal">
-        <div>
+      <div className="flex items-end justify-between gap-4 border-b border-neutral-900 pb-6 reveal">
+        <div className="min-w-0">
           <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Log</p>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">New programs</h1>
           <p className="text-neutral-400 mt-2">The freshest programs added to the index.</p>
         </div>
         <a
           href="/feed.xml"
-          className="focus-ring mono text-xs px-3 py-1.5 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-2"
+          className="focus-ring shrink-0 mono text-xs px-3 py-1.5 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-2"
         >
           <RssIcon size={12} />
           RSS
@@ -48,19 +49,23 @@ export default async function FeedPage() {
       {dbError ? (
         <div className="mt-8 border border-amber-900/60 bg-amber-950/30 rounded-lg p-4 text-sm text-amber-200/80">
           <p className="mono text-xs text-amber-400 mb-2">INDEX_READ_ONLY</p>
-          <p>New-program history is paused while the index reconnects. Browse the full <a href="/programs" className="underline text-emerald-400">program list</a> — it&rsquo;s live from the upstream mirror.</p>
+          <p>New-program history is paused while the index reconnects. Browse the full <Link href="/programs" className="underline text-emerald-400">program list</Link>, it&rsquo;s live from the upstream mirror.</p>
         </div>
       ) : rows.length === 0 ? (
-        <p className="mono text-xs text-neutral-500 mt-8">— empty log — run <code className="text-emerald-400">npm run ingest</code></p>
+        <div className="mt-10">
+          <EmptyState title="nothing new to show" action={{ href: '/programs', label: 'browse the full index →' }}>
+            This log fills as new programs land in the index. Check back, or subscribe to the RSS feed above.
+          </EmptyState>
+        </div>
       ) : (
         <div className="mt-10 space-y-10">
           {[...groups.entries()].map(([date, entries]) => (
-            <section key={date} className="md:grid md:grid-cols-[92px_1fr] md:gap-6">
+            <section key={date} className="md:grid md:grid-cols-[92px_minmax(0,1fr)] md:gap-6">
               <div className="mb-3 md:mb-0 md:pt-1 flex md:block items-baseline gap-3">
                 <p className="mono text-xs text-neutral-500 tabular-nums">{date}</p>
                 <p className="mono text-[10px] uppercase tracking-widest text-neutral-700 md:mt-1">{entries.length} added</p>
               </div>
-              <ul>
+              <ul className="min-w-0">
                 {entries.map((p, i) => (
                   <li
                     key={p.id}

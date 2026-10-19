@@ -8,6 +8,7 @@ import { FilterDrawer } from './filter-drawer';
 import { KeyboardHintBanner } from './keyboard-hint-banner';
 import { formatBounty, platformLabel, PLATFORM_META } from '@/lib/format';
 import { opportunityScore } from '@/lib/opportunity';
+import { EmptyState } from '@/app/_ui/empty-state';
 
 export const dynamic = 'force-dynamic';
 
@@ -127,14 +128,17 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
             <pre className="mono text-xs mt-2 text-amber-200/60">npm run db:push && npm run ingest</pre>
           </div>
         ) : rows.length === 0 ? (
-          <div className="border border-neutral-900 rounded-lg p-16 text-center bg-neutral-950/40">
-            <p className="mono text-xs text-neutral-500 uppercase tracking-widest">— no programs match —</p>
-            <p className="text-neutral-400 mt-3">try fewer letters. or an actual company name.</p>
-            <p className="mt-6 mono text-[10px] uppercase tracking-widest text-neutral-600">
-              <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
-              <span className="ml-2">to focus search</span>
-            </p>
-          </div>
+          <EmptyState
+            title="no programs match"
+            action={{ href: '/programs', label: 'clear all filters' }}
+            footnote={
+              <span className="inline-flex items-center gap-2">
+                or press <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd> to refine the search
+              </span>
+            }
+          >
+            Nothing in the index fits this filter set. Loosen a filter, or clear them all to start over.
+          </EmptyState>
         ) : (
           <div className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">
             <table className="w-full table-fixed">

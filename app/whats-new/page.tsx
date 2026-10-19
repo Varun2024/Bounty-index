@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getRecentChanges, type RecentChange } from '@/lib/db/queries';
 import { platformLabel, PLATFORM_META, shortenIdentifier } from '@/lib/format';
 import { RssIcon } from '@/app/_ui/icons';
+import { EmptyState } from '@/app/_ui/empty-state';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +12,7 @@ const DEFAULT_HOURS = 168;
 export const metadata: Metadata = {
   title: "What's new · Bounty Index",
   description:
-    "Every scope, reward, and safe-harbor change across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi — the last 7 days at a glance.",
+    'Every scope, reward, and safe-harbor change across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi. The last 7 days at a glance.',
   alternates: {
     canonical: '/whats-new',
     types: { 'application/rss+xml': '/whats-new.xml' },
@@ -57,7 +58,7 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
           <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Changelog</p>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">What&rsquo;s new</h1>
           <p className="text-neutral-400 mt-2">
-            Every scope, reward, and safe-harbor change across all platforms — the last <span className="text-neutral-100 tabular-nums">{windowLabel}</span>.{' '}
+            Every scope, reward, and safe-harbor change across all platforms, over the last <span className="text-neutral-100 tabular-nums">{windowLabel}</span>.{' '}
             <Link href="/reward-changes" className="text-emerald-400 hover:underline">Just reward moves →</Link>
           </p>
         </div>
@@ -76,17 +77,15 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
           <p>Change history is paused while the index reconnects. Program list and scope lookup are still live.</p>
         </div>
       ) : changes.length === 0 ? (
-        <div className="mt-10 space-y-3">
-          <p className="mono text-xs text-neutral-500">— no changes in the last <span className="text-neutral-300 tabular-nums">{windowLabel}</span> —</p>
-          <p className="text-sm text-neutral-500">
-            Try widening the window:
-            {' '}
-            <Link href="/whats-new?hours=720" className="text-emerald-400 hover:underline">30 days</Link>
+        <div className="mt-10">
+          <EmptyState title={`no changes in the last ${windowLabel}`}>
+            Try a wider window:{' '}
+            <Link href="/whats-new?hours=720" className="text-emerald-300 hover:text-emerald-200 transition">30 days</Link>
             {' · '}
-            <Link href="/whats-new?hours=168" className="text-emerald-400 hover:underline">7 days</Link>
+            <Link href="/whats-new?hours=168" className="text-emerald-300 hover:text-emerald-200 transition">7 days</Link>
             {' · '}
-            <Link href="/whats-new?hours=24" className="text-emerald-400 hover:underline">24 hours</Link>
-          </p>
+            <Link href="/whats-new?hours=24" className="text-emerald-300 hover:text-emerald-200 transition">24 hours</Link>
+          </EmptyState>
         </div>
       ) : (
         <div className="mt-10 space-y-10">

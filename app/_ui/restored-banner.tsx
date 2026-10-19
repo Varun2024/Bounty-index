@@ -19,7 +19,9 @@ export function RestoredBanner() {
     } catch {
       // Private mode / blocked storage: show anyway, dismissal just won't persist.
     }
-    setShow(true);
+    // Deferred so it isn't a synchronous setState in the effect body (keeps client-only reveal).
+    const id = requestAnimationFrame(() => setShow(true));
+    return () => cancelAnimationFrame(id);
   }, []);
 
   if (!show) return null;
@@ -37,7 +39,7 @@ export function RestoredBanner() {
         <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
         <span className="flex-1">
           <strong className="font-medium">Services restored.</strong>{' '}
-          Logins, watchlists, Discord alerts and saved filters are back on — go hunt.
+          Logins, watchlists, Discord alerts and saved filters are back on. Go hunt.
         </span>
         <button
           type="button"
