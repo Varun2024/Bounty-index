@@ -461,7 +461,25 @@ async function getRecentChangesUncached(hoursBack = 168, limit = 200): Promise<R
     .where(inArray(schema.programSnapshots.programId, programIds))
     .orderBy(schema.programSnapshots.programId, schema.programSnapshots.capturedAt);
 
-  const programs = await db.select().from(schema.programs).where(inArray(schema.programs.id, programIds));
+  // Only the columns RecentChange consumers actually read. Selecting the whole row pulled the
+  // large `raw` source-JSON per program, which pushed the cached result past Next's 2MB
+  // unstable_cache ceiling (~7MB) — so it failed to cache and re-queried on every request.
+  const programs = await db
+    .select({
+      id: schema.programs.id,
+      name: schema.programs.name,
+      platform: schema.programs.platform,
+      slug: schema.programs.slug,
+      programType: schema.programs.programType,
+      offersBounty: schema.programs.offersBounty,
+      minBounty: schema.programs.minBounty,
+      maxBounty: schema.programs.maxBounty,
+      currency: schema.programs.currency,
+      safeHarbor: schema.programs.safeHarbor,
+      url: schema.programs.url,
+    })
+    .from(schema.programs)
+    .where(inArray(schema.programs.id, programIds));
   const byId = new Map(programs.map((p) => [p.id, p]));
 
   // 3. Walk consecutive pairs; emit non-empty diffs whose cur.capturedAt is inside the window.

@@ -51,8 +51,14 @@ export interface WatchlistEntry {
 }
 
 // One entry per snapshot diff (predecessor → current) where cur.capturedAt is inside the window.
+// `program` is deliberately narrowed to the fields consumers (whats-new, reward-changes, their
+// RSS feeds, and the MCP whats_new tool) read — NOT the full row, whose `raw` column made the
+// cached result exceed Next's 2MB unstable_cache limit.
 export interface RecentChange {
-  program: typeof programs.$inferSelect;
+  program: Pick<
+    typeof programs.$inferSelect,
+    'id' | 'name' | 'platform' | 'slug' | 'programType' | 'offersBounty' | 'minBounty' | 'maxBounty' | 'currency' | 'safeHarbor' | 'url'
+  >;
   capturedAt: Date;
   diff: SnapshotDiff;
 }
