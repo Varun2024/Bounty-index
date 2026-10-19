@@ -18,7 +18,7 @@ opportunity score) already shipped.
 - [x] **Grouped nav + honest landing** — header dropdowns (Explore/Track/Tools) + landing feature directory. Shipped 2026-10-19.
 - [x] **Command palette (⌘K)** — jump to any page, action, or program (live search) from one keystroke, with a visible ⌘K header trigger. Shipped 2026-10-19.
 - [x] **Keyboard-shortcut help overlay (`?`)** — the `/ j k ↵ esc` model + ⌘K are now listed in a `?` overlay (also reachable from the command menu). Shipped 2026-10-19.
-- [ ] **Better empty states** — `/watchlist`, `/compare`, `/scope-lookup`, saved-filters-empty. Teach how to fill them + cross-link. Discovery at the point of need. Next up.
+- [x] **Better empty states** — shared `EmptyState`; `/watchlist` + `/compare` now teach the mechanic and cross-link (what's new, highest payouts), `/scope-lookup` gained a browse/what's-new cross-link. Shipped 2026-10-19. (Saved-filters already taught its own state.)
 
 ## Next — queued after Now empties
 

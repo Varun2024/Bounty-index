@@ -131,7 +131,7 @@ export function SiteNav() {
       <nav className="hidden md:flex items-center gap-0.5">
         <Link
           href="/programs"
-          className={`nav-underline px-3 py-1.5 rounded-md transition focus-ring text-sm whitespace-nowrap ${
+          className={`px-3 py-1.5 rounded-md transition focus-ring text-sm whitespace-nowrap ${
             programsActive ? 'text-neutral-100' : 'text-neutral-400 hover:text-neutral-100 hover:bg-neutral-900'
           }`}
         >

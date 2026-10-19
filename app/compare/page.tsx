@@ -4,6 +4,7 @@ import { getProgramsByIds } from '@/lib/db/queries';
 import { formatBounty, platformLabel, relativeTime } from '@/lib/format';
 import { RemoveColumnButton } from './remove-column-button';
 import { PlatformLogo } from '@/app/_ui/platform-logo';
+import { EmptyState } from '@/app/_ui/empty-state';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,7 +45,19 @@ export default async function ComparePage({ searchParams }: PageProps) {
       </header>
 
       {programs.length === 0 ? (
-        <EmptyState />
+        <EmptyState
+          title="no programs selected"
+          action={{ href: '/programs', label: 'browse programs →' }}
+          footnote={
+            <>
+              Not sure where to start?{' '}
+              <Link href="/programs?sort=reward" className="text-emerald-300 hover:text-emerald-200 transition">the highest payouts</Link>.
+            </>
+          }
+        >
+          Open any two programs and hit <span className="mono text-emerald-300">+ compare</span>. Payouts, scope
+          size, safe harbor, and status line up side by side so the trade-offs are obvious.
+        </EmptyState>
       ) : (
         <div className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 overflow-x-auto">
           <table className="w-full min-w-[720px]">
@@ -132,24 +145,6 @@ export default async function ComparePage({ searchParams }: PageProps) {
           Add more from any <Link href="/programs" className="text-emerald-400 hover:text-emerald-300 transition">program page</Link>. Max 4.
         </p>
       )}
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="border border-neutral-900 rounded-lg p-12 bg-neutral-950/40 text-center">
-      <p className="mono text-xs uppercase tracking-widest text-neutral-500">— nothing to compare against nothing —</p>
-      <p className="mt-3 text-neutral-400 text-sm">
-        Add up to 4 programs with <span className="mono text-emerald-300">+ compare</span>. This page gets
-        interesting after the second one.
-      </p>
-      <Link
-        href="/programs"
-        className="mt-6 inline-flex items-center gap-2 mono text-sm px-4 py-2 border border-neutral-800 rounded-md text-neutral-200 hover:border-neutral-600 hover:bg-neutral-900 transition"
-      >
-        browse programs →
-      </Link>
     </div>
   );
 }

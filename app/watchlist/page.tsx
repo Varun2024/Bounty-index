@@ -6,6 +6,7 @@ import { diffSnapshots, isEmptyDiff } from '@/lib/snapshots';
 import { WatchlistSync } from './sync';
 import { UnwatchButton } from './unwatch-button';
 import { UnavailablePanel } from '@/app/_ui/unavailable-panel';
+import { EmptyState } from '@/app/_ui/empty-state';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,37 +51,32 @@ export default async function WatchlistPage({ searchParams }: PageProps) {
       {entries === null ? (
         <UnavailablePanel what="Watchlist snapshot data" />
       ) : entries.length === 0 ? (
-        <EmptyState hasIds={ids.length > 0} />
+        ids.length > 0 ? (
+          <EmptyState title="syncing your watchlist">
+            Pulling the latest snapshot for your saved programs.
+          </EmptyState>
+        ) : (
+          <EmptyState
+            title="nothing watched yet"
+            action={{ href: '/programs', label: 'browse programs →' }}
+            footnote={
+              <>
+                Don&apos;t want to curate?{' '}
+                <Link href="/whats-new" className="text-emerald-300 hover:text-emerald-200 transition">what&apos;s new</Link>{' '}
+                tracks changes across every program.
+              </>
+            }
+          >
+            Open any program and hit <span className="mono text-amber-300">☆ watch</span>. New in-scope assets,
+            reward bumps, and safe-harbor changes show up here the moment the daily snapshot catches them.
+          </EmptyState>
+        )
       ) : (
         <ul className="space-y-6">
           {entries.map((e) => (
             <WatchlistRow key={e.program.id} entry={e} />
           ))}
         </ul>
-      )}
-    </div>
-  );
-}
-
-function EmptyState({ hasIds }: { hasIds: boolean }) {
-  return (
-    <div className="border border-neutral-900 rounded-lg p-12 bg-neutral-950/40 text-center">
-      <p className="mono text-xs uppercase tracking-widest text-neutral-500">
-        {hasIds ? '— syncing your watchlist —' : '— your watchlist is emptier than a Tuesday triage queue —'}
-      </p>
-      {!hasIds && (
-        <>
-          <p className="mt-3 text-neutral-400 text-sm">
-            Hit <span className="mono text-amber-300">☆ watch</span> on any program. Like Twitter favorites,
-            minus the algorithm, minus the ads, minus the crypto replies.
-          </p>
-          <Link
-            href="/programs"
-            className="mt-6 inline-flex items-center gap-2 mono text-sm px-4 py-2 border border-neutral-800 rounded-md text-neutral-200 hover:border-neutral-600 hover:bg-neutral-900 transition"
-          >
-            browse programs →
-          </Link>
-        </>
       )}
     </div>
   );

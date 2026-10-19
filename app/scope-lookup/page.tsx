@@ -51,6 +51,12 @@ export default async function ScopeLookup({ searchParams }: PageProps) {
           </Link>
         ))}
       </div>
+
+      <p className="mt-6 mono text-[11px] text-neutral-500">
+        No domain in mind?{' '}
+        <Link href="/programs" className="text-emerald-300 hover:text-emerald-200 transition">browse the full index</Link>{' '}
+        or check <Link href="/whats-new" className="text-emerald-300 hover:text-emerald-200 transition">what&apos;s new</Link>.
+      </p>
     </div>
   );
 }
