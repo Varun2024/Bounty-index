@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useFocusTrap } from './use-focus-trap';
 
 // Only real, wired shortcuts (see global-keyboard.tsx, command-palette.tsx, keyboard-nav.tsx).
 // No invented keys.
@@ -48,6 +49,10 @@ function Keys({ keys }: { keys: string[] }) {
 export function ShortcutsHelp() {
   const [open, setOpen] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Trap Tab inside the dialog and restore focus on close. Before the close-button-focus effect.
+  useFocusTrap(dialogRef, open);
 
   // `?` opens from anywhere; the command palette also opens it via a custom event.
   useEffect(() => {
@@ -88,6 +93,7 @@ export function ShortcutsHelp() {
     >
       <div aria-hidden className="absolute inset-0 bg-neutral-950/70 backdrop-blur-sm" />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="shortcuts-title"

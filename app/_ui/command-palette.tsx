@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useFocusTrap } from './use-focus-trap';
 
 interface Command {
   label: string;
@@ -48,6 +49,11 @@ export function CommandPalette() {
   const [active, setActive] = useState(0);
   const [programs, setPrograms] = useState<ProgramRow[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Trap Tab inside the dialog and restore focus on close. Declared before the autofocus
+  // effect so the opener is captured before focus moves into the input.
+  useFocusTrap(dialogRef, open);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -159,14 +165,14 @@ export function CommandPalette() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden md:inline-flex items-center gap-2 h-8 pl-2.5 pr-1.5 rounded-md border border-neutral-800 bg-neutral-950/60 text-neutral-400 hover:text-neutral-200 hover:border-neutral-700 transition focus-ring"
+        className="inline-flex items-center justify-center gap-2 h-10 w-10 md:h-8 md:w-auto md:pl-2.5 md:pr-1.5 rounded-md border border-neutral-800 bg-neutral-950/60 text-neutral-400 hover:text-neutral-200 hover:border-neutral-700 transition focus-ring"
         aria-label="Open command menu"
       >
-        <svg aria-hidden viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" className="md:w-[14px] md:h-[14px]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-3.5-3.5" />
         </svg>
-        <span className="mono text-[10px] uppercase tracking-widest flex items-center gap-1">
+        <span className="hidden md:flex mono text-[10px] uppercase tracking-widest items-center gap-1">
           <kbd className="px-1 py-0.5 border border-neutral-800 rounded bg-neutral-900/80 normal-case tracking-normal">⌘K</kbd>
         </span>
       </button>
@@ -181,6 +187,7 @@ export function CommandPalette() {
         >
           <div aria-hidden className="absolute inset-0 bg-neutral-950/70 backdrop-blur-sm" />
           <div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label="Command menu"

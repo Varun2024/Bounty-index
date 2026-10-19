@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import type { ProgramFilters } from '@/lib/db/queries';
@@ -43,11 +44,30 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
     update({ assetType: [...current] });
   };
 
+  const activeCount =
+    (filters.q ? 1 : 0) +
+    (filters.platform?.length ?? 0) +
+    (filters.assetType?.length ?? 0) +
+    (filters.programType && filters.programType !== 'all' ? 1 : 0) +
+    (filters.minReward ? 1 : 0) +
+    (filters.safeHarbor ? 1 : 0);
+
   return (
-    <aside className="md:sticky md:top-20 self-start space-y-6 text-sm">
-      <div className="flex items-center gap-2 mono text-[10px] uppercase tracking-widest text-neutral-500 pb-3 border-b border-neutral-900">
-        <FilterIcon size={12} />
-        Filters
+    <aside className="md:sticky md:top-20 self-start space-y-5 text-sm">
+      <div className="flex items-center justify-between pb-3 border-b border-neutral-900">
+        <span className="flex items-center gap-2 mono text-[10px] uppercase tracking-widest text-neutral-500">
+          <FilterIcon size={12} />
+          Filters
+          {activeCount > 0 && <span className="text-emerald-300 tabular-nums">{activeCount}</span>}
+        </span>
+        {activeCount > 0 && (
+          <Link
+            href="/programs"
+            className="focus-ring rounded mono text-[10px] uppercase tracking-widest text-neutral-500 hover:text-amber-300 transition"
+          >
+            clear all
+          </Link>
+        )}
       </div>
       <div>
         <div className="relative">
@@ -62,10 +82,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
             className="focus-ring w-full mono text-xs pl-8 pr-3 py-2 bg-neutral-900 border border-neutral-800 rounded focus:outline-none focus:border-emerald-400/50"
           />
         </div>
-        <p className="mono text-[10px] text-neutral-600 mt-1.5">
-          <span className="text-neutral-700">{'// '}</span>
-          matches <span className="text-neutral-400">program name</span> OR any <span className="text-neutral-400">in-scope identifier</span>
-        </p>
+        <p className="mono text-[10px] text-neutral-600 mt-1.5">matches a name or any in-scope identifier</p>
       </div>
 
       <SavedFiltersSection />
@@ -110,13 +127,10 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         <Chip
           active={filters.safeHarbor ?? false}
           onClick={() => update({ safeHarbor: filters.safeHarbor ? null : '1' })}
+          title="Programs with a published safe-harbor clause. Coverage note: Bugcrowd only; other platforms don't publish this structurally yet."
         >
           safe harbor
         </Chip>
-        <p className="mono text-[10px] leading-relaxed text-neutral-600 mt-1 w-full">
-          <span className="text-neutral-700">{'// '}</span>
-          coverage: <span className="text-neutral-400">Bugcrowd only</span>. other platforms don&apos;t publish this structurally yet.
-        </p>
       </FilterGroup>
 
       <FilterGroup label="Sort">

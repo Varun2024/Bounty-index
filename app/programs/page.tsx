@@ -82,6 +82,12 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
           <div>
             <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">The index</p>
             <h1 className="text-3xl font-semibold text-neutral-100 tracking-tight">Programs</h1>
+            <p className="mono text-[11px] text-neutral-600 mt-2 max-w-md hidden md:block">
+              Open any program for <span className="text-neutral-400">copyable scope</span>,{' '}
+              <span className="text-neutral-400">change history</span>,{' '}
+              <span className="text-neutral-400">community response times</span>, and{' '}
+              <span className="text-neutral-400">private notes</span>.
+            </p>
           </div>
           <div className="text-right">
             <p className="mono text-xs text-neutral-500">
