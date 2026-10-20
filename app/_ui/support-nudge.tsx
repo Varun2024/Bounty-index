@@ -5,9 +5,9 @@ import { useSession, signIn } from 'next-auth/react';
 
 // A humble, dismissible corner nudge. Fires on desktop exit-intent (mouse leaving toward the tab
 // bar) once the visitor has stuck around a bit, with a time fallback so touch devices get it too.
-// Shown at most once per 30 days; longer if they engage. Never blocks, always easy to dismiss.
+// Shown at most once every few days; much longer if they engage. Never blocks, always easy to dismiss.
 const KEY = 'bi:support-nudge';
-const DISMISS_DAYS = 30;
+const DISMISS_DAYS = 3;
 const ENGAGED_DAYS = 180;
 const ARM_DELAY_MS = 20_000; // don't arm exit-intent for the first 20s (ignore quick bounces)
 const FALLBACK_MS = 90_000; // no-exit-intent fallback (mobile, or a patient desktop reader)
