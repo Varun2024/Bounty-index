@@ -11,6 +11,7 @@ import { SiteNav } from './_ui/nav-menu';
 import { CommandPalette } from './_ui/command-palette';
 import { ShortcutsHelp } from './_ui/shortcuts-help';
 import { NavProgress } from './_ui/nav-progress';
+import { SupportNudge } from './_ui/support-nudge';
 import { Suspense } from 'react';
 import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
@@ -152,6 +153,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <main id="main" className="flex-1">{children}</main>
         <GlobalKeyboard />
         <ShortcutsHelp />
+        <SupportNudge />
         <CompareTray />
         <AuthSync />
         <Analytics />
