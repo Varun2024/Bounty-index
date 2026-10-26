@@ -7,6 +7,7 @@ import { WatchlistSync } from './sync';
 import { UnwatchButton } from './unwatch-button';
 import { UnavailablePanel } from '@/app/_ui/unavailable-panel';
 import { EmptyState } from '@/app/_ui/empty-state';
+import { RssIcon } from '@/app/_ui/icons';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,6 +47,14 @@ export default async function WatchlistPage({ searchParams }: PageProps) {
           Programs you watch, with the most recent scope and reward changes tracked from daily snapshots.
           Selection lives in your browser — no account needed.
         </p>
+        {ids.length > 0 && (
+          <a
+            href={`/watchlist.xml?ids=${ids.join(',')}`}
+            className="mt-4 inline-flex items-center gap-2 mono text-[11px] text-amber-300/80 hover:text-amber-200 transition focus-ring rounded w-fit"
+          >
+            <RssIcon size={12} /> subscribe to these changes via RSS
+          </a>
+        )}
       </header>
 
       {entries === null ? (

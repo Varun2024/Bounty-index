@@ -23,11 +23,11 @@ opportunity score) already shipped.
 ## Next — queued after Now empties
 
 - [x] **Scope-changelog stream** — shipped as `/whats-new` (+ `/whats-new.xml`). Every scope, reward, and safe-harbor change across all programs, grouped by day, RSS-enabled. Free version of what bbradar Pro gates.
-- [ ] **Program opportunity score** — algorithmic ranking from `max payout × in-scope surface × recent activity × safe-harbor status`. Cheap differentiator vs their opaque tiers. Expose the formula publicly.
+- [x] **Program opportunity score** — shipped. Algorithmic ranking from max payout × in-scope surface × recent activity × safe-harbor status, formula exposed publicly.
 - [ ] **Cover Huntr + HackenProof (return)** — AI/ML bounties (Huntr) and the platforms we dropped when upstream went stale.
-- [ ] **Better empty states** — `/programs` when filters return zero, `/scope-lookup` when no query, `/feed` when no recent additions. Existing states are functional but bland.
-- [ ] **Command palette (Cmd+K)** — jump-to-program, quick actions. Real time-saver once you use it daily.
-- [ ] **Watchlist RSS feed** — `/watchlist.xml?ids=1,2,3` (or per signed-in user) surfacing snapshot diffs in a feed reader. Replaces the email notifications we killed.
+- [x] **Better empty states** — shipped 2026-10-19. `/programs` zero-match + `/feed` "nothing new" use the shared `EmptyState` with cross-links; `/scope-lookup` no-query state has example chips + browse/what's-new links.
+- [x] **Command palette (Cmd+K)** — shipped 2026-10-19. Jump to any page, action, or program from one keystroke.
+- [x] **Watchlist RSS feed** — shipped. `/watchlist.xml?ids=1,2,3` emits one item per watched program with a non-empty snapshot diff; subscribe link lives in the watchlist header. Replaces the email notifications we killed.
 - [x] **Saved filter sets** — signed-in users can name + save filter combos. localStorage fallback signed-out; merges to server on sign-in. Section lives in the filters rail on `/programs`.
 - [ ] **Community reviews (design first, code second)** — needs a design chat: rating shape, moderation model, reputation gating. Held for a proper scoping session.
 

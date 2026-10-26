@@ -26,6 +26,24 @@ Phase list:
 
 ---
 
+## 2026-10-26 — Watchlist RSS + ROADMAP reconcile
+
+Closed the last open discoverability thread. New `/watchlist.xml?ids=1,2,3` route mirrors the
+`whats-new.xml` shape: pulls the watched programs via `getWatchlist(ids)`, diffs latest↔previous
+snapshots, and emits one `<item>` per program with a non-empty diff (scope added/removed, reward,
+safe-harbor). IDs are capped at 200 and an empty `ids` returns a valid empty feed. A `<atom:link
+rel="self">` makes it autodiscoverable. The watchlist header now shows a "subscribe via RSS" link
+once anything is watched — the ids are already in the URL via `WatchlistSync`, so no new plumbing.
+
+Also reconciled ROADMAP drift: better empty states, command palette, and opportunity score were all
+built but still sat unchecked in Next. The Next list is now down to Huntr/HackenProof coverage and
+the (design-first) community reviews.
+
+**For blog:** finishing the feature you killed email for — RSS as the retention primitive, and why
+a per-user feed needs zero new state when the selection already lives in the URL.
+
+---
+
 ## 2026-10-19 — Feature discoverability: grouped nav + honest landing
 
 The two surfaces every visitor sees were advertising ~4 of ~15 shipped features. Fixed both.
