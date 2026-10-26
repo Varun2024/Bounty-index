@@ -25,13 +25,13 @@
 
 ## What it is
 
-A single, filterable index of every public bug bounty and VDP program across the six major platforms, with a domain-to-program lookup, daily scope diffs, and per-program RSS. Free. No paywalls on the core index. Sign in only if you want your watchlist to sync across devices.
+A single, filterable index of every public bug bounty and VDP program across seven platforms, with a domain-to-program lookup, daily scope diffs, and per-program RSS. Free. No paywalls on the core index. Sign in only if you want your watchlist to sync across devices.
 
 ## Why
 
 Every platform shows only its own programs. Directory sites are stale or policy-only. Raw JSON dumps assume you enjoy `jq`. The one competitor with a real product — [bbradar.io](https://bbradar.io) — paywalls scope-change alerts, RSS, and API behind a €89/yr Pro tier.
 
-bounty.index is the free, polished middle: cross-platform, change-aware, keyboard-first.
+bounty.index is the free middle: cross-platform, change-aware, keyboard-first.
 
 | Source | Coverage | Sort by payout | Scope lookup | Change alerts | Cost |
 |---|---|---|---|---|---|
@@ -39,7 +39,7 @@ bounty.index is the free, polished middle: cross-platform, change-aware, keyboar
 | disclose.io | VDP policies only | ✗ | ✗ | ✗ | free |
 | `bounty-targets-data` (JSON) | 5 platforms raw | grep + jq | grep + jq | ✗ | free |
 | bbradar.io | 24 platforms | ✓ | ✗ | Pro only | €89/yr |
-| **bounty.index** | **6 platforms unified** | ✓ | ✓ one query | **per-program RSS, free** | **free** |
+| **bounty.index** | **7 platforms unified** | ✓ | ✓ one query | **per-program RSS, free** | **free** |
 
 ## Features
 
@@ -81,7 +81,7 @@ bounty.index is the free, polished middle: cross-platform, change-aware, keyboar
 - **Neon Postgres** + **Drizzle ORM**, pg_trgm for fuzzy search
 - **Auth.js v5** — GitHub OAuth, database sessions
 - **Vercel** — hosting, cron, analytics
-- Data sources: [arkadiyt/bounty-targets-data](https://github.com/arkadiyt/bounty-targets-data) (MIT) for five platforms, first-party HTML scrape for Immunefi.
+- Data sources: [arkadiyt/bounty-targets-data](https://github.com/arkadiyt/bounty-targets-data) (MIT) for the HackerOne, Bugcrowd, Intigriti, and YesWeHack feeds; first-party HTML scrapes for Immunefi and HackenProof. Federacy rows are retained from earlier pulls (upstream dropped the feed).
 - SHA-256 content-hashed program snapshots for change detection (sparse rows: only when content actually changes).
 
 ## Local setup
@@ -125,15 +125,15 @@ Cron runs daily at 06:00 UTC via `vercel.ts` → `/api/cron/ingest` (Bearer-auth
 
 ### Why Neon
 
-This is a cron-driven read-heavy app: one write burst a day, queries the rest of the time. Neon's scale-to-zero means the database costs nothing between the ingest run and the next page view, and its database branching gives every Vercel preview deploy a throwaway copy of production data without a manual seed step. Any Postgres works if you self-host, but that shape is why the hosted site runs on Neon.
+This is a cron-driven, read-heavy app: one write burst a day, queries the rest of the time. Neon's compute scales to zero while idle, so it costs next to nothing between the ingest run and the next page view, and its branching gives every Vercel preview deploy a throwaway copy of production data without a manual seed step. Any Postgres works if you self-host; that usage shape is why the hosted site runs on Neon.
 
 ## Roadmap
 
-**Shipped** — six-platform coverage, filters + scope lookup, watchlist + compare with GitHub-OAuth cross-device sync, per-program scope-change RSS, activity chips, snapshot history, editorial dark UI, keyboard nav, preset SEO landing pages.
+**Shipped** — seven-platform coverage, filters + scope lookup, watchlist + compare with GitHub-OAuth cross-device sync, per-program scope-change RSS, activity chips, snapshot history, editorial dark UI, keyboard nav, preset SEO landing pages.
 
 **Next** — community reviews, coverage expansion (Huntr), distribution (Chrome extension / Burp plugin).
 
-**Later** — community reviews, company pages, public API.
+**Later** — company pages, public API.
 
 **Never** — paywalls on the core index, ads, email alerts (killed permanently in favor of RSS), fake or sponsored programs.
 
