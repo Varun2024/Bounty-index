@@ -25,7 +25,7 @@ opportunity score) already shipped.
 - [x] **Scope-changelog stream** — shipped as `/whats-new` (+ `/whats-new.xml`). Every scope, reward, and safe-harbor change across all programs, grouped by day, RSS-enabled. Free version of what bbradar Pro gates.
 - [x] **Program opportunity score** — shipped. Algorithmic ranking from max payout × in-scope surface × recent activity × safe-harbor status, formula exposed publicly.
 - [x] **Cover HackenProof (return)** — shipped. First-party scrape of their Nuxt `__NUXT_DATA__` (arkadiyt dropped the file). Also removed the dead federacy source in the same pass.
-- [ ] **Cover Huntr** — deferred. Doesn't fit the program→scope model (it's AI/ML OSS *repos*, not companies); needs its own data-model design pass before building.
+- [ ] **Huntr** — deferred (design pass done 2026-10-26, see `docs/plans/PLAN_HUNTR.md`). Huntr pivoted from OSS-repo bounties to time-limited AI *challenges*; it's a different product, not "coverage." Build only as a separate `/challenges` surface, and only when a 2nd AI-CTF source appears or it's the best remaining differentiator.
 - [x] **Better empty states** — shipped 2026-10-19. `/programs` zero-match + `/feed` "nothing new" use the shared `EmptyState` with cross-links; `/scope-lookup` no-query state has example chips + browse/what's-new links.
 - [x] **Command palette (Cmd+K)** — shipped 2026-10-19. Jump to any page, action, or program from one keystroke.
 - [x] **Watchlist RSS feed** — shipped. `/watchlist.xml?ids=1,2,3` emits one item per watched program with a non-empty snapshot diff; subscribe link lives in the watchlist header. Replaces the email notifications we killed.
