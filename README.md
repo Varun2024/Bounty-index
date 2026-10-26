@@ -1,35 +1,50 @@
-<p align="center">
-  <a href="https://www.bountyindex.in">
-    <img src="public/screenshots/hero.png" alt="bounty.index — every public bounty program, one index" width="880" />
-  </a>
+<div align="center">
+
+<h1>bounty.index</h1>
+
+<p><strong>The bug bounty market, live-indexed.</strong></p>
+
+<p>
+  Every public program across HackerOne, Bugcrowd, Intigriti, YesWeHack, Immunefi, and HackenProof,<br/>
+  filtered by scope, asset type, and payout, in one view.
 </p>
 
-<h1 align="center">bounty.index</h1>
-
-<p align="center">
-  <strong>The bug bounty market, live-indexed.</strong><br/>
-  Every public program across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, and HackenProof — filtered by scope, asset type, and payout, in one view.
+<p>
+  <a href="https://www.bountyindex.in"><img src="https://img.shields.io/badge/Open_the_index-bountyindex.in-10b981?style=for-the-badge&logo=vercel&logoColor=white" alt="Open the index" /></a>
+  <a href="https://www.bountyindex.in/scope-lookup"><img src="https://img.shields.io/badge/Scope_lookup-paste_a_domain-1f2937?style=for-the-badge" alt="Scope lookup" /></a>
+  <a href="https://www.bountyindex.in/whats-new"><img src="https://img.shields.io/badge/Changelog-scope_diffs-1f2937?style=for-the-badge" alt="Changelog" /></a>
 </p>
 
-<p align="center">
-  <a href="https://www.bountyindex.in"><strong>bountyindex.in</strong></a> · 1,351 programs · ~50,000 in-scope assets · top payout $15M (LayerZero) · updated daily
+<p>
+  <img src="https://img.shields.io/badge/license-MIT-black" alt="MIT license" />
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs&logoColor=white" alt="Next.js 16" />
+  <img src="https://img.shields.io/badge/Postgres-Neon-black?logo=postgresql&logoColor=white" alt="Neon Postgres" />
+  <img src="https://img.shields.io/badge/deploy-Vercel-black?logo=vercel&logoColor=white" alt="Deployed on Vercel" />
 </p>
 
-<p align="center">
+<p><strong>1,467 programs · ~55,000 in-scope assets · top payout $15M (LayerZero) · updated daily</strong></p>
+
+<p>
   <a href="https://www.producthunt.com/products/bounty-index?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-bounty-index" target="_blank" rel="noopener noreferrer"><img alt="Bounty Index on Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1218125&theme=dark&t=1786208999205"></a>
   &nbsp;
   <a href="https://launchleague.xyz/?product=bounty-index" target="_blank" rel="noopener noreferrer"><img alt="Launching on LaunchLeague" width="300" height="66" src="https://cdn.launchleague.xyz/site-images/badges/badge-dark.svg"></a>
 </p>
 
+<a href="https://www.bountyindex.in">
+  <img src="public/screenshots/hero.png" alt="bounty.index home: every public bounty program, one index" width="900" />
+</a>
+
+</div>
+
 ---
 
 ## What it is
 
-A single, filterable index of every public bug bounty and VDP program across seven platforms, with a domain-to-program lookup, daily scope diffs, and per-program RSS. Free. No paywalls on the core index. Sign in only if you want your watchlist to sync across devices.
+A single, filterable index of every public bug bounty and VDP program across six platforms, with a domain-to-program lookup, daily scope diffs, and per-program RSS. Free. No paywalls on the core index. Sign in only if you want your watchlist to sync across devices.
 
 ## Why
 
-Every platform shows only its own programs. Directory sites are stale or policy-only. Raw JSON dumps assume you enjoy `jq`. The one competitor with a real product — [bbradar.io](https://bbradar.io) — paywalls scope-change alerts, RSS, and API behind a €89/yr Pro tier.
+Every platform shows only its own programs. Directory sites are stale or policy-only. Raw JSON dumps assume you enjoy `jq`. The one competitor with a real product, [bbradar.io](https://bbradar.io), paywalls scope-change alerts, RSS, and API behind a €89/yr Pro tier.
 
 bounty.index is the free middle: cross-platform, change-aware, keyboard-first.
 
@@ -37,21 +52,21 @@ bounty.index is the free middle: cross-platform, change-aware, keyboard-first.
 |---|---|---|---|---|---|
 | HackerOne / Bugcrowd directories | own only | limited | ✗ | ✗ | free |
 | disclose.io | VDP policies only | ✗ | ✗ | ✗ | free |
-| `bounty-targets-data` (JSON) | 5 platforms raw | grep + jq | grep + jq | ✗ | free |
+| `bounty-targets-data` (JSON) | 4 platforms raw | grep + jq | grep + jq | ✗ | free |
 | bbradar.io | 24 platforms | ✓ | ✗ | Pro only | €89/yr |
-| **bounty.index** | **7 platforms unified** | ✓ | ✓ one query | **per-program RSS, free** | **free** |
+| **bounty.index** | **6 platforms unified** | ✓ | ✓ one query | **per-program RSS, free** | **free** |
 
 ## Features
 
-- **Unified index** — one table across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, and HackenProof, sorted by max reward.
-- **Scope lookup** — paste a domain, get every program it appears in (in-scope only), with wildcard and identifier matches.
-- **Per-program RSS** — every program has a feed of its scope changes at `/rss/programs/{platform}/{slug}`. Point your reader at it and know when scope shifts.
-- **7-day activity chip** — a small `+N −M · 7d` indicator on program pages so you can tell dormant from active at a glance.
-- **Watchlist & compare** — signed-out uses localStorage, sign-in with GitHub for cross-device sync. Zero email, zero notifications.
-- **Filters** — platform, asset type (wildcard, API, mobile, hardware, source), minimum payout, safe-harbor status.
-- **Keyboard-first** — `/` focus search, `j`/`k` move rows, `↵` open, `esc` blur.
-- **New-programs feed** — dated log at `/feed` + site-wide RSS at `/feed.xml`.
-- **Preset landing pages** — bookmarkable filter combos at `/programs/paying`, `/programs/safe-harbor`, `/programs/wildcard`.
+- **Unified index:** one table across HackerOne, Bugcrowd, Intigriti, YesWeHack, Immunefi, and HackenProof, sorted by max reward.
+- **Scope lookup:** paste a domain, get every program it appears in (in-scope only), with wildcard and identifier matches.
+- **Per-program RSS:** every program has a feed of its scope changes at `/rss/programs/{platform}/{slug}`. Point your reader at it and know when scope shifts.
+- **7-day activity chip:** a small `+N −M · 7d` indicator on program pages so you can tell dormant from active at a glance.
+- **Watchlist & compare:** signed-out uses localStorage, sign-in with GitHub for cross-device sync. Zero email, zero notifications.
+- **Filters:** platform, asset type (wildcard, API, mobile, hardware, source), minimum payout, safe-harbor status.
+- **Keyboard-first:** `/` focus search, `j`/`k` move rows, `↵` open, `esc` blur.
+- **New-programs feed:** dated log at `/feed` + site-wide RSS at `/feed.xml`.
+- **Preset landing pages:** bookmarkable filter combos at `/programs/paying`, `/programs/safe-harbor`, `/programs/wildcard`.
 
 ## Screenshots
 
@@ -59,17 +74,21 @@ bounty.index is the free middle: cross-platform, change-aware, keyboard-first.
   <tr>
     <td width="50%">
       <a href="https://www.bountyindex.in/programs"><img src="public/screenshots/programs.png" alt="Programs index with chip filters" /></a>
-      <p align="center"><sub><strong>/programs</strong> — filter by platform, asset type, payout, safe-harbor</sub></p>
+      <p align="center"><sub><strong>/programs</strong> · filter by platform, asset type, payout, safe-harbor</sub></p>
     </td>
     <td width="50%">
       <a href="https://www.bountyindex.in/scope-lookup?domain=shopify.com"><img src="public/screenshots/scope-lookup.png" alt="Scope lookup with in-scope and out-of-scope split" /></a>
-      <p align="center"><sub><strong>/scope-lookup</strong> — paste a domain, see every program it's in — and the ones that explicitly exclude it</sub></p>
+      <p align="center"><sub><strong>/scope-lookup</strong> · paste a domain, see every program it's in, plus the ones that explicitly exclude it</sub></p>
     </td>
   </tr>
   <tr>
-    <td colspan="2">
-      <a href="https://www.bountyindex.in/programs/immunefi/layerzero"><img src="public/screenshots/program-detail.png" alt="LayerZero program detail with company logo, activity chip, and RSS" /></a>
-      <p align="center"><sub><strong>/programs/immunefi/layerzero</strong> — company logo, 7-day activity chip, per-program RSS, split in/out-of-scope</sub></p>
+    <td width="50%">
+      <a href="https://www.bountyindex.in/programs/immunefi/layerzero"><img src="public/screenshots/program-detail.png" alt="LayerZero program detail with opportunity score, payout, and scope breakdown" /></a>
+      <p align="center"><sub><strong>/programs/immunefi/layerzero</strong> · opportunity score, 7-day activity, per-program RSS, split in/out-of-scope</sub></p>
+    </td>
+    <td width="50%">
+      <a href="https://www.bountyindex.in/whats-new"><img src="public/screenshots/whats-new.png" alt="What's new changelog of scope, reward, and safe-harbor changes grouped by day" /></a>
+      <p align="center"><sub><strong>/whats-new</strong> · every scope, reward, and safe-harbor change, grouped by day, RSS-enabled</sub></p>
     </td>
   </tr>
 </table>
@@ -77,10 +96,10 @@ bounty.index is the free middle: cross-platform, change-aware, keyboard-first.
 ## Stack
 
 - **Next.js 16** (App Router, Fluid Compute) + **TypeScript**
-- **Tailwind 4** — dark editorial design system, single-accent emerald
+- **Tailwind 4:** dark editorial design system, single-accent emerald
 - **Neon Postgres** + **Drizzle ORM**, pg_trgm for fuzzy search
-- **Auth.js v5** — GitHub OAuth, database sessions
-- **Vercel** — hosting, cron, analytics
+- **Auth.js v5:** GitHub OAuth, database sessions
+- **Vercel:** hosting, cron, analytics
 - Data sources: [arkadiyt/bounty-targets-data](https://github.com/arkadiyt/bounty-targets-data) (MIT) for the HackerOne, Bugcrowd, Intigriti, and YesWeHack feeds; first-party HTML scrapes for Immunefi and HackenProof. Federacy rows are retained from earlier pulls (upstream dropped the feed).
 - SHA-256 content-hashed program snapshots for change detection (sparse rows: only when content actually changes).
 
@@ -90,13 +109,13 @@ bounty.index is the free middle: cross-platform, change-aware, keyboard-first.
 git clone https://github.com/Varun2024/Bounty-index.git
 cd Bounty-index
 npm install
-cp .env.example .env    # set DATABASE_URL — we run on Neon (neon.tech); any Postgres works
+cp .env.example .env    # set DATABASE_URL. we run on Neon (neon.tech); any Postgres works
 npm run db:push         # create tables
 npm run ingest          # first data pull (~1,300 programs, ~50k scopes)
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). GitHub OAuth is optional locally — the localStorage path works signed-out.
+Open [localhost:3000](http://localhost:3000). GitHub OAuth is optional locally; the localStorage path works signed-out.
 
 ### Scripts
 
@@ -116,12 +135,12 @@ Open [localhost:3000](http://localhost:3000). GitHub OAuth is optional locally �
 
 Deployed on Vercel with:
 
-- `DATABASE_URL` — Neon Postgres connection string
-- `CRON_SECRET` — random 32-byte hex for the ingest cron
-- `NEXT_PUBLIC_SITE_URL` — canonical site URL (metadataBase, sitemap, robots)
-- `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `AUTH_URL` — Auth.js + GitHub OAuth
+- `DATABASE_URL`: Neon Postgres connection string
+- `CRON_SECRET`: random 32-byte hex for the ingest cron
+- `NEXT_PUBLIC_SITE_URL`: canonical site URL (metadataBase, sitemap, robots)
+- `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `AUTH_URL`: Auth.js + GitHub OAuth
 
-Cron runs daily at 06:00 UTC via `vercel.ts` → `/api/cron/ingest` (Bearer-authenticated). Immunefi ingest uses stage-1 hashing to short-circuit unchanged programs and fit inside the 300s function cap on subsequent runs.
+Cron runs daily at 06:00 UTC via `vercel.ts` to `/api/cron/ingest` (Bearer-authenticated). Immunefi ingest uses stage-1 hashing to short-circuit unchanged programs and fit inside the 300s function cap on subsequent runs.
 
 ### Why Neon
 
@@ -129,13 +148,13 @@ This is a cron-driven, read-heavy app: one write burst a day, queries the rest o
 
 ## Roadmap
 
-**Shipped** — seven-platform coverage, filters + scope lookup, watchlist + compare with GitHub-OAuth cross-device sync, per-program scope-change RSS, activity chips, snapshot history, editorial dark UI, keyboard nav, preset SEO landing pages.
+**Shipped:** six-platform coverage, filters + scope lookup, watchlist + compare with GitHub-OAuth cross-device sync, per-program scope-change RSS, activity chips, snapshot history, editorial dark UI, keyboard nav, preset SEO landing pages.
 
-**Next** — community reviews, coverage expansion (Huntr), distribution (Chrome extension / Burp plugin).
+**Next:** community reviews, distribution (Chrome extension / Burp plugin).
 
-**Later** — company pages, public API.
+**Later:** company pages, public API.
 
-**Never** — paywalls on the core index, ads, email alerts (killed permanently in favor of RSS), fake or sponsored programs.
+**Never:** paywalls on the core index, ads, email alerts (killed permanently in favor of RSS), fake or sponsored programs.
 
 ## Product & follow
 
