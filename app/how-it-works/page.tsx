@@ -20,7 +20,7 @@ const STAGES: Stage[] = [
     key: 'extract',
     eyebrow: '01 · extract',
     title: 'Pull',
-    body: 'Six platform feeds fetched daily — HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy via arkadiyt/bounty-targets-data; Immunefi scraped directly. One pipeline, normalized.',
+    body: 'Seven platform feeds fetched daily — HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy via arkadiyt/bounty-targets-data; Immunefi and HackenProof scraped directly. One pipeline, normalized.',
     detail: 'source · single mirror',
   },
   {

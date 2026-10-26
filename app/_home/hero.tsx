@@ -40,7 +40,7 @@ export function Hero({ s, top }: HeroProps) {
                   )}
                 </>
               ) : (
-                'Public programs from HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi.'
+                'Public programs from HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, and HackenProof.'
               )}
             </p>
 

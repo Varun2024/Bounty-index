@@ -7,7 +7,7 @@ export function HowItWorks() {
     {
       n: '01',
       title: 'Aggregate.',
-      body: 'Every public program from six platforms pulled daily into a single normalized index. HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi.',
+      body: 'Every public program from seven platforms pulled daily into a single normalized index. HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, HackenProof.',
       note: 'source · arkadiyt/bounty-targets-data',
     },
     {

@@ -12,7 +12,7 @@ const DEFAULT_HOURS = 168;
 export const metadata: Metadata = {
   title: "What's new · Bounty Index",
   description:
-    'Every scope, reward, and safe-harbor change across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi. The last 7 days at a glance.',
+    'Every scope, reward, and safe-harbor change across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, and HackenProof. The last 7 days at a glance.',
   alternates: {
     canonical: '/whats-new',
     types: { 'application/rss+xml': '/whats-new.xml' },

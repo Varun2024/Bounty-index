@@ -20,6 +20,7 @@ const PLATFORM_DOTS: Record<string, string> = {
   immunefi: '#f472b6',
   yeswehack: '#facc15',
   federacy: '#a78bfa',
+  hackenproof: '#e879f9',
 };
 
 const ROWS = [

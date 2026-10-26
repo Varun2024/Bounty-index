@@ -12,7 +12,7 @@ import { EmptyState } from '@/app/_ui/empty-state';
 
 export const dynamic = 'force-dynamic';
 
-const PLATFORMS = ['hackerone', 'bugcrowd', 'intigriti', 'yeswehack', 'federacy', 'immunefi'];
+const PLATFORMS = ['hackerone', 'bugcrowd', 'intigriti', 'yeswehack', 'federacy', 'immunefi', 'hackenproof'];
 const ASSET_TYPES = ['url', 'wildcard', 'api', 'android', 'ios', 'source_code', 'hardware', 'smart_contract'];
 
 function parseArray(v: string | string[] | undefined): string[] {

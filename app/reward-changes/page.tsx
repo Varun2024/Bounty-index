@@ -12,7 +12,7 @@ const DEFAULT_HOURS = 720; // 30 days — reward changes are rarer than scope ch
 export const metadata: Metadata = {
   title: 'Reward changes · Bounty Index',
   description:
-    'Just the money moves. Every max-payout bump or cut across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi.',
+    'Just the money moves. Every max-payout bump or cut across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, and HackenProof.',
   alternates: {
     canonical: '/reward-changes',
     types: { 'application/rss+xml': '/reward-changes.xml' },

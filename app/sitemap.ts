@@ -31,6 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/platforms/yeswehack`, priority: 0.7 },
     { url: `${base}/platforms/federacy`, priority: 0.7 },
     { url: `${base}/platforms/immunefi`, priority: 0.7 },
+    { url: `${base}/platforms/hackenproof`, priority: 0.7 },
   ];
 
   try {

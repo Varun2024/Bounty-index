@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { domain: raw } = await params;
   const domain = cleanDomain(raw);
   const title = `${domain} in scope? · bounty.index`;
-  const description = `Every bug bounty program that lists ${domain} as in-scope or out-of-scope. Searchable across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi.`;
+  const description = `Every bug bounty program that lists ${domain} as in-scope or out-of-scope. Searchable across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, and HackenProof.`;
   return {
     title,
     description,

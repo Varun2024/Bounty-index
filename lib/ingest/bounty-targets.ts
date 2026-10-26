@@ -5,15 +5,15 @@ import { upsertScopes } from './upsert-scopes';
 
 const BASE = 'https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/main/data';
 
-// ponytail: hackenproof file was removed upstream. Re-add if arkadiyt/bounty-targets-data brings it back.
-export type Platform = 'hackerone' | 'bugcrowd' | 'intigriti' | 'yeswehack' | 'federacy';
+// arkadiyt/bounty-targets-data dropped both hackenproof and federacy. hackenproof returns via a
+// first-party scrape (lib/ingest/hackenproof.ts); federacy is gone (no live source) so it's out.
+export type Platform = 'hackerone' | 'bugcrowd' | 'intigriti' | 'yeswehack';
 
 export const SOURCES: Record<Platform, string> = {
   hackerone: `${BASE}/hackerone_data.json`,
   bugcrowd: `${BASE}/bugcrowd_data.json`,
   intigriti: `${BASE}/intigriti_data.json`,
   yeswehack: `${BASE}/yeswehack_data.json`,
-  federacy: `${BASE}/federacy_data.json`,
 };
 
 export interface NormalizedProgram {
@@ -260,41 +260,11 @@ function normalizeYesWeHack(r: YesWeHackRecord): NormalizedProgram | null {
   };
 }
 
-interface FederacyRecord {
-  id?: string | number;
-  name?: string;
-  offers_awards?: boolean;
-  url?: string;
-  targets?: RawTargets;
-}
-
-function normalizeFederacy(r: FederacyRecord): NormalizedProgram | null {
-  if (!r.name) return null;
-  const slug = r.url ? r.url.replace(/^.*federacy\.com\//, '').replace(/\/$/, '').replace(/^programs\//, '') : slugify(r.name);
-  return {
-    slug: slug || slugify(r.name),
-    handle: null,
-    name: r.name,
-    url: r.url ?? `https://www.federacy.com/${slug}`,
-    offersBounty: false,
-    offersSwag: !!r.offers_awards,
-    managed: false,
-    minBounty: null,
-    maxBounty: null,
-    currency: 'USD',
-    submissionState: null,
-    safeHarbor: null,
-    scopes: normalizeScopes(r.targets ?? {}, false),
-    raw: r as unknown as object,
-  };
-}
-
 export const NORMALIZERS: Record<Platform, (r: unknown) => NormalizedProgram | null> = {
   hackerone: (r) => normalizeHackerOne(r as HackerOneRecord),
   bugcrowd: (r) => normalizeBugcrowd(r as BugcrowdRecord),
   intigriti: (r) => normalizeIntigriti(r as IntigritiRecord),
   yeswehack: (r) => normalizeYesWeHack(r as YesWeHackRecord),
-  federacy: (r) => normalizeFederacy(r as FederacyRecord),
 };
 
 
@@ -480,6 +450,14 @@ export async function ingestAll() {
     results.push({ ...r });
   } catch (e) {
     results.push({ platform: 'immunefi', error: e instanceof Error ? e.message : String(e) });
+  }
+  // HackenProof — dropped from arkadiyt, scraped first-party from their Nuxt payload.
+  try {
+    const { ingestHackenproof } = await import('./hackenproof');
+    const r = await ingestHackenproof();
+    results.push({ ...r });
+  } catch (e) {
+    results.push({ platform: 'hackenproof', error: e instanceof Error ? e.message : String(e) });
   }
   return results;
 }

@@ -7,7 +7,7 @@ import { opportunityScore } from '@/lib/opportunity';
 
 export const revalidate = 3600;
 
-const PLATFORMS = ['hackerone', 'bugcrowd', 'intigriti', 'yeswehack', 'federacy', 'immunefi'] as const;
+const PLATFORMS = ['hackerone', 'bugcrowd', 'intigriti', 'yeswehack', 'federacy', 'immunefi', 'hackenproof'] as const;
 type PlatformId = typeof PLATFORMS[number];
 
 interface PageProps {
@@ -21,6 +21,7 @@ const BLURBS: Record<PlatformId, string> = {
   yeswehack: 'YesWeHack hosts programs weighted toward European enterprise, with notable crypto and gaming entries.',
   federacy: 'Federacy is the long-tail — smaller programs, early-stage startups, and public VDPs that often slip under the radar.',
   immunefi: 'Immunefi is the DeFi + web3 specialist. Catalog is 100% paid, often with multi-million-dollar maximum bounties on smart contracts and bridges.',
+  hackenproof: 'HackenProof is crypto-heavy — exchanges, wallets, and DeFi protocols, triaged on-platform. Maximum bounties run into the seven figures.',
 };
 
 export function generateStaticParams() {

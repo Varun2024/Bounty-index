@@ -26,6 +26,30 @@ Phase list:
 
 ---
 
+## 2026-10-26 — Coverage: HackenProof (return) + federacy cleanup
+
+New platform `hackenproof` via a first-party scraper (`lib/ingest/hackenproof.ts`). arkadiyt dropped
+their data file, so this parses the Nuxt 3 `__NUXT_DATA__` devalue payload directly: a flat array
+where every field is an index pointer, so the parser derefs with a cycle guard. Two-stage like
+Immunefi — Stage 1 paginates `/programs?page=N` for the list (slug, name, max reward, tags), Stage 2
+fetches `/programs/{slug}` for the `scopes[]` (target, criticality, in/out). Copies Immunefi's
+`stage1Hash` short-circuit AND adds a per-run detail-fetch cap (120) so a ~400-program cold run
+drains across a few cron ticks instead of blowing Vercel's 300s cap. Crypto-heavy roster (BitDelta
+up to $1M, Gate, CoinW) that complements Immunefi's DeFi focus.
+
+Bug found and fixed in the same pass: arkadiyt also dropped `federacy_data.json`, so every ingest run
+was silently 404ing on it. Removed federacy from the arkadiyt `SOURCES`/`Platform`/`NORMALIZERS`
+(kept its PLATFORM_META + /platforms page so existing rows still render). HackenProof wired into all
+seven-platform surfaces: filters, /platforms/[platform], sitemap, footer, OG image, platform logo,
+and the marketing copy that enumerates platforms. Parser verified against live saved HTML (20
+programs + scopes extract correctly); tsc/eslint/build green.
+
+**For blog:** scraping a Nuxt `__NUXT_DATA__` devalue payload (index-pointer format) when the tidy
+upstream JSON disappears — and bounding a 400-page cold scrape under a serverless timeout with a
+per-run cap that self-drains.
+
+---
+
 ## 2026-10-26 — Watchlist RSS + ROADMAP reconcile
 
 Closed the last open discoverability thread. New `/watchlist.xml?ids=1,2,3` route mirrors the

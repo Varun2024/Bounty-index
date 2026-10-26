@@ -8,7 +8,7 @@
 
 <p align="center">
   <strong>The bug bounty market, live-indexed.</strong><br/>
-  Every public program across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi — filtered by scope, asset type, and payout, in one view.
+  Every public program across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, and HackenProof — filtered by scope, asset type, and payout, in one view.
 </p>
 
 <p align="center">
@@ -43,7 +43,7 @@ bounty.index is the free, polished middle: cross-platform, change-aware, keyboar
 
 ## Features
 
-- **Unified index** — one table across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, and Immunefi, sorted by max reward.
+- **Unified index** — one table across HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, and HackenProof, sorted by max reward.
 - **Scope lookup** — paste a domain, get every program it appears in (in-scope only), with wildcard and identifier matches.
 - **Per-program RSS** — every program has a feed of its scope changes at `/rss/programs/{platform}/{slug}`. Point your reader at it and know when scope shifts.
 - **7-day activity chip** — a small `+N −M · 7d` indicator on program pages so you can tell dormant from active at a glance.
@@ -127,7 +127,7 @@ Cron runs daily at 06:00 UTC via `vercel.ts` → `/api/cron/ingest` (Bearer-auth
 
 **Shipped** — six-platform coverage, filters + scope lookup, watchlist + compare with GitHub-OAuth cross-device sync, per-program scope-change RSS, activity chips, snapshot history, editorial dark UI, keyboard nav, preset SEO landing pages.
 
-**Next** — site-wide scope-changelog stream at `/feed/scopes`, algorithmic program opportunity score, coverage expansion (Huntr, HackenProof), watchlist RSS.
+**Next** — community reviews, coverage expansion (Huntr), distribution (Chrome extension / Burp plugin).
 
 **Later** — community reviews, company pages, public API.
 
@@ -143,4 +143,4 @@ Cron runs daily at 06:00 UTC via `vercel.ts` → `/api/cron/ingest` (Bearer-auth
 
 ## License
 
-MIT. Data belongs to the respective platforms. Not affiliated with HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, or any other platform.
+MIT. Data belongs to the respective platforms. Not affiliated with HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, HackenProof, or any other platform.
