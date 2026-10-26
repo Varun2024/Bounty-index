@@ -90,7 +90,7 @@ bounty.index is the free, polished middle: cross-platform, change-aware, keyboar
 git clone https://github.com/Varun2024/Bounty-index.git
 cd Bounty-index
 npm install
-cp .env.example .env    # set DATABASE_URL to a Postgres connection string
+cp .env.example .env    # set DATABASE_URL — we run on Neon (neon.tech); any Postgres works
 npm run db:push         # create tables
 npm run ingest          # first data pull (~1,300 programs, ~50k scopes)
 npm run dev
