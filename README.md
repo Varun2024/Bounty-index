@@ -123,6 +123,10 @@ Deployed on Vercel with:
 
 Cron runs daily at 06:00 UTC via `vercel.ts` → `/api/cron/ingest` (Bearer-authenticated). Immunefi ingest uses stage-1 hashing to short-circuit unchanged programs and fit inside the 300s function cap on subsequent runs.
 
+### Why Neon
+
+This is a cron-driven read-heavy app: one write burst a day, queries the rest of the time. Neon's scale-to-zero means the database costs nothing between the ingest run and the next page view, and its database branching gives every Vercel preview deploy a throwaway copy of production data without a manual seed step. Any Postgres works if you self-host, but that shape is why the hosted site runs on Neon.
+
 ## Roadmap
 
 **Shipped** — six-platform coverage, filters + scope lookup, watchlist + compare with GitHub-OAuth cross-device sync, per-program scope-change RSS, activity chips, snapshot history, editorial dark UI, keyboard nav, preset SEO landing pages.
