@@ -1,15 +1,16 @@
 'use server';
 
-import { and, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, isNotNull, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db/client';
-import { discordWebhooks, programs } from '@/lib/db/schema';
+import { discordWebhooks, programs, userWatchlist } from '@/lib/db/schema';
 import { validateDiscordWebhookUrl } from '@/lib/discord';
 import { requireUserId } from './require-user';
 
 // Soft limit per user (hard limit at 100 enforced below).
 const MAX_WEBHOOKS_PER_USER = 100;
 const LABEL_MAX = 60;
+const TOP_PAYING_COUNT = 10;
 
 export interface UserWebhookRow {
   id: number;
@@ -158,6 +159,69 @@ export async function testWebhookUrl(
     return { ok: false, error: `Discord returned ${res.status} — check the URL is right and the webhook still exists.` };
   }
   return { ok: false, error: `Discord returned ${res.status}` };
+}
+
+// One-click bulk subscribe: point a pasted URL at a whole set of programs at once
+// (the user's watchlist, or the current top payers) instead of hand-picking one
+// at a time. Fills remaining slots up to the cap; dedupes against existing subs.
+export type BatchSource = 'watchlist' | 'top-paying';
+
+export async function addWebhooksBatch(input: {
+  webhookUrl: string;
+  source: BatchSource;
+  label?: string | null;
+}): Promise<{ ok: true; added: number; skipped: number } | { ok: false; error: string }> {
+  const userId = await requireUserId();
+  if (!userId) return { ok: false, error: 'sign in first' };
+
+  const v = validateDiscordWebhookUrl(input.webhookUrl);
+  if (!v.ok || !v.normalized) return { ok: false, error: v.error ?? 'invalid url' };
+  const url = v.normalized;
+  const label = input.label?.trim().slice(0, LABEL_MAX) || null;
+
+  let programIds: number[];
+  if (input.source === 'watchlist') {
+    const rows = await db
+      .select({ id: userWatchlist.programId })
+      .from(userWatchlist)
+      .where(eq(userWatchlist.userId, userId));
+    programIds = rows.map((r) => r.id);
+    if (programIds.length === 0) return { ok: false, error: 'your watchlist is empty' };
+  } else if (input.source === 'top-paying') {
+    const rows = await db
+      .select({ id: programs.id })
+      .from(programs)
+      .where(isNotNull(programs.maxBounty))
+      .orderBy(desc(programs.maxBounty))
+      .limit(TOP_PAYING_COUNT);
+    programIds = rows.map((r) => r.id);
+    if (programIds.length === 0) return { ok: false, error: 'no paying programs found' };
+  } else {
+    return { ok: false, error: 'unknown source' };
+  }
+
+  // Fill only the remaining slots under the hard cap.
+  const [{ n }] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(discordWebhooks)
+    .where(eq(discordWebhooks.userId, userId));
+  const slots = MAX_WEBHOOKS_PER_USER - n;
+  if (slots <= 0) return { ok: false, error: `limit reached (${MAX_WEBHOOKS_PER_USER})` };
+
+  const take = programIds.slice(0, slots);
+  const skipped = programIds.length - take.length;
+  if (take.length === 0) return { ok: false, error: 'nothing to add' };
+
+  await db
+    .insert(discordWebhooks)
+    .values(take.map((programId) => ({ userId, programId, webhookUrl: url, label })))
+    .onConflictDoUpdate({
+      target: [discordWebhooks.userId, discordWebhooks.programId, discordWebhooks.webhookUrl],
+      set: { label, brokenAt: null },
+    });
+
+  revalidatePath('/settings/discord');
+  return { ok: true, added: take.length, skipped };
 }
 
 export async function removeWebhook(id: number): Promise<void> {

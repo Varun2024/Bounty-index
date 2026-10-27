@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { auth } from '@/auth';
 import { db } from '@/lib/db/client';
-import { programs } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { programs, userWatchlist } from '@/lib/db/schema';
+import { eq, sql } from 'drizzle-orm';
 import { listMyWebhooks } from '@/app/actions/discord';
 import { AddWebhookForm } from './add-webhook-form';
 import { WebhookRow } from './webhook-row';
@@ -25,7 +25,8 @@ interface PageProps {
 
 export default async function DiscordSettingsPage({ searchParams }: PageProps) {
   const session = await auth();
-  const signedIn = Boolean(session?.user?.id);
+  const userId = session?.user?.id ?? null;
+  const signedIn = Boolean(userId);
 
   const { program: programParam } = await searchParams;
   const prefillProgramId = programParam ? Number(programParam) : null;
@@ -46,6 +47,17 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
 
   // ponytail: null means the DB read failed (Neon quota etc). Distinguish from empty [].
   const rows = signedIn ? await listMyWebhooks().catch(() => null) : null;
+
+  const watchlistCount =
+    userId !== null
+      ? (
+          await db
+            .select({ n: sql<number>`count(*)::int` })
+            .from(userWatchlist)
+            .where(eq(userWatchlist.userId, userId))
+            .catch(() => [{ n: 0 }])
+        )[0]?.n ?? 0
+      : 0;
 
   return (
     <div className="max-w-[900px] mx-auto px-6 py-10">
@@ -128,7 +140,7 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
             <p className="text-sm text-neutral-500 mb-4 leading-relaxed">
               Paste the URL you copied above. Pick which program should fire it — you can add more later. Optional label helps you tell subscriptions apart when you have several (e.g. <span className="mono text-neutral-400">#alerts</span>).
             </p>
-            <AddWebhookForm prefillProgram={prefillProgram} />
+            <AddWebhookForm prefillProgram={prefillProgram} watchlistCount={watchlistCount} />
             <p className="mt-3 mono text-[11px] text-neutral-600">
               {'// '}after saving, hit <span className="text-emerald-400">test</span> on the row to fire a sample embed right now — no need to wait for the daily cron.
             </p>

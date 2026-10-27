@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { addWebhook, testWebhookUrl } from '@/app/actions/discord';
+import { addWebhook, addWebhooksBatch, testWebhookUrl, type BatchSource } from '@/app/actions/discord';
 
 interface PrefillProgram {
   id: number;
@@ -13,9 +13,10 @@ interface PrefillProgram {
 
 interface Props {
   prefillProgram: PrefillProgram | null;
+  watchlistCount: number;
 }
 
-export function AddWebhookForm({ prefillProgram }: Props) {
+export function AddWebhookForm({ prefillProgram, watchlistCount }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [testing, startTest] = useTransition();
@@ -26,6 +27,28 @@ export function AddWebhookForm({ prefillProgram }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [testMsg, setTestMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [bulkPending, startBulk] = useTransition();
+  const [bulkMsg, setBulkMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  function onBulk(source: BatchSource) {
+    setBulkMsg(null);
+    if (!url.trim()) {
+      setBulkMsg({ ok: false, text: 'paste a webhook URL first' });
+      return;
+    }
+    startBulk(async () => {
+      const res = await addWebhooksBatch({ webhookUrl: url, source, label: label || null });
+      if (res.ok) {
+        const over = res.skipped ? ` (${res.skipped} over the cap, skipped)` : '';
+        setBulkMsg({ ok: true, text: `subscribed ${res.added} program${res.added === 1 ? '' : 's'}${over}` });
+        setUrl('');
+        setLabel('');
+        router.refresh();
+      } else {
+        setBulkMsg({ ok: false, text: res.error });
+      }
+    });
+  }
 
   function onTest() {
     setTestMsg(null);
@@ -137,6 +160,36 @@ export function AddWebhookForm({ prefillProgram }: Props) {
       >
         {pending ? 'saving…' : 'subscribe →'}
       </button>
+
+      <div className="pt-4 border-t border-neutral-900">
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">or subscribe in bulk</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onBulk('watchlist')}
+            disabled={bulkPending || !url || watchlistCount === 0}
+            title={watchlistCount === 0 ? 'add programs to your watchlist first' : undefined}
+            className="mono text-[11px] px-2.5 py-1 border border-neutral-800 rounded text-neutral-300 hover:text-emerald-300 hover:border-emerald-400/40 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            my watchlist ({watchlistCount})
+          </button>
+          <button
+            type="button"
+            onClick={() => onBulk('top-paying')}
+            disabled={bulkPending || !url}
+            className="mono text-[11px] px-2.5 py-1 border border-neutral-800 rounded text-neutral-300 hover:text-emerald-300 hover:border-emerald-400/40 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            top 10 paying
+          </button>
+          {bulkPending && <span className="mono text-[11px] text-neutral-500">adding…</span>}
+          {bulkMsg && (
+            <span className={`mono text-[11px] ${bulkMsg.ok ? 'text-emerald-400' : 'text-red-400'}`}>
+              {bulkMsg.ok ? '✓' : '✗'} {bulkMsg.text}
+            </span>
+          )}
+        </div>
+        <p className="mono text-[10px] text-neutral-600 mt-2">{'// '}points the URL above at every matching program at once</p>
+      </div>
     </form>
   );
 }
