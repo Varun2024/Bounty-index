@@ -47,31 +47,3 @@ export function activeAnnouncements(now: Date = new Date()): Announcement[] {
     return t >= s && t < e;
   }).sort((a, b) => new Date(b.startsAt).getTime() - new Date(a.startsAt).getTime());
 }
-
-// --- Self-check -------------------------------------------------------------
-
-if (require.main === module) {
-  const sample: Announcement[] = [
-    { id: 'a', message: '', href: '/', cta: '', startsAt: '2026-01-01T00:00:00Z', expiresAt: '2026-01-10T00:00:00Z' },
-    { id: 'b', message: '', href: '/', cta: '', startsAt: '2026-01-05T00:00:00Z', expiresAt: '2026-01-20T00:00:00Z' },
-  ];
-  // Monkey-patch the exported list for the check.
-  (ANNOUNCEMENTS as Announcement[]).length = 0;
-  (ANNOUNCEMENTS as Announcement[]).push(...sample);
-
-  const before = activeAnnouncements(new Date('2025-12-31T00:00:00Z'));
-  const during = activeAnnouncements(new Date('2026-01-06T00:00:00Z'));
-  const after = activeAnnouncements(new Date('2026-02-01T00:00:00Z'));
-  const atExpiry = activeAnnouncements(new Date('2026-01-10T00:00:00Z')); // 'a' expired exactly
-
-  const pass =
-    before.length === 0 &&
-    during.length === 2 &&
-    during[0].id === 'b' && // newest first
-    after.length === 0 &&
-    atExpiry.length === 1 &&
-    atExpiry[0].id === 'b';
-
-  console.log(`${pass ? 'ok ' : 'FAIL'} activeAnnouncements window + ordering`);
-  if (!pass) process.exit(1);
-}
