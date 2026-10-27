@@ -118,6 +118,48 @@ export async function addWebhook(input: AddWebhookInput): Promise<{ ok: true } |
   return { ok: true };
 }
 
+// Fire a sample embed at a pasted URL *before* it's saved, so the user gets
+// proof-of-life (and catches a bad URL) without first picking a program and
+// committing a row. Auth-gated: same rule as save — bounty.index must never be
+// usable as an anonymous relay to POST into an arbitrary Discord channel.
+// ponytail: no per-user throttle. Auth ties every call to a GitHub account, and
+// Discord itself 429s a hammered URL. Add a cooldown only if abuse shows up.
+export async function testWebhookUrl(
+  webhookUrl: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const userId = await requireUserId();
+  if (!userId) return { ok: false, error: 'sign in first' };
+
+  const v = validateDiscordWebhookUrl(webhookUrl);
+  if (!v.ok || !v.normalized) return { ok: false, error: v.error ?? 'invalid url' };
+
+  const { formatDiffEmbed, postDiffToWebhook } = await import('@/lib/discord');
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://bountyindex.in';
+
+  const embed = formatDiffEmbed(
+    {
+      added: ['api.example.com', '*.staging.example.com'],
+      removed: [],
+      rewardDelta: { from: 5000, to: 10000 },
+      safeHarborChanged: null,
+    },
+    {
+      programName: 'bounty.index · test alert',
+      programUrl: `${SITE_URL}/settings/discord`,
+      platformLabel: 'bounty.index',
+      currency: 'USD',
+      capturedAt: new Date(),
+    },
+  );
+
+  const res = await postDiffToWebhook(v.normalized, embed);
+  if (res.ok) return { ok: true };
+  if (res.broken) {
+    return { ok: false, error: `Discord returned ${res.status} — check the URL is right and the webhook still exists.` };
+  }
+  return { ok: false, error: `Discord returned ${res.status}` };
+}
+
 export async function removeWebhook(id: number): Promise<void> {
   const userId = await requireUserId();
   if (!userId) throw new Error('sign in first');

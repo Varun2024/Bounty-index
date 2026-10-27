@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { addWebhook } from '@/app/actions/discord';
+import { addWebhook, testWebhookUrl } from '@/app/actions/discord';
 
 interface PrefillProgram {
   id: number;
@@ -18,12 +18,27 @@ interface Props {
 export function AddWebhookForm({ prefillProgram }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [testing, startTest] = useTransition();
   const [url, setUrl] = useState('');
   const [label, setLabel] = useState('');
   const [programId, setProgramId] = useState<number | null>(prefillProgram?.id ?? null);
   const [programQuery, setProgramQuery] = useState(prefillProgram?.name ?? '');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [testMsg, setTestMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  function onTest() {
+    setTestMsg(null);
+    if (!url.trim()) {
+      setTestMsg({ ok: false, text: 'paste a webhook URL first' });
+      return;
+    }
+    startTest(async () => {
+      const res = await testWebhookUrl(url);
+      if (res.ok) setTestMsg({ ok: true, text: 'sent — check your Discord channel' });
+      else setTestMsg({ ok: false, text: res.error });
+    });
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -81,6 +96,22 @@ export function AddWebhookForm({ prefillProgram }: Props) {
           placeholder="https://discord.com/api/webhooks/…"
           className="w-full mono text-xs px-3 py-2 bg-neutral-950 border border-neutral-800 rounded text-neutral-100 focus:border-emerald-400/60 focus:outline-none"
         />
+        <div className="mt-2 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onTest}
+            disabled={testing || !url}
+            className="mono text-[11px] px-2.5 py-1 border border-neutral-800 rounded text-neutral-400 hover:text-emerald-300 hover:border-emerald-400/40 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {testing ? 'sending…' : 'send test →'}
+          </button>
+          {testMsg && (
+            <span className={`mono text-[11px] ${testMsg.ok ? 'text-emerald-400' : 'text-red-400'}`}>
+              {testMsg.ok ? '✓' : '✗'} {testMsg.text}
+            </span>
+          )}
+          {!testMsg && <span className="mono text-[11px] text-neutral-600">{'// '}fire a sample embed now, before you save</span>}
+        </div>
       </div>
 
       <div>
