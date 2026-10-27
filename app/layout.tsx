@@ -17,6 +17,7 @@ import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
 import { DegradedBanner } from './_ui/degraded-banner';
 import { RestoredBanner } from './_ui/restored-banner';
+import { AnnouncementStrip } from './_ui/announcement-strip';
 import { Analytics } from '@vercel/analytics/next';
 import { ThemeToggle } from './_ui/theme-toggle';
 
@@ -150,6 +151,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </header>
         <DegradedBanner />
         <RestoredBanner />
+        <AnnouncementStrip />
         <main id="main" className="flex-1">{children}</main>
         <GlobalKeyboard />
         <ShortcutsHelp />
