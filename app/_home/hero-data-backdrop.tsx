@@ -6,7 +6,7 @@ import { shortenIdentifier } from '@/lib/format';
 // (.hero-data-backdrop). Identifiers are sampled server-side (see sampleScopeIdentifiers);
 // on empty we fall back to just the glow, never fabricated domains.
 
-const COLS = 4;
+const COLS = 3;
 const MIN_FILL = 40; // enough lines per column for a seamless vertical loop
 const MAX_IDS = 48;
 

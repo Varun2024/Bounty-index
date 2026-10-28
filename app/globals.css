@@ -120,20 +120,22 @@ body {
   background: radial-gradient(620px 420px at 30% 22%, rgba(52, 211, 153, 0.10), transparent 66%);
 }
 .hero-data-backdrop__field {
-  position: absolute; inset: 0; display: flex; gap: 48px; padding: 0 40px;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 44%, #000 86%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 44%, #000 86%, transparent 100%);
+  /* Columns live in the left ~56% (padding-right clears the leaderboard column), and the
+     band sits low so it also clears the H1. Simple single mask, no compositing. */
+  position: absolute; inset: 0; display: flex; gap: 56px; padding: 0 44% 0 40px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 84%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 84%, transparent 100%);
 }
 .hdb-col { flex: 1 1 0; min-width: 0; animation: hdb-drift 120s linear infinite; will-change: transform; }
 .hdb-col:nth-child(2n) { animation-duration: 160s; animation-direction: reverse; }
 .hdb-col:nth-child(3n) { animation-duration: 190s; }
 .hdb-list { list-style: none; margin: 0; padding: 0; }
 .hdb-id {
-  font-size: 20px; line-height: 2.3; letter-spacing: 0.02em;
+  font-size: 19px; line-height: 2.7; letter-spacing: 0.02em;
   white-space: nowrap; overflow: hidden; text-overflow: clip;
-  color: rgba(229, 229, 229, 0.04);
+  color: rgba(229, 229, 229, 0.028);
 }
-html.light .hdb-id { color: rgba(10, 10, 11, 0.055); }
+html.light .hdb-id { color: rgba(10, 10, 11, 0.04); }
 @media (max-width: 768px) { .hero-data-backdrop__field { display: none; } }
 @media (prefers-reduced-motion: reduce) { .hdb-col { animation: none !important; } }
 
