@@ -46,7 +46,6 @@ const GROUPS: NavGroup[] = [
     items: [
       { href: '/how-scored', label: 'Opportunity score', desc: 'How the 0 to 100 ranking is built' },
       { href: '/how-it-works', label: 'How it works', desc: 'Where the data comes from, and how often' },
-      { href: '/mcp', label: 'MCP server', desc: 'Query the index from Claude or Cursor', beta: true },
     ],
   },
 ];
@@ -166,6 +165,19 @@ export function SiteNav() {
             </div>
           );
         })}
+
+        {/* MCP is a top-level link, not a dropdown item: it's the headline differentiator
+            (free agent endpoint). Emerald pill so it stands out from the muted nav items. */}
+        <Link
+          href="/mcp"
+          className={`ml-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border transition focus-ring text-sm font-medium whitespace-nowrap ${
+            isActive('/mcp')
+              ? 'text-emerald-200 border-emerald-400/60 bg-emerald-400/[0.14]'
+              : 'text-emerald-300 border-emerald-400/30 bg-emerald-400/[0.06] hover:border-emerald-400/60 hover:bg-emerald-400/[0.12] hover:text-emerald-200'
+          }`}
+        >
+          MCP
+        </Link>
       </nav>
 
       {/* Mobile: hamburger toggles a full-width panel */}
@@ -199,6 +211,14 @@ export function SiteNav() {
               ))}
             </div>
           ))}
+          <Link
+            href="/mcp"
+            onClick={() => setMobileOpen(false)}
+            className="mt-4 flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium text-emerald-300 border border-emerald-400/30 bg-emerald-400/[0.06] hover:bg-emerald-400/[0.12] hover:text-emerald-200 transition focus-ring"
+          >
+            MCP server
+            <span aria-hidden className="text-emerald-400/70">→</span>
+          </Link>
         </div>
       )}
     </div>
