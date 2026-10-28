@@ -541,6 +541,21 @@ export const stats = cachedWithDates(
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
 );
 
+// Distinct MCP clients (by IP) that hit the endpoint in the last 7 days. Real usage
+// signal for the homepage heartbeat. Best-effort: returns 0 on any error (incl. the
+// table not existing yet) so a missing mcp_hits never breaks the home page.
+export async function mcpAgentsThisWeek(): Promise<number> {
+  try {
+    const [row] = await db
+      .select({ c: sql<number>`count(distinct ip)::int` })
+      .from(schema.mcpHits)
+      .where(sql`${schema.mcpHits.ts} > now() - interval '7 days'`);
+    return row?.c ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
 // Public read-only aggregate. Kept here (not in app/actions/reports.ts which is 'use server')
 // so a server-component page can import it without the whole page becoming a server-action
 // consumer — which Next.js opts out of static/ISR rendering.

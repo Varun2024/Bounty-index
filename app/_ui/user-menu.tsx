@@ -35,9 +35,9 @@ export function UserMenu() {
           className="list-none cursor-pointer focus-ring rounded-md"
           aria-label="Open menu"
         >
-          <span className="mono text-xs px-3 py-1.5 rounded-md border border-neutral-800 text-neutral-300 hover:border-neutral-600 hover:bg-neutral-900 group-open:border-neutral-600 group-open:bg-neutral-900 transition inline-flex items-center gap-2">
+          <span className="mono text-xs px-2.5 sm:px-3 py-1.5 rounded-md border border-neutral-800 text-neutral-300 hover:border-neutral-600 hover:bg-neutral-900 group-open:border-neutral-600 group-open:bg-neutral-900 transition inline-flex items-center gap-2">
             <span aria-hidden className="w-4 h-4 rounded-full border border-neutral-700 group-open:border-emerald-400/50 flex items-center justify-center text-[10px] transition">☰</span>
-            menu
+            <span className="hidden sm:inline">menu</span>
           </span>
         </summary>
 

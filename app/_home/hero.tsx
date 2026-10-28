@@ -7,9 +7,10 @@ import { HeroScopeCheck } from './hero-scope-check';
 interface HeroProps {
   s: Awaited<ReturnType<typeof stats>> | null;
   top: Awaited<ReturnType<typeof topPayouts>>;
+  agentsThisWeek: number;
 }
 
-export function Hero({ s, top }: HeroProps) {
+export function Hero({ s, top, agentsThisWeek }: HeroProps) {
   const topBounty = s && top[0]?.maxBounty ? `$${top[0].maxBounty.toLocaleString()}` : null;
   const lastIngest = s?.lastIngestAt ? relativeTime(s.lastIngestAt) : null;
   const programCount = s?.programs.toLocaleString() ?? null;
@@ -56,6 +57,13 @@ export function Hero({ s, top }: HeroProps) {
                 MCP endpoint
               </Link>{' '}
               for agents.
+              {agentsThisWeek > 0 && (
+                <>
+                  {' '}
+                  <span className="mono text-neutral-100 tabular-nums">{agentsThisWeek.toLocaleString()}</span>{' '}
+                  connected this week.
+                </>
+              )}
             </p>
           </section>
 
