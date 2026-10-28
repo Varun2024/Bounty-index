@@ -21,7 +21,7 @@ export default async function Home() {
     getRecentChanges(168, 6).catch(() => []),
     trendingNewPayouts(6, 30).catch(() => []),
     mcpAgentsThisWeek().catch(() => 0),
-    sampleScopeIdentifiers(48).catch(() => []),
+    sampleScopeIdentifiers(16).catch(() => []),
   ]);
 
   return (

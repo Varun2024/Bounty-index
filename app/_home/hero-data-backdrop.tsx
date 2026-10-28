@@ -1,49 +1,64 @@
 import { shortenIdentifier } from '@/lib/format';
 
-// Data-as-atmosphere: ghosted real in-scope identifiers drift behind the hero, proving
-// the index is real in the background texture itself. No other site can render this
-// because it's our data. Styling + mask + drift + reduced-motion live in globals.css
-// (.hero-data-backdrop). Identifiers are sampled server-side (see sampleScopeIdentifiers);
-// on empty we fall back to just the glow, never fabricated domains.
+// Data-as-atmosphere: a sparse, scattered set of real in-scope identifiers ghosted behind
+// the hero, proving the index is real in the texture itself. No other site can render this,
+// it's our data. Styling + float + reduced-motion live in globals.css (.hdb-item). Positions
+// are hand-placed slots (not random) so they sit in the hero's negative space, clear of the
+// H1 and leaderboard, and stay stable across SSR/hydration. On empty we show only the glow,
+// never fabricated domains.
 
-const COLS = 3;
-const MIN_FILL = 40; // enough lines per column for a seamless vertical loop
-const MAX_IDS = 48;
+interface Slot {
+  top: number;   // %
+  left: number;  // %
+  size: number;  // px
+  opacity: number;
+  blur: number;  // px
+}
+
+// Three depth tiers (near = larger/clearer, far = smaller/fainter/blurred), spread across
+// the top strip, left gutter, and lower band — the zones the hero content doesn't occupy.
+const SLOTS: Slot[] = [
+  { top: 7,  left: 7,  size: 16, opacity: 0.038, blur: 0.3 },
+  { top: 11, left: 34, size: 13, opacity: 0.024, blur: 0.6 },
+  { top: 8,  left: 60, size: 15, opacity: 0.030, blur: 0.4 },
+  { top: 8,  left: 83, size: 14, opacity: 0.028, blur: 0.5 },
+  { top: 6,  left: 93, size: 13, opacity: 0.022, blur: 0.7 },
+  { top: 48, left: 2,  size: 18, opacity: 0.040, blur: 0.2 },
+  { top: 80, left: 9,  size: 22, opacity: 0.050, blur: 0 },
+  { top: 90, left: 31, size: 14, opacity: 0.026, blur: 0.5 },
+  { top: 84, left: 50, size: 16, opacity: 0.032, blur: 0.3 },
+  { top: 88, left: 69, size: 19, opacity: 0.040, blur: 0.1 },
+  { top: 93, left: 88, size: 13, opacity: 0.022, blur: 0.6 },
+];
 
 export function HeroDataBackdrop({ identifiers }: { identifiers: string[] }) {
-  let ids = identifiers.filter(Boolean);
-
-  if (ids.length === 0) {
-    return (
-      <div className="hero-data-backdrop" aria-hidden>
-        <div className="hero-data-backdrop__glow" />
-      </div>
-    );
-  }
-
-  // Repeat to fill, then cap, then shorten so lines stay tidy.
-  while (ids.length < MIN_FILL) ids = ids.concat(ids);
-  ids = ids.slice(0, MAX_IDS).map((id) => shortenIdentifier(id, 28));
-
-  const columns = Array.from({ length: COLS }, (_, i) => ids.filter((_, idx) => idx % COLS === i));
+  const ids = identifiers.filter(Boolean);
 
   return (
     <div className="hero-data-backdrop" aria-hidden>
       <div className="hero-data-backdrop__glow" />
-      <div className="hero-data-backdrop__field">
-        {columns.map((col, ci) => (
-          <div className="hdb-col" key={ci}>
-            {/* list rendered twice: translateY(-50%) loops seamlessly over one copy */}
-            {[0, 1].map((dup) => (
-              <ul className="hdb-list" key={dup}>
-                {col.map((id, i) => (
-                  <li key={`${dup}-${i}`} className="hdb-id mono">{id}</li>
-                ))}
-              </ul>
-            ))}
-          </div>
-        ))}
-      </div>
+      {ids.length > 0 &&
+        SLOTS.map((s, i) => {
+          const id = ids[i % ids.length];
+          if (!id) return null;
+          return (
+            <span
+              key={i}
+              className="hdb-item mono"
+              style={{
+                top: `${s.top}%`,
+                left: `${s.left}%`,
+                fontSize: `${s.size}px`,
+                opacity: s.opacity,
+                filter: s.blur ? `blur(${s.blur}px)` : undefined,
+                animationDuration: `${9 + (i % 5) * 1.3}s`,
+                animationDelay: `${((i * 0.9) % 4).toFixed(1)}s`,
+              }}
+            >
+              {shortenIdentifier(id, 24)}
+            </span>
+          );
+        })}
     </div>
   );
 }

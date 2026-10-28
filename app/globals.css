@@ -107,37 +107,28 @@ body {
   to   { transform: translateX(-50%); }
 }
 
-/* Hero "data-as-atmosphere" backdrop: ghosted real scope identifiers drifting slowly,
-   with a single emerald focal glow. Replaces the tile grid. The field is masked to the
-   lower band so it stays clear of the H1 and the leaderboard. */
-@keyframes hdb-drift {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-50%); }
+/* Hero "data-as-atmosphere" backdrop: a sparse scatter of real scope identifiers at
+   hand-placed slots (clear of the H1 and leaderboard), with per-item depth (size +
+   opacity + blur) and a slow idle float, over a single emerald focal glow. Replaces the
+   tile grid. Positions are deterministic (server-assigned) so there's no hydration shift. */
+@keyframes hdb-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
 }
 .hero-data-backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .hero-data-backdrop__glow {
   position: absolute; inset: 0;
   background: radial-gradient(620px 420px at 30% 22%, rgba(52, 211, 153, 0.10), transparent 66%);
 }
-.hero-data-backdrop__field {
-  /* Columns live in the left ~56% (padding-right clears the leaderboard column), and the
-     band sits low so it also clears the H1. Simple single mask, no compositing. */
-  position: absolute; inset: 0; display: flex; gap: 56px; padding: 0 44% 0 40px;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 84%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 50%, #000 84%, transparent 100%);
+.hdb-item {
+  position: absolute; white-space: nowrap; letter-spacing: 0.02em;
+  color: rgba(229, 229, 229, 0.9); /* final strength comes from inline opacity per item */
+  animation-name: hdb-float; animation-timing-function: ease-in-out; animation-iteration-count: infinite;
+  will-change: transform;
 }
-.hdb-col { flex: 1 1 0; min-width: 0; animation: hdb-drift 120s linear infinite; will-change: transform; }
-.hdb-col:nth-child(2n) { animation-duration: 160s; animation-direction: reverse; }
-.hdb-col:nth-child(3n) { animation-duration: 190s; }
-.hdb-list { list-style: none; margin: 0; padding: 0; }
-.hdb-id {
-  font-size: 19px; line-height: 2.7; letter-spacing: 0.02em;
-  white-space: nowrap; overflow: hidden; text-overflow: clip;
-  color: rgba(229, 229, 229, 0.028);
-}
-html.light .hdb-id { color: rgba(10, 10, 11, 0.04); }
-@media (max-width: 768px) { .hero-data-backdrop__field { display: none; } }
-@media (prefers-reduced-motion: reduce) { .hdb-col { animation: none !important; } }
+html.light .hdb-item { color: rgba(10, 10, 11, 0.9); }
+@media (max-width: 768px) { .hdb-item { display: none; } }
+@media (prefers-reduced-motion: reduce) { .hdb-item { animation: none !important; } }
 
 @keyframes dash {
   to { stroke-dashoffset: -206; }
