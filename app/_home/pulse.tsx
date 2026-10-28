@@ -1,14 +1,17 @@
 import Link from 'next/link';
-import { recentlyAdded, trendingNewPayouts } from '@/lib/db/queries';
+import type { getRecentChanges, trendingNewPayouts } from '@/lib/db/queries';
 import { formatBounty, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 
 interface PulseProps {
-  recent: Awaited<ReturnType<typeof recentlyAdded>>;
+  changes: Awaited<ReturnType<typeof getRecentChanges>>;
   trending: Awaited<ReturnType<typeof trendingNewPayouts>>;
 }
 
-export function Pulse({ recent, trending }: PulseProps) {
-  if (recent.length === 0 && trending.length === 0) return null;
+// "What's moving now": the scope-churn feed leads (the product's whole point is that
+// scope moves), with top new payouts as the money panel. Recently-added lives in the
+// ticker + /feed, so it's not repeated here.
+export function Pulse({ changes, trending }: PulseProps) {
+  if (changes.length === 0 && trending.length === 0) return null;
   return (
     <section className="max-w-[1200px] mx-auto px-6 py-24">
       <div className="mb-12 flex items-end justify-between reveal">
@@ -17,21 +20,21 @@ export function Pulse({ recent, trending }: PulseProps) {
           <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What&apos;s moving now.</h2>
         </div>
         <Link
-          href="/feed"
+          href="/whats-new"
           className="hidden md:inline-flex cta-arrow mono text-xs text-neutral-500 hover:text-emerald-400 transition items-center gap-1.5"
         >
-          full feed <span className="arrow">→</span>
+          all changes <span className="arrow">→</span>
         </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-6 md:gap-8 items-start">
         <PulsePanel
-          eyebrow="Recently added"
-          hint="last 14 days"
-          empty="No new programs indexed in the last 14 days."
+          eyebrow="Scope moved"
+          hint="last 7 days"
+          empty="No scope or reward changes in the last 7 days."
         >
-          {recent.map((p) => (
-            <PulseRow key={p.id} p={p} showRelative />
+          {changes.map((c) => (
+            <ChangeRow key={`${c.program.id}-${c.capturedAt.getTime()}`} c={c} />
           ))}
         </PulsePanel>
 
@@ -41,7 +44,7 @@ export function Pulse({ recent, trending }: PulseProps) {
           empty="No paying programs added recently."
         >
           {trending.map((p) => (
-            <PulseRow key={p.id} p={p} showPayout />
+            <TrendingRow key={p.id} p={p} />
           ))}
         </PulsePanel>
       </div>
@@ -73,13 +76,62 @@ function PulsePanel({ eyebrow, hint, empty, children }: PulsePanelProps) {
   );
 }
 
-interface PulseRowProps {
-  p: Awaited<ReturnType<typeof recentlyAdded>>[number];
-  showRelative?: boolean;
-  showPayout?: boolean;
+function ChangeRow({ c }: { c: Awaited<ReturnType<typeof getRecentChanges>>[number] }) {
+  const dot = PLATFORM_META[c.program.platform]?.dot ?? 'bg-neutral-500';
+  return (
+    <li className="border-b border-neutral-900 last:border-b-0">
+      <Link
+        href={`/programs/${c.program.platform}/${c.program.slug}`}
+        className="flex items-start gap-4 px-5 py-3.5 hover:bg-neutral-900/40 transition group"
+      >
+        <span className={`w-1.5 h-1.5 mt-1.5 rounded-full ${dot} shrink-0`} />
+        <div className="flex-1 min-w-0">
+          <p className="text-neutral-100 group-hover:text-emerald-400 transition truncate">{c.program.name}</p>
+          <p className="mono text-[11px] text-neutral-500 mt-0.5 truncate">{platformLabel(c.program.platform)}</p>
+          <DiffLine diff={c.diff} />
+        </div>
+        <span className="text-xs text-neutral-500 shrink-0 mt-0.5">{relativeTime(c.capturedAt)}</span>
+      </Link>
+    </li>
+  );
 }
 
-function PulseRow({ p, showRelative, showPayout }: PulseRowProps) {
+// Compact one-line diff: just the counts/deltas, no identifier samples (those live on
+// the program page and /whats-new). Keeps the Pulse row scannable.
+function DiffLine({ diff }: { diff: Awaited<ReturnType<typeof getRecentChanges>>[number]['diff'] }) {
+  const bits: React.ReactNode[] = [];
+  if (diff.added.length) bits.push(<span key="a" className="text-emerald-300">+{diff.added.length} in-scope</span>);
+  if (diff.removed.length) bits.push(<span key="r" className="text-amber-300">−{diff.removed.length} removed</span>);
+  if (diff.rewardDelta) {
+    bits.push(
+      <span key="rw" className="text-neutral-300">
+        reward {fmtReward(diff.rewardDelta.from)} → {fmtReward(diff.rewardDelta.to)}
+      </span>,
+    );
+  }
+  if (diff.safeHarborChanged) {
+    bits.push(
+      <span key="sh" className="text-neutral-300">
+        safe-harbor {diff.safeHarborChanged.from ?? '—'} → {diff.safeHarborChanged.to ?? '—'}
+      </span>,
+    );
+  }
+  if (bits.length === 0) return null;
+  return (
+    <p className="mono text-[11px] mt-1 flex flex-wrap gap-x-2.5 gap-y-0.5">
+      {bits.map((b, i) => (
+        <span key={i}>{b}</span>
+      ))}
+    </p>
+  );
+}
+
+function fmtReward(v: number | null): string {
+  if (v === null) return '—';
+  return formatBounty(v, 'USD');
+}
+
+function TrendingRow({ p }: { p: Awaited<ReturnType<typeof trendingNewPayouts>>[number] }) {
   const dot = PLATFORM_META[p.platform]?.dot ?? 'bg-neutral-500';
   return (
     <li className="border-b border-neutral-900 last:border-b-0">
@@ -95,13 +147,9 @@ function PulseRow({ p, showRelative, showPayout }: PulseRowProps) {
             {p.offersBounty ? <span className="text-emerald-400/80"> · bounty</span> : <span className="text-neutral-600"> · vdp</span>}
           </p>
         </div>
-        {showPayout && p.maxBounty ? (
+        {p.maxBounty ? (
           <span className="mono text-sm text-emerald-300 tabular-nums shrink-0">
             {formatBounty(p.maxBounty, p.currency ?? 'USD')}
-          </span>
-        ) : showRelative && p.firstSeenAt ? (
-          <span className="text-xs text-neutral-400 shrink-0">
-            {relativeTime(p.firstSeenAt)}
           </span>
         ) : null}
       </Link>

@@ -1,4 +1,4 @@
-import { stats, topPayouts, recentlyAdded, trendingNewPayouts, mcpAgentsThisWeek } from '@/lib/db/queries';
+import { stats, topPayouts, getRecentChanges, trendingNewPayouts, mcpAgentsThisWeek } from '@/lib/db/queries';
 import { Ticker } from '@/app/_ui/ticker';
 import { Hero } from './_home/hero';
 import { Pulse } from './_home/pulse';
@@ -15,10 +15,10 @@ export const revalidate = 3600;
 
 // Order is value-first: pitch → prove with live data → feature detail → why-not-them → trust → how → convert.
 export default async function Home() {
-  const [s, top, recent, trending, agentsThisWeek] = await Promise.all([
+  const [s, top, changes, trending, agentsThisWeek] = await Promise.all([
     stats().catch(() => null),
     topPayouts(5).catch(() => []),
-    recentlyAdded(8, 14).catch(() => []),
+    getRecentChanges(168, 12).catch(() => []),
     trendingNewPayouts(6, 30).catch(() => []),
     mcpAgentsThisWeek().catch(() => 0),
   ]);
@@ -27,7 +27,7 @@ export default async function Home() {
     <>
       <Hero s={s} top={top} agentsThisWeek={agentsThisWeek} />
       <Ticker />
-      <Pulse recent={recent} trending={trending} />
+      <Pulse changes={changes} trending={trending} />
       <SectionOrnament />
       <Features s={s} />
       <SectionOrnament />
