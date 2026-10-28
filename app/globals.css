@@ -112,8 +112,8 @@ body {
    opacity + blur) and a slow idle float, over a single emerald focal glow. Replaces the
    tile grid. Positions are deterministic (server-assigned) so there's no hydration shift. */
 @keyframes hdb-float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-7px); }
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(var(--dx, 0px), var(--amp, -12px)); }
 }
 .hero-data-backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .hero-data-backdrop__glow {

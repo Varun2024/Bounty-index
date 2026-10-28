@@ -119,11 +119,6 @@ export function Hero({ s, top, agentsThisWeek, bgIdentifiers }: HeroProps) {
           </dl>
         )}
       </div>
-
-      <CornerMark position="top-left" />
-      <CornerMark position="top-right" />
-      <CornerMark position="bottom-left" />
-      <CornerMark position="bottom-right" />
     </div>
   );
 }
@@ -139,17 +134,3 @@ function StatInline({ label, value, accent }: { label: string; value: string; ac
   );
 }
 
-function CornerMark({ position }: { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' }) {
-  const map = {
-    'top-left': 'top-4 left-4 border-l border-t',
-    'top-right': 'top-4 right-4 border-r border-t',
-    'bottom-left': 'bottom-4 left-4 border-l border-b',
-    'bottom-right': 'bottom-4 right-4 border-r border-b',
-  } as const;
-  return (
-    <span
-      aria-hidden
-      className={`hidden md:block absolute w-5 h-5 pointer-events-none border-neutral-800 ${map[position]}`}
-    />
-  );
-}
