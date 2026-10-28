@@ -556,6 +556,25 @@ export async function mcpAgentsThisWeek(): Promise<number> {
   }
 }
 
+// A random sample of real in-scope identifiers for the hero's data-as-atmosphere backdrop.
+// Domain-ish only (contains a dot, reasonable length) so the ghosted text reads as scope.
+// Best-effort: [] on error, so the hero falls back to just the glow (never fabricated data).
+export async function sampleScopeIdentifiers(limit = 48): Promise<string[]> {
+  try {
+    const rows = await db
+      .select({ id: schema.scopes.identifier })
+      .from(schema.scopes)
+      .where(
+        sql`${schema.scopes.inScope} = true and ${schema.scopes.identifier} like '%.%' and char_length(${schema.scopes.identifier}) between 4 and 48`,
+      )
+      .orderBy(sql`random()`)
+      .limit(limit);
+    return rows.map((r) => r.id);
+  } catch {
+    return [];
+  }
+}
+
 // Public read-only aggregate. Kept here (not in app/actions/reports.ts which is 'use server')
 // so a server-component page can import it without the whole page becoming a server-action
 // consumer — which Next.js opts out of static/ISR rendering.

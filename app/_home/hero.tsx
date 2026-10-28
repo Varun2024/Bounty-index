@@ -1,16 +1,17 @@
 import Link from 'next/link';
 import { stats, topPayouts } from '@/lib/db/queries';
 import { formatBounty, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
-import { BackdropGrid } from './shared';
+import { HeroDataBackdrop } from './hero-data-backdrop';
 import { HeroScopeCheck } from './hero-scope-check';
 
 interface HeroProps {
   s: Awaited<ReturnType<typeof stats>> | null;
   top: Awaited<ReturnType<typeof topPayouts>>;
   agentsThisWeek: number;
+  bgIdentifiers: string[];
 }
 
-export function Hero({ s, top, agentsThisWeek }: HeroProps) {
+export function Hero({ s, top, agentsThisWeek, bgIdentifiers }: HeroProps) {
   const topBounty = s && top[0]?.maxBounty ? `$${top[0].maxBounty.toLocaleString()}` : null;
   const lastIngest = s?.lastIngestAt ? relativeTime(s.lastIngestAt) : null;
   const programCount = s?.programs.toLocaleString() ?? null;
@@ -20,7 +21,7 @@ export function Hero({ s, top, agentsThisWeek }: HeroProps) {
 
   return (
     <div className="relative overflow-hidden lg:min-h-[calc(100vh-3.5rem)]">
-      <div className="parallax-slow absolute inset-0" aria-hidden><BackdropGrid /></div>
+      <HeroDataBackdrop identifiers={bgIdentifiers} />
 
       <div className="relative max-w-[1280px] mx-auto px-6 flex flex-col min-h-full">
         <div className="flex-1 grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-16 items-start pt-24 pb-20 lg:pt-28 lg:pb-24">

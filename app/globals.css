@@ -107,6 +107,36 @@ body {
   to   { transform: translateX(-50%); }
 }
 
+/* Hero "data-as-atmosphere" backdrop: ghosted real scope identifiers drifting slowly,
+   with a single emerald focal glow. Replaces the tile grid. The field is masked to the
+   lower band so it stays clear of the H1 and the leaderboard. */
+@keyframes hdb-drift {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+.hero-data-backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.hero-data-backdrop__glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(620px 420px at 30% 22%, rgba(52, 211, 153, 0.10), transparent 66%);
+}
+.hero-data-backdrop__field {
+  position: absolute; inset: 0; display: flex; gap: 48px; padding: 0 40px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 44%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 44%, #000 86%, transparent 100%);
+}
+.hdb-col { flex: 1 1 0; min-width: 0; animation: hdb-drift 120s linear infinite; will-change: transform; }
+.hdb-col:nth-child(2n) { animation-duration: 160s; animation-direction: reverse; }
+.hdb-col:nth-child(3n) { animation-duration: 190s; }
+.hdb-list { list-style: none; margin: 0; padding: 0; }
+.hdb-id {
+  font-size: 20px; line-height: 2.3; letter-spacing: 0.02em;
+  white-space: nowrap; overflow: hidden; text-overflow: clip;
+  color: rgba(229, 229, 229, 0.04);
+}
+html.light .hdb-id { color: rgba(10, 10, 11, 0.055); }
+@media (max-width: 768px) { .hero-data-backdrop__field { display: none; } }
+@media (prefers-reduced-motion: reduce) { .hdb-col { animation: none !important; } }
+
 @keyframes dash {
   to { stroke-dashoffset: -206; }
 }
