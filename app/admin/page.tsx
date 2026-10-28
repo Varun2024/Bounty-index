@@ -26,11 +26,17 @@ export default async function AdminPage() {
     total_notes: number; total_reports: number; total_saved_filters: number;
     total_webhooks: number; broken_webhooks: number;
     total_programs: number; total_snapshots: number;
+  };
+  type McpCounts = {
     mcp_requests: number; mcp_clients: number;
     mcp_requests_7d: number; mcp_clients_7d: number;
   };
   type McpUa = { ua: string | null; clients: number; requests: number };
-  const [countsRows, recentUsers, topWatchedRows, mcpUaRows] = await Promise.all([
+  // MCP counts are a SEPARATE settled query on purpose: mcp_hits is a newer table and a
+  // deploy can land before its migration runs. Folding it into the main counts query would
+  // make one missing table blank every tile (it did — see 003_mcp_hits). Isolated, a missing
+  // mcp_hits only blanks the MCP tiles.
+  const [countsRows, recentUsers, topWatchedRows, mcpCountsRows, mcpUaRows] = await Promise.all([
     settle(db.execute<Counts>(sql`
       SELECT
         (SELECT count(*) FROM "user")::int               AS total_users,
@@ -42,11 +48,7 @@ export default async function AdminPage() {
         (SELECT count(*) FROM discord_webhooks)::int     AS total_webhooks,
         (SELECT count(*) FROM discord_webhooks WHERE broken_at IS NOT NULL)::int AS broken_webhooks,
         (SELECT count(*) FROM programs)::int             AS total_programs,
-        (SELECT count(*) FROM program_snapshots)::int    AS total_snapshots,
-        (SELECT count(*) FROM mcp_hits)::int                                  AS mcp_requests,
-        (SELECT count(DISTINCT ip) FROM mcp_hits)::int                        AS mcp_clients,
-        (SELECT count(*) FROM mcp_hits WHERE ts > now() - interval '7 days')::int           AS mcp_requests_7d,
-        (SELECT count(DISTINCT ip) FROM mcp_hits WHERE ts > now() - interval '7 days')::int AS mcp_clients_7d
+        (SELECT count(*) FROM program_snapshots)::int    AS total_snapshots
     `)),
     settle(
       db
@@ -66,6 +68,13 @@ export default async function AdminPage() {
         .orderBy(sql`count(*) DESC`)
         .limit(10),
     ),
+    settle(db.execute<McpCounts>(sql`
+      SELECT
+        (SELECT count(*) FROM mcp_hits)::int                                  AS mcp_requests,
+        (SELECT count(DISTINCT ip) FROM mcp_hits)::int                        AS mcp_clients,
+        (SELECT count(*) FROM mcp_hits WHERE ts > now() - interval '7 days')::int           AS mcp_requests_7d,
+        (SELECT count(DISTINCT ip) FROM mcp_hits WHERE ts > now() - interval '7 days')::int AS mcp_clients_7d
+    `)),
     settle(db.execute<McpUa>(sql`
       SELECT ua,
              count(DISTINCT ip)::int AS clients,
@@ -88,10 +97,11 @@ export default async function AdminPage() {
   const brokenWebhooks     = c?.broken_webhooks     ?? null;
   const totalPrograms      = c?.total_programs      ?? null;
   const totalSnapshots     = c?.total_snapshots     ?? null;
-  const mcpRequests        = c?.mcp_requests        ?? null;
-  const mcpClients         = c?.mcp_clients         ?? null;
-  const mcpRequests7d      = c?.mcp_requests_7d     ?? null;
-  const mcpClients7d       = c?.mcp_clients_7d      ?? null;
+  const mc = (mcpCountsRows as unknown as { rows?: McpCounts[] } | null)?.rows?.[0] ?? null;
+  const mcpRequests        = mc?.mcp_requests        ?? null;
+  const mcpClients         = mc?.mcp_clients         ?? null;
+  const mcpRequests7d      = mc?.mcp_requests_7d     ?? null;
+  const mcpClients7d       = mc?.mcp_clients_7d      ?? null;
 
   const mcpUa = (mcpUaRows as unknown as { rows?: McpUa[] } | null)?.rows ?? [];
 
