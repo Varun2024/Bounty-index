@@ -21,7 +21,11 @@ import { AnnouncementStrip } from './_ui/announcement-strip';
 import { Analytics } from '@vercel/analytics/next';
 import { ThemeToggle } from './_ui/theme-toggle';
 
-const THEME_INIT = `(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'){document.documentElement.classList.add(t);}}catch(e){}})();`;
+// Dark is the default (design.md is dark-first). Only an explicit stored 'light' opts out;
+// anything else, including no preference and a light system setting, resolves to dark. The
+// CSS light override is guarded by html:not(.dark), so adding 'dark' here wins over the
+// prefers-color-scheme media query.
+const THEME_INIT = `(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList.add(t==='light'?'light':'dark');}catch(e){document.documentElement.classList.add('dark');}})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
@@ -110,7 +114,7 @@ function FooterLink({
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
       </head>

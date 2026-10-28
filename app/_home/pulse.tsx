@@ -8,30 +8,24 @@ interface PulseProps {
 }
 
 // "What's moving now": the scope-churn feed leads (the product's whole point is that
-// scope moves), with top new payouts as the money panel. Recently-added lives in the
-// ticker + /feed, so it's not repeated here.
+// scope moves), with top new payouts as the money panel. Both panels are capped to a
+// handful of 2-line rows so the columns stay roughly even and the section doesn't turn
+// into a long scroll; each panel links out to its full list.
 export function Pulse({ changes, trending }: PulseProps) {
   if (changes.length === 0 && trending.length === 0) return null;
   return (
     <section className="max-w-[1200px] mx-auto px-6 py-24">
-      <div className="mb-12 flex items-end justify-between reveal">
-        <div>
-          <p className="text-sm text-neutral-500 mb-2">Pulse</p>
-          <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What&apos;s moving now.</h2>
-        </div>
-        <Link
-          href="/whats-new"
-          className="hidden md:inline-flex cta-arrow mono text-xs text-neutral-500 hover:text-emerald-400 transition items-center gap-1.5"
-        >
-          all changes <span className="arrow">→</span>
-        </Link>
+      <div className="mb-12 reveal">
+        <p className="text-sm text-neutral-500 mb-2">Pulse</p>
+        <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What&apos;s moving now.</h2>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-6 md:gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-start">
         <PulsePanel
           eyebrow="Scope moved"
           hint="last 7 days"
           empty="No scope or reward changes in the last 7 days."
+          footer={changes.length > 0 ? { href: '/whats-new', label: 'all changes' } : undefined}
         >
           {changes.map((c) => (
             <ChangeRow key={`${c.program.id}-${c.capturedAt.getTime()}`} c={c} />
@@ -42,6 +36,7 @@ export function Pulse({ changes, trending }: PulseProps) {
           eyebrow="Top new payouts"
           hint="last 30 days"
           empty="No paying programs added recently."
+          footer={trending.length > 0 ? { href: '/programs?sort=reward', label: 'full leaderboard' } : undefined}
         >
           {trending.map((p) => (
             <TrendingRow key={p.id} p={p} />
@@ -56,26 +51,38 @@ interface PulsePanelProps {
   eyebrow: string;
   hint: string;
   empty: string;
+  footer?: { href: string; label: string };
   children: React.ReactNode;
 }
 
-function PulsePanel({ eyebrow, hint, empty, children }: PulsePanelProps) {
+function PulsePanel({ eyebrow, hint, empty, footer, children }: PulsePanelProps) {
   const items = Array.isArray(children) ? children.filter(Boolean) : children ? [children] : [];
+  const isEmpty = items.length === 0;
   return (
     <div className="border border-neutral-900 rounded-xl bg-neutral-950/50 overflow-hidden reveal reveal-delay-1">
       <div className="flex items-center justify-between px-5 py-3 border-b border-neutral-900 bg-neutral-950/70">
         <p className="text-xs text-emerald-300">{eyebrow}</p>
         <p className="text-xs text-neutral-500">{hint}</p>
       </div>
-      {items.length === 0 ? (
+      {isEmpty ? (
         <div className="p-6 mono text-xs text-neutral-600">{empty}</div>
       ) : (
         <ul>{children}</ul>
+      )}
+      {!isEmpty && footer && (
+        <Link
+          href={footer.href}
+          className="cta-arrow flex items-center justify-between px-5 py-2.5 border-t border-neutral-900 mono text-xs text-neutral-500 hover:text-emerald-400 hover:bg-neutral-900/30 transition focus-ring"
+        >
+          {footer.label} <span className="arrow">→</span>
+        </Link>
       )}
     </div>
   );
 }
 
+// Two-line row (name + time, then a single meta line) so a change row is the same height
+// as a payout row and the two columns line up.
 function ChangeRow({ c }: { c: Awaited<ReturnType<typeof getRecentChanges>>[number] }) {
   const dot = PLATFORM_META[c.program.platform]?.dot ?? 'bg-neutral-500';
   return (
@@ -84,21 +91,25 @@ function ChangeRow({ c }: { c: Awaited<ReturnType<typeof getRecentChanges>>[numb
         href={`/programs/${c.program.platform}/${c.program.slug}`}
         className="flex items-start gap-4 px-5 py-3.5 hover:bg-neutral-900/40 transition group"
       >
-        <span className={`w-1.5 h-1.5 mt-1.5 rounded-full ${dot} shrink-0`} />
+        <span className={`w-1.5 h-1.5 mt-2 rounded-full ${dot} shrink-0`} />
         <div className="flex-1 min-w-0">
-          <p className="text-neutral-100 group-hover:text-emerald-400 transition truncate">{c.program.name}</p>
-          <p className="mono text-[11px] text-neutral-500 mt-0.5 truncate">{platformLabel(c.program.platform)}</p>
-          <DiffLine diff={c.diff} />
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-neutral-100 group-hover:text-emerald-400 transition truncate">{c.program.name}</p>
+            <span className="text-xs text-neutral-500 shrink-0">{relativeTime(c.capturedAt)}</span>
+          </div>
+          <p className="mono text-[11px] mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <span className="text-neutral-500">{platformLabel(c.program.platform)}</span>
+            {diffBits(c.diff)}
+          </p>
         </div>
-        <span className="text-xs text-neutral-500 shrink-0 mt-0.5">{relativeTime(c.capturedAt)}</span>
       </Link>
     </li>
   );
 }
 
-// Compact one-line diff: just the counts/deltas, no identifier samples (those live on
-// the program page and /whats-new). Keeps the Pulse row scannable.
-function DiffLine({ diff }: { diff: Awaited<ReturnType<typeof getRecentChanges>>[number]['diff'] }) {
+// Compact diff tokens for one line: counts and deltas only (identifier samples live on the
+// program page and /whats-new).
+function diffBits(diff: Awaited<ReturnType<typeof getRecentChanges>>[number]['diff']): React.ReactNode[] {
   const bits: React.ReactNode[] = [];
   if (diff.added.length) bits.push(<span key="a" className="text-emerald-300">+{diff.added.length} in-scope</span>);
   if (diff.removed.length) bits.push(<span key="r" className="text-amber-300">−{diff.removed.length} removed</span>);
@@ -116,14 +127,7 @@ function DiffLine({ diff }: { diff: Awaited<ReturnType<typeof getRecentChanges>>
       </span>,
     );
   }
-  if (bits.length === 0) return null;
-  return (
-    <p className="mono text-[11px] mt-1 flex flex-wrap gap-x-2.5 gap-y-0.5">
-      {bits.map((b, i) => (
-        <span key={i}>{b}</span>
-      ))}
-    </p>
-  );
+  return bits;
 }
 
 function fmtReward(v: number | null): string {

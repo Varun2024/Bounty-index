@@ -18,7 +18,7 @@ export default async function Home() {
   const [s, top, changes, trending, agentsThisWeek] = await Promise.all([
     stats().catch(() => null),
     topPayouts(5).catch(() => []),
-    getRecentChanges(168, 12).catch(() => []),
+    getRecentChanges(168, 6).catch(() => []),
     trendingNewPayouts(6, 30).catch(() => []),
     mcpAgentsThisWeek().catch(() => 0),
   ]);
