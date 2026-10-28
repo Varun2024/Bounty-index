@@ -277,6 +277,46 @@ export const discordWebhooks = pgTable(
   }),
 );
 
+// Filter/saved-search subscriptions (Discord v2). The subscription is a predicate
+// (structured ProgramFilters) rather than a fixed program. See PLAN_DISCORD_V2.md.
+export const discordFilterSubs = pgTable(
+  'discord_filter_subs',
+  {
+    id: serial('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    webhookUrl: text('webhook_url').notNull(),
+    label: text('label'),
+    filterJson: jsonb('filter_json').notNull(), // structured ProgramFilters
+    newOnly: boolean('new_only').notNull().default(false),
+    lastDeliveredAt: timestamp('last_delivered_at', { withTimezone: true }),
+    brokenAt: timestamp('broken_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    userIdx: index('discord_filter_subs_user_idx').on(t.userId),
+  }),
+);
+
+// MCP endpoint usage log. One row per POST (JSON-RPC call) to /api/mcp or /api/mcp/v2.
+// There are no MCP "users" (the endpoint is unauthenticated), so distinct ip / (ip, ua) is
+// the only honest proxy for "how many are using it". Includes the handshake/tools-list
+// POSTs clients auto-fire, which still mean a client connected. See app/admin/page.tsx.
+export const mcpHits = pgTable(
+  'mcp_hits',
+  {
+    id: serial('id').primaryKey(),
+    ts: timestamp('ts', { withTimezone: true }).notNull().defaultNow(),
+    version: text('version').notNull(), // 'v1' | 'v2'
+    ip: text('ip'),
+    ua: text('ua'),
+  },
+  (t) => ({
+    tsIdx: index('mcp_hits_ts_idx').on(t.ts),
+  }),
+);
+
 export type Program = typeof programs.$inferSelect;
 export type NewProgram = typeof programs.$inferInsert;
 export type Scope = typeof scopes.$inferSelect;

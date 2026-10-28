@@ -2,6 +2,7 @@ import { createMcpHandler } from 'mcp-handler';
 import { z } from 'zod';
 import {
   registerCoreTools,
+  withMcpLogging,
   summarize,
   json,
   normalizeAsset,
@@ -277,4 +278,6 @@ const handler = createMcpHandler(
   },
 );
 
-export { handler as GET, handler as POST, handler as DELETE };
+const logged = withMcpLogging(handler, 'v2');
+
+export { logged as GET, logged as POST, logged as DELETE };

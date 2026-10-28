@@ -26,8 +26,11 @@ export default async function AdminPage() {
     total_notes: number; total_reports: number; total_saved_filters: number;
     total_webhooks: number; broken_webhooks: number;
     total_programs: number; total_snapshots: number;
+    mcp_requests: number; mcp_clients: number;
+    mcp_requests_7d: number; mcp_clients_7d: number;
   };
-  const [countsRows, recentUsers, topWatchedRows] = await Promise.all([
+  type McpUa = { ua: string | null; clients: number; requests: number };
+  const [countsRows, recentUsers, topWatchedRows, mcpUaRows] = await Promise.all([
     settle(db.execute<Counts>(sql`
       SELECT
         (SELECT count(*) FROM "user")::int               AS total_users,
@@ -39,7 +42,11 @@ export default async function AdminPage() {
         (SELECT count(*) FROM discord_webhooks)::int     AS total_webhooks,
         (SELECT count(*) FROM discord_webhooks WHERE broken_at IS NOT NULL)::int AS broken_webhooks,
         (SELECT count(*) FROM programs)::int             AS total_programs,
-        (SELECT count(*) FROM program_snapshots)::int    AS total_snapshots
+        (SELECT count(*) FROM program_snapshots)::int    AS total_snapshots,
+        (SELECT count(*) FROM mcp_hits)::int                                  AS mcp_requests,
+        (SELECT count(DISTINCT ip) FROM mcp_hits)::int                        AS mcp_clients,
+        (SELECT count(*) FROM mcp_hits WHERE ts > now() - interval '7 days')::int           AS mcp_requests_7d,
+        (SELECT count(DISTINCT ip) FROM mcp_hits WHERE ts > now() - interval '7 days')::int AS mcp_clients_7d
     `)),
     settle(
       db
@@ -59,6 +66,15 @@ export default async function AdminPage() {
         .orderBy(sql`count(*) DESC`)
         .limit(10),
     ),
+    settle(db.execute<McpUa>(sql`
+      SELECT ua,
+             count(DISTINCT ip)::int AS clients,
+             count(*)::int           AS requests
+      FROM mcp_hits
+      GROUP BY ua
+      ORDER BY requests DESC
+      LIMIT 10
+    `)),
   ]);
 
   const c = (countsRows as unknown as { rows?: Counts[] } | null)?.rows?.[0] ?? null;
@@ -72,6 +88,12 @@ export default async function AdminPage() {
   const brokenWebhooks     = c?.broken_webhooks     ?? null;
   const totalPrograms      = c?.total_programs      ?? null;
   const totalSnapshots     = c?.total_snapshots     ?? null;
+  const mcpRequests        = c?.mcp_requests        ?? null;
+  const mcpClients         = c?.mcp_clients         ?? null;
+  const mcpRequests7d      = c?.mcp_requests_7d     ?? null;
+  const mcpClients7d       = c?.mcp_clients_7d      ?? null;
+
+  const mcpUa = (mcpUaRows as unknown as { rows?: McpUa[] } | null)?.rows ?? [];
 
   const pendingSignups = await listPendingSignups().catch(() => []);
 
@@ -121,6 +143,36 @@ export default async function AdminPage() {
           <Tile label="Programs indexed" value={totalPrograms} />
           <Tile label="Snapshots stored" value={totalSnapshots} />
         </div>
+      </section>
+
+      <section>
+        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
+          MCP endpoint <span className="text-neutral-700">· unauthenticated — clients = distinct IPs</span>
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Tile label="Clients (all time)" value={mcpClients} />
+          <Tile label="Clients · 7d" value={mcpClients7d} />
+          <Tile label="Requests (all time)" value={mcpRequests} />
+          <Tile label="Requests · 7d" value={mcpRequests7d} />
+        </div>
+        {mcpUa.length > 0 && (
+          <ul className="mt-3 border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 divide-y divide-neutral-900">
+            {mcpUa.map((u, i) => (
+              <li key={i} className="px-4 py-2.5 flex items-center gap-3">
+                <span className="mono text-sm text-emerald-300 tabular-nums w-8 text-right">{u.clients}</span>
+                <span className="text-sm text-neutral-200 truncate" title={u.ua ?? ''}>
+                  {u.ua ?? '(no user-agent)'}
+                </span>
+                <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 ml-auto whitespace-nowrap">
+                  {u.requests.toLocaleString()} req
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="mt-3 mono text-[10px] text-neutral-600">
+          {'// '}one row per POST, handshake calls included. IP from x-forwarded-for; a shared NAT undercounts clients.
+        </p>
       </section>
 
       <section>

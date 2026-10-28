@@ -9,6 +9,42 @@ import {
   getProgramSnapshots,
   listPlatformsWithCounts,
 } from '@/lib/db/queries';
+import { db } from '@/lib/db/client';
+import { mcpHits } from '@/lib/db/schema';
+
+function clientIp(req: Request): string | null {
+  const xff = req.headers.get('x-forwarded-for');
+  if (xff) return xff.split(',')[0].trim();
+  return req.headers.get('x-real-ip');
+}
+
+// Log one usage row (headers only — never touches the body the handler needs).
+// Best-effort: a logging failure must never break the MCP call.
+async function logMcpHit(req: Request, version: 'v1' | 'v2'): Promise<void> {
+  try {
+    await db.insert(mcpHits).values({
+      version,
+      ip: clientIp(req),
+      ua: req.headers.get('user-agent')?.slice(0, 500) ?? null,
+    });
+  } catch {
+    // swallow — usage logging is non-critical
+  }
+}
+
+type RouteHandler = (req: Request) => Promise<Response>;
+
+// Wrap an mcp-handler route so every POST (a JSON-RPC call) is counted. GET is the SSE
+// stream negotiation and would double-count a session, so only POSTs are logged. The
+// insert runs concurrently with the handler (headers only, no body contention) → no
+// added latency on the response.
+export function withMcpLogging(handler: RouteHandler, version: 'v1' | 'v2'): RouteHandler {
+  return async (req) => {
+    if (req.method !== 'POST') return handler(req);
+    const [, res] = await Promise.all([logMcpHit(req, version), handler(req)]);
+    return res;
+  };
+}
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.bountyindex.in';
 
