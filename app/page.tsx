@@ -1,4 +1,4 @@
-import { stats, topPayouts, getRecentChanges, trendingNewPayouts, mcpAgentsThisWeek, sampleScopeIdentifiers } from '@/lib/db/queries';
+import { stats, topPayouts, getRecentChanges, trendingNewPayouts, mcpTotalRequests, sampleScopeIdentifiers } from '@/lib/db/queries';
 import { Ticker } from '@/app/_ui/ticker';
 import { Hero } from './_home/hero';
 import { Pulse } from './_home/pulse';
@@ -15,18 +15,18 @@ export const revalidate = 3600;
 
 // Order is value-first: pitch → prove with live data → feature detail → why-not-them → trust → how → convert.
 export default async function Home() {
-  const [s, top, changes, trending, agentsThisWeek, bgIdentifiers] = await Promise.all([
+  const [s, top, changes, trending, mcpRequests, bgIdentifiers] = await Promise.all([
     stats().catch(() => null),
     topPayouts(5).catch(() => []),
     getRecentChanges(168, 6).catch(() => []),
     trendingNewPayouts(6, 30).catch(() => []),
-    mcpAgentsThisWeek().catch(() => 0),
+    mcpTotalRequests().catch(() => 0),
     sampleScopeIdentifiers(16).catch(() => []),
   ]);
 
   return (
     <>
-      <Hero s={s} top={top} agentsThisWeek={agentsThisWeek} bgIdentifiers={bgIdentifiers} />
+      <Hero s={s} top={top} mcpRequests={mcpRequests} bgIdentifiers={bgIdentifiers} />
       <Ticker />
       <Pulse changes={changes} trending={trending} />
       <SectionOrnament />
