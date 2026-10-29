@@ -115,8 +115,13 @@ export default function McpPage(): React.JSX.Element {
         </dl>
       </section>
 
-      {/* Endpoint + Config side-by-side on desktop */}
-      <section className="mt-10 grid lg:grid-cols-2 gap-8">
+      {/* Body in a two-column layout: content left, support card in a sticky right rail
+          that stays in view while the capability list scrolls. Collapses to one column on
+          mobile, where the card flows below the content. */}
+      <div className="mt-10 lg:grid lg:grid-cols-[1fr_300px] lg:gap-12 lg:items-start">
+        <div className="min-w-0">
+          {/* Endpoint + Config side-by-side on desktop */}
+          <section className="grid lg:grid-cols-2 gap-8">
         <div className="min-w-0">
           <SectionLabel>endpoint</SectionLabel>
           <code className="mono text-sm text-emerald-300 break-all bg-neutral-950/60 border border-neutral-900 rounded-lg px-4 py-3 block">
@@ -174,8 +179,12 @@ export default function McpPage(): React.JSX.Element {
           </div>
         </div>
       </section>
+        </div>
 
-      <McpSupport />
+        <aside className="mt-12 lg:mt-0 lg:sticky lg:top-24">
+          <McpSupport />
+        </aside>
+      </div>
     </div>
   );
 }
