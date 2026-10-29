@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { McpSupport } from './mcp-support';
 
 export const metadata: Metadata = {
   title: 'MCP server · Bounty Index',
@@ -117,7 +117,7 @@ export default function McpPage(): React.JSX.Element {
 
       {/* Endpoint + Config side-by-side on desktop */}
       <section className="mt-10 grid lg:grid-cols-2 gap-8">
-        <div>
+        <div className="min-w-0">
           <SectionLabel>endpoint</SectionLabel>
           <code className="mono text-sm text-emerald-300 break-all bg-neutral-950/60 border border-neutral-900 rounded-lg px-4 py-3 block">
             {MCP_URL_V2}
@@ -128,7 +128,7 @@ export default function McpPage(): React.JSX.Element {
           </p>
         </div>
 
-        <div>
+        <div className="min-w-0">
           <SectionLabel>config</SectionLabel>
           <pre className="mono text-[12px] text-neutral-300 bg-neutral-950/60 border border-neutral-900 rounded-lg p-4 overflow-x-auto">
 {CONFIG_SNIPPET}
@@ -175,14 +175,7 @@ export default function McpPage(): React.JSX.Element {
         </div>
       </section>
 
-      <section className="mt-14 border-t border-neutral-900 pt-6">
-        <Link
-          href="/how-it-works"
-          className="mono text-xs text-neutral-500 hover:text-emerald-300 transition"
-        >
-          how the index is built →
-        </Link>
-      </section>
+      <McpSupport />
     </div>
   );
 }
