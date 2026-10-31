@@ -5,7 +5,15 @@ import { CheckButton } from '@/app/scope-lookup/check-button';
 import { SearchIcon } from '@/app/_ui/icons';
 import { ScopeResults } from '@/app/scope-lookup/results';
 
-export const dynamic = 'force-dynamic';
+// Pure function of the :domain param over data that only changes at the daily ingest,
+// so render once and serve from cache. No cookies/headers/auth here to force dynamic.
+// Empty generateStaticParams + revalidate = prerender none, cache each domain on-demand
+// (ISR). Without it, a dynamic-param route stays server-rendered on every request.
+export const revalidate = 3600;
+
+export function generateStaticParams(): { domain: string }[] {
+  return [];
+}
 
 interface PageProps {
   params: Promise<{ domain: string }>;

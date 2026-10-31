@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { PresetView } from '../_preset-view';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Wildcard-Scope Bug Bounty Programs — bounty.index',
