@@ -14,7 +14,7 @@ New entries at the top. One entry per shipped feature or notable decision. Keep 
 
 ## Current phase
 
-**Moat P1–P4 + C1 shipped, followed by a codebase cleanup pass.** Next candidates: coverage expansion (Huntr / HackenProof-return), distribution (E1 Chrome extension or E2 Burp plugin), or growth loop (Reddit / X posts seeding C1 reports — drafts already written this session).
+**Moat P1–P4 + C1 shipped, 7-platform coverage, MCP server (14 tools / 3 prompts / 1 resource) live with usage logging, home redesign.** Distribution direction is now **decided**: public `/v1` REST API + zero-dep CLI, behind API-key auth, free tier — see `docs/plans/PLAN_CLI_API.md`. Chrome extension dropped; Burp/Caido plugin parked for a much later stage. Security audit queued as a separate track, to run after the API lands.
 
 Phase list:
 - ~~**P1** `/whats-new` daily changelog + RSS~~ — shipped
@@ -23,6 +23,42 @@ Phase list:
 - ~~**P4** Program lifecycle chart~~ — shipped
 - ~~**C1** Community response-time tracking~~ — shipped
 - ~~Refactor pass (4 items)~~ — shipped
+- ~~MCP server v1 + v2 (14 tools, 3 prompts, 1 resource) + usage logging~~ — shipped
+- **Next:** `/v1` API + CLI (planned, `PLAN_CLI_API.md`) · then security audit
+
+---
+
+## 2026-10-31 — Distribution decided: auth'd `/v1` API + CLI
+
+Settled the distribution question. **Path B** (thin public REST API + zero-dep CLI on top)
+over Path A (CLI speaking MCP JSON-RPC) — REST is the right shape for a terminal audience and
+the backend gap is small because `GET /api/export/programs` already takes the full filter set.
+API goes **behind API-key auth** (new `api_keys` table, hash-only storage, create-on-demand
+keys, per-key rate limit reusing `proxy.ts`), free tier. Honest caveat recorded: auth on `/v1`
+is abuse-attribution + rate-control, **not** site security — the already-open MCP and export
+surfaces serve the same data unauthenticated, and the security audit is the track that actually
+hardens the site. Chrome extension (moat E1) dropped; Burp/Caido (E2) parked for later. Full
+design + vertical-slice checklist in `docs/plans/PLAN_CLI_API.md`. Nothing built yet.
+
+**For blog:** choosing REST over MCP-JSON-RPC for a product CLI, and why "put it behind auth"
+is honest about what it does and doesn't secure.
+
+---
+
+## 2026-10-29 — $250 NEON OSS grant + home redesign + MCP usage surface
+
+Awarded a **$250 grant under the NEON OSS program.** Announcement drafts written for LinkedIn
+and X (grant-email screenshot prepped with a security-scrub checklist). Alongside: a batch of
+home + MCP work landed over several sessions — MCP endpoint usage logging (`mcp_hits` table +
+`withMcpLogging` wrapper, POST-only to avoid double-counting SSE negotiation) surfaced as a
+real "requests served" number on the home hero and in the admin panel; MCP promoted to a
+top-level nav link; a non-blocking sign-in + support rail on the `/mcp` page (sticky right
+rail) with the mobile-overflow fixes it exposed; live scope-check + live agent count in the
+hero; default-dark theme; and the "data-as-atmosphere" scattered hero backdrop built from real
+scope identifiers.
+
+**For blog:** instrumenting an MCP server's real usage (POST-only logging, headers-only, no
+body contention) and turning the count into a live trust signal on the landing page.
 
 ---
 

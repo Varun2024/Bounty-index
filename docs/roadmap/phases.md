@@ -1,9 +1,16 @@
 # Phases
 
-> **Status note (2026-10-19):** the per-checkbox state below is stale. Phases 0 through 2
+> **Status note (2026-10-31):** the per-checkbox state below is stale. Phases 0 through 2
 > are fully shipped and Phase 3 is mostly shipped (see `progress.md` for the live record).
 > The project is effectively at the tail of Phase 3; Phase 4 (monetization) is not started,
 > by design. The checkboxes are left as written for history rather than re-ticked by hand.
+>
+> Since written: coverage is now **7 platforms** (HackenProof added; the "6 platforms" in
+> Phase 0 below is outdated). An **MCP server** (14 tools, 3 prompts, 1 resource) with usage
+> logging is live — that's the "API access" line from Phase 4 arriving early, read-only and
+> free. Distribution is decided: a public **`/v1` REST API + CLI behind API-key auth**
+> (`docs/plans/PLAN_CLI_API.md`) — this is the first piece of Phase 4's "API access" to be
+> built deliberately. A **security audit** track is queued to follow it.
 
 ## Phase 0 — Scaffold ✅
 - Next.js 16 + Tailwind 4 + TS

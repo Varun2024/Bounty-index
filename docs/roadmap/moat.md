@@ -45,10 +45,10 @@ Freshness signal + personal accumulation + workflow integration is what makes pe
 
 | # | Feature | Effort | Notes |
 |---|---|---|---|
-| E1 | Chrome extension | ~1-2 weeks | On any H1/Bugcrowd/etc program page, side panel shows historical diffs, community rating, similar programs. **Huge.** |
-| E2 | Burp Suite / Caido plugin | ~2 weeks | Pipe watched-program scope directly into their scanner. Hunters *live* in those tools. **Probably the strongest workflow lock-in on this list.** |
-| E3 | Discord bot | ~1 week | Watch a program, get pinged in your own server. Cheap community play. |
-| E4 | CLI (`bx watch shopify`) | ~3-5 days | Nerd credibility, low retention lift, great social signal. |
+| E1 | ~~Chrome extension~~ | — | **Dropped (2026-10-31).** Was ranked "huge" but not the chosen direction. |
+| E2 | Burp Suite / Caido plugin | ~2 weeks | Pipe watched-program scope directly into their scanner. Hunters *live* in those tools. **Parked for a much later stage (2026-10-31)** — strongest workflow lock-in, but highest effort. |
+| E3 ✅ | Discord bot/alerts | ~1 week | ✅ Shipped. Watch a program / filter set, get pinged via webhook. Filter-subscriptions + digest (v2) queued. |
+| E4 ⏳ | CLI + public `/v1` API | ~3-5 days | **Chosen distribution pick (2026-10-31).** Behind API-key auth, free tier. Plan: `docs/plans/PLAN_CLI_API.md`. Not started. |
 
 ---
 
@@ -63,9 +63,10 @@ Freshness signal + personal accumulation + workflow integration is what makes pe
 **Ship next** — medium effort, real moat. ✅ Shipped 2026-08-10:
 - C1: Community response-time tracking ✅
 
-**Ship when you have a full week free** — distribution changes the game; retention stops mattering because users never leave your context:
-- E1: Chrome extension, or
-- E2: Burp / Caido plugin
+**Distribution (decided 2026-10-31)** — changes the game; users never leave your context:
+- E4: CLI + public `/v1` API behind API-key auth ← **building this** (`PLAN_CLI_API.md`)
+- E2: Burp / Caido plugin ← parked for a much later stage
+- E1: Chrome extension ← dropped
 
 **Hold** — validate lighter lock-in first:
 - D1: Community reviews
