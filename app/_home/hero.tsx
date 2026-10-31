@@ -53,19 +53,31 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
 
             <p className="mt-12 text-sm text-neutral-400 max-w-xl">
               Used weekly by 2,000+ hunters. Free, no signup.
-              {lastIngest && <> Index refreshed {lastIngest}.</>}{' '}
-              <Link href="/mcp" className="text-neutral-300 hover:text-emerald-300 transition underline decoration-neutral-700 underline-offset-4 hover:decoration-emerald-400">
-                MCP endpoint
-              </Link>{' '}
-              for agents.
+              {lastIngest && <> Index refreshed {lastIngest}.</>}
+            </p>
+
+            {/* MCP endpoint lifted out of the credibility line into its own chip: it's the
+                surface we're actively pushing and the served-count is a real, growing trust
+                signal. Number uses the emerald accent (same as the one highlighted stat); the
+                single dot marks a genuinely live endpoint — static, no glow, no pulse. */}
+            <Link
+              href="/mcp"
+              className="group mt-5 inline-flex items-center gap-2.5 rounded-lg border border-neutral-800 bg-neutral-900/40 py-2 pl-3 pr-3.5 text-sm transition hover:border-emerald-800/70 hover:bg-neutral-900/70 focus-ring"
+            >
+              <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+              <span className="text-neutral-300 transition group-hover:text-neutral-100">
+                MCP endpoint for agents
+              </span>
               {mcpRequests > 0 && (
                 <>
-                  {' '}
-                  <span className="mono text-neutral-100 tabular-nums">{mcpRequests.toLocaleString()}</span>{' '}
-                  request{mcpRequests === 1 ? '' : 's'} served.
+                  <span aria-hidden className="text-neutral-700">·</span>
+                  <span className="mono tabular-nums text-emerald-300">{mcpRequests.toLocaleString()}</span>
+                  <span className="text-neutral-500">
+                    request{mcpRequests === 1 ? '' : 's'} served
+                  </span>
                 </>
               )}
-            </p>
+            </Link>
           </section>
 
           {top.length > 0 && (
