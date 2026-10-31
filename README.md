@@ -44,7 +44,7 @@ A single, filterable index of every public bug bounty and VDP program across six
 
 ## Why
 
-Every platform shows only its own programs. Directory sites are stale or policy-only. Raw JSON dumps assume you enjoy `jq`. The one competitor with a real product, [bbradar.io](https://bbradar.io), paywalls scope-change alerts, RSS, and API behind a €89/yr Pro tier.
+Every platform shows only its own programs. Directory sites are stale or policy-only. Raw JSON dumps assume you enjoy `jq`. 
 
 bounty.index is the free middle: cross-platform, change-aware, keyboard-first.
 
