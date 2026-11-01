@@ -24,7 +24,47 @@ Phase list:
 - ~~**C1** Community response-time tracking~~ — shipped
 - ~~Refactor pass (4 items)~~ — shipped
 - ~~MCP server v1 + v2 (14 tools, 3 prompts, 1 resource) + usage logging~~ — shipped
+- ~~ISR caching pass (Active-CPU fix) + SEO/AEO/GEO tiers 1–2~~ — shipped
 - **Next:** `/v1` API + CLI (planned, `PLAN_CLI_API.md`) · then security audit
+
+---
+
+## 2026-11-01 — SEO / AEO / GEO pass (tiers 1–2)
+
+Structured data + answer-shaped content so search and answer engines treat the index as a
+source of record, all from live queries (no hardcoded counts). **Tier 1:** `Dataset` +
+`DataCatalog` JSON-LD with CSV/JSON `DataDownload` distributions (home + `/stats`); a new
+public **`/stats`** page (answer-first prose, live totals, top payouts, grounded FAQ) carrying
+`Dataset` + `FAQPage`; robots now allows `/api/export/` so the dataset distribution is
+crawlable. **Tier 2:** answer-first lead sentences embedding the live count on preset
+(`paying`/`wildcard`/`safe-harbor`) and platform pages (kept the keyword-strong H1s); an ISR
+**`/llms.txt`** route mapping the site for agents — leaning on the MCP endpoint and Discord
+alerts as the machine-consumption hooks; **per-program OG images** (route handler at
+`/og/[platform]/[...slug]`, since the `opengraph-image` file convention is banned after a
+catch-all) wired into each program's `openGraph`/`twitter` metadata; a per-program `FAQPage`
+("Does X have a bug bounty?") built only from that program's fields. Swept the stale "six
+platforms" copy → seven (hero now uses the live count so it can't drift). New helper
+`lib/structured-data.ts` (Dataset/FAQ builders). No DB/schema changes.
+
+**For blog:** AEO/GEO for a dataset product — Dataset schema + a citable `/stats` page +
+`llms.txt` pointing at an MCP endpoint, and why answer-first prose beats a buried number.
+
+---
+
+## 2026-11-01 — ISR caching pass (Vercel Active-CPU fix)
+
+Exceeded Vercel Fluid's Active-CPU allowance: read-only pages were `force-dynamic`, re-rendering
+on every request over data that only changes at the daily ingest. Flipped the preset pages
+(`paying`/`wildcard`/`safe-harbor`) to `revalidate=3600`, and converted the two dynamic-param
+routes — `scope/[domain]` and `programs/[platform]/[...slug]` — to on-demand ISR by adding empty
+`generateStaticParams` (revalidate alone has no effect on a dynamic-param route without it; these
+detail pages had been silently SSR'ing every hit despite a `revalidate` export). `/programs`
+itself stays dynamic (arbitrary filters) but its query layer was already `unstable_cache`-wrapped,
+so no change needed there. Confirmed via the build's route symbols (`ƒ` → `○`/`●`). No content or
+schema change — crawlers get identical HTML, just CDN-served, so SEO/AEO/GEO are unaffected.
+
+**For blog:** the silent Next.js ISR trap — `export const revalidate` does nothing on a
+`[param]` route until you add `generateStaticParams`, and how it shows up in the build output.
 
 ---
 
