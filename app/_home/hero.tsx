@@ -36,7 +36,7 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
             <p className="mt-8 text-lg md:text-xl text-neutral-300 leading-snug max-w-xl">
               {programCount ? (
                 <>
-                  <span className="mono text-neutral-100 tabular-nums">{programCount}</span> programs across six platforms.
+                  <span className="mono text-neutral-100 tabular-nums">{programCount}</span> programs across {platformCount} platforms.
                   Filter by scope, asset, payout.
                   {topBounty && (
                     <> Highest live today: <span className="mono text-neutral-100 tabular-nums">{topBounty}</span>.</>

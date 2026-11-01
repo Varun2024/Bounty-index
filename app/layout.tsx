@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'bounty.index: every public bounty, one index',
-    description: 'Every public bug bounty program across six platforms, filterable by scope, payout, and asset type.',
+    description: 'Every public bug bounty program across seven platforms, filterable by scope, payout, and asset type.',
     type: 'website',
     siteName: 'bounty.index',
     images: [{ url: '/og.png', width: 1200, height: 630, alt: 'bounty.index: every public bounty, one index' }],
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'bounty.index: every public bounty, one index',
-    description: 'Every public bug bounty program across six platforms.',
+    description: 'Every public bug bounty program across seven platforms.',
     images: ['/og.png'],
   },
 };
@@ -249,7 +249,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
                 </Link>
                 <p className="mt-4 text-sm text-neutral-400 leading-relaxed max-w-xs">
-                  The bug bounty market, live-indexed. Every public program across six platforms, filterable in one view.
+                  The bug bounty market, live-indexed. Every public program across seven platforms, filterable in one view.
                 </p>
                 <a
                   href="https://buymeacoffee.com/varun_builds"
