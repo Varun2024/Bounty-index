@@ -19,9 +19,9 @@ const BLURBS: Record<PlatformId, string> = {
   bugcrowd: 'Bugcrowd runs managed and standalone programs across SaaS, retail, government, and automotive. Known for strong triage support.',
   intigriti: 'Intigriti is Europe-first with heavy fintech, telco, and public-sector representation. Smaller catalog, denser safe-harbor language.',
   yeswehack: 'YesWeHack hosts programs weighted toward European enterprise, with notable crypto and gaming entries.',
-  federacy: 'Federacy is the long-tail — smaller programs, early-stage startups, and public VDPs that often slip under the radar.',
+  federacy: 'Federacy is the long-tail: smaller programs, early-stage startups, and public VDPs that often slip under the radar.',
   immunefi: 'Immunefi is the DeFi + web3 specialist. Catalog is 100% paid, often with multi-million-dollar maximum bounties on smart contracts and bridges.',
-  hackenproof: 'HackenProof is crypto-heavy — exchanges, wallets, and DeFi protocols, triaged on-platform. Maximum bounties run into the seven figures.',
+  hackenproof: 'HackenProof is crypto-heavy: exchanges, wallets, and DeFi protocols, triaged on-platform. Maximum bounties run into the seven figures.',
 };
 
 export function generateStaticParams() {
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { platform } = await params;
   if (!PLATFORMS.includes(platform as PlatformId)) return { title: 'Platform not found · Bounty Index' };
   const label = platformLabel(platform);
-  const title = `${label} bug bounty programs — bounty.index`;
+  const title = `${label} bug bounty programs · bounty.index`;
   const description = `Every public ${label} bug bounty program, filterable by scope, payout, and asset type. Daily snapshots, no login required.`;
   return {
     title,
@@ -81,7 +81,7 @@ export default async function PlatformLandingPage({ params }: PageProps) {
             bounty.index tracks{' '}
             <span className="tabular-nums text-neutral-50 mono">{top.total.toLocaleString()}</span> public {label} bug
             bounty {top.total === 1 ? 'program' : 'programs'}
-            {sharePct !== null && <> — {sharePct}% of all programs in the index</>}, updated daily.
+            {sharePct !== null && <>, {sharePct}% of all programs in the index</>}, updated daily.
           </p>
         )}
         <p className="text-neutral-400 mt-4 max-w-2xl leading-relaxed">
@@ -93,11 +93,11 @@ export default async function PlatformLandingPage({ params }: PageProps) {
         <Stat label="programs" value={top.total.toLocaleString()} />
         <Stat
           label="share of index"
-          value={sharePct === null ? '—' : `${sharePct}%`}
+          value={sharePct === null ? '·' : `${sharePct}%`}
           sub={s ? `of ${s.programs.toLocaleString()}` : undefined}
         />
-        <Stat label="top payout" value={topPayouts[0]?.maxBounty ? formatBounty(topPayouts[0].maxBounty, topPayouts[0].currency ?? 'USD') : '—'} />
-        <Stat label="updated" value={s?.lastIngestAt ? 'daily' : '—'} sub="snapshot cadence" />
+        <Stat label="top payout" value={topPayouts[0]?.maxBounty ? formatBounty(topPayouts[0].maxBounty, topPayouts[0].currency ?? 'USD') : '·'} />
+        <Stat label="updated" value={s?.lastIngestAt ? 'daily' : '·'} sub="snapshot cadence" />
       </section>
 
       <section className="mt-10">
@@ -114,7 +114,7 @@ export default async function PlatformLandingPage({ params }: PageProps) {
           </Link>
         </div>
         {top.rows.length === 0 ? (
-          <p className="mono text-xs text-neutral-600 py-6">— index unavailable right now —</p>
+          <p className="mono text-xs text-neutral-600 py-6">index unavailable right now</p>
         ) : (
           <ul className="border border-neutral-900 rounded-lg bg-neutral-950/40 overflow-hidden">
             {top.rows.slice(0, 10).map((p, i) => {

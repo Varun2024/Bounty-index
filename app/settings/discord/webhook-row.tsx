@@ -37,7 +37,7 @@ export function WebhookRow({ row }: Props) {
     setTestMsg(null);
     startTransition(async () => {
       const res = await testWebhook(row.id);
-      if (res.ok) setTestMsg({ ok: true, text: 'sent — check Discord' });
+      if (res.ok) setTestMsg({ ok: true, text: 'sent, check Discord' });
       else setTestMsg({ ok: false, text: res.error });
       router.refresh();
     });
@@ -56,7 +56,7 @@ export function WebhookRow({ row }: Props) {
           <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">{row.programPlatform}</span>
           {row.brokenAt && (
             <span className="mono text-[10px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-red-400/40 text-red-300 bg-red-400/[0.06]">
-              broken — resave URL
+              broken, resave URL
             </span>
           )}
         </div>

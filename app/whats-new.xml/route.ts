@@ -21,8 +21,8 @@ export async function GET(req: Request): Promise<Response> {
       if (c.diff.removed.length) {
         parts.push(`−${c.diff.removed.length} removed: ${c.diff.removed.slice(0, 10).join(', ')}${c.diff.removed.length > 10 ? `, +${c.diff.removed.length - 10} more` : ''}`);
       }
-      if (c.diff.rewardDelta) parts.push(`Max reward: ${c.diff.rewardDelta.from ?? '—'} → ${c.diff.rewardDelta.to ?? '—'}`);
-      if (c.diff.safeHarborChanged) parts.push(`Safe harbor: ${c.diff.safeHarborChanged.from ?? '—'} → ${c.diff.safeHarborChanged.to ?? '—'}`);
+      if (c.diff.rewardDelta) parts.push(`Max reward: ${c.diff.rewardDelta.from ?? '·'} → ${c.diff.rewardDelta.to ?? '·'}`);
+      if (c.diff.safeHarborChanged) parts.push(`Safe harbor: ${c.diff.safeHarborChanged.from ?? '·'} → ${c.diff.safeHarborChanged.to ?? '·'}`);
 
       const titleBits: string[] = [];
       if (c.diff.added.length) titleBits.push(`+${c.diff.added.length}`);
@@ -44,7 +44,7 @@ export async function GET(req: Request): Promise<Response> {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Bounty Index — what&apos;s new</title>
+    <title>Bounty Index: what&apos;s new</title>
     <link>${origin}/whats-new</link>
     <description>Every scope, reward, and safe-harbor change across all indexed platforms.</description>
     <language>en-us</language>

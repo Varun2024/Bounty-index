@@ -40,7 +40,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
         <h1 className="text-3xl font-semibold text-neutral-100 tracking-tight">Compare programs</h1>
         <p className="mt-3 text-sm text-neutral-400 max-w-2xl">
           Pick up to 4 programs to compare rewards, scope, safe harbor, and platform side by side.
-          Selections persist in your browser — no account needed.
+          Selections persist in your browser. No account needed.
         </p>
       </header>
 
@@ -95,12 +95,12 @@ export default async function ComparePage({ searchParams }: PageProps) {
               ))} />
               <Row label="Max payout" values={programs.map((p) => (
                 <span key={p.id} className={p.maxBounty ? 'mono text-emerald-300 tabular-nums' : 'text-neutral-600'}>
-                  {p.maxBounty ? formatBounty(p.maxBounty, p.currency ?? 'USD') : '—'}
+                  {p.maxBounty ? formatBounty(p.maxBounty, p.currency ?? 'USD') : '·'}
                 </span>
               ))} />
               <Row label="Min payout" values={programs.map((p) => (
                 <span key={p.id} className={p.minBounty ? 'mono text-neutral-200 tabular-nums' : 'text-neutral-600'}>
-                  {p.minBounty ? formatBounty(p.minBounty, p.currency ?? 'USD') : '—'}
+                  {p.minBounty ? formatBounty(p.minBounty, p.currency ?? 'USD') : '·'}
                 </span>
               ))} />
               <Row label="Safe harbor" values={programs.map((p) => <SafeHarborCell key={p.id} value={p.safeHarbor} />)} />
@@ -117,11 +117,11 @@ export default async function ComparePage({ searchParams }: PageProps) {
                 <YesNo key={p.id} v={p.offersSwag} />
               ))} />
               <Row label="Status" values={programs.map((p) => (
-                <span key={p.id} className="mono text-xs text-neutral-400">{p.submissionState ?? '—'}</span>
+                <span key={p.id} className="mono text-xs text-neutral-400">{p.submissionState ?? '·'}</span>
               ))} />
               <Row label="Last updated" values={programs.map((p) => (
                 <span key={p.id} className="mono text-xs text-neutral-500">
-                  {p.lastUpdatedAt ? relativeTime(p.lastUpdatedAt) : '—'}
+                  {p.lastUpdatedAt ? relativeTime(p.lastUpdatedAt) : '·'}
                 </span>
               ))} />
               <Row label="Program page" values={programs.map((p) => (

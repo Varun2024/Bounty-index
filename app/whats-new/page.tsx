@@ -146,14 +146,14 @@ function DiffSummary({ diff }: { diff: RecentChange['diff'] }) {
   if (diff.rewardDelta) {
     bits.push(
       <span key="reward" className="text-neutral-200">
-        reward {diff.rewardDelta.from ?? '—'} → {diff.rewardDelta.to ?? '—'}
+        reward {diff.rewardDelta.from ?? '·'} → {diff.rewardDelta.to ?? '·'}
       </span>,
     );
   }
   if (diff.safeHarborChanged) {
     bits.push(
       <span key="sh" className="text-neutral-200">
-        safe-harbor {diff.safeHarborChanged.from ?? '—'} → {diff.safeHarborChanged.to ?? '—'}
+        safe-harbor {diff.safeHarborChanged.from ?? '·'} → {diff.safeHarborChanged.to ?? '·'}
       </span>,
     );
   }

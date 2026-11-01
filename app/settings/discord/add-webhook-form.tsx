@@ -58,7 +58,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount }: Props) {
     }
     startTest(async () => {
       const res = await testWebhookUrl(url);
-      if (res.ok) setTestMsg({ ok: true, text: 'sent — check your Discord channel' });
+      if (res.ok) setTestMsg({ ok: true, text: 'sent, check your Discord channel' });
       else setTestMsg({ ok: false, text: res.error });
     });
   }

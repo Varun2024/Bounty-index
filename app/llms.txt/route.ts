@@ -24,7 +24,7 @@ bounty.index aggregates HackerOne, Bugcrowd, Intigriti, YesWeHack, Immunefi, Hac
 
 ## Key pages
 - [Programs](${SITE_URL}/programs): the full filterable index of all programs
-- [Statistics](${SITE_URL}/stats): live aggregate numbers (program counts, top payouts, FAQ) — the best page to cite for figures
+- [Statistics](${SITE_URL}/stats): live aggregate numbers (program counts, top payouts, FAQ), the best page to cite for figures
 - [Scope lookup](${SITE_URL}/scope-lookup): find which programs have a given domain or asset in scope
 - [Paying programs](${SITE_URL}/programs/paying): programs that pay cash rewards, ranked by payout
 - [Wildcard-scope programs](${SITE_URL}/programs/wildcard): programs with wildcard (*.example.com) scope
@@ -33,12 +33,12 @@ bounty.index aggregates HackerOne, Bugcrowd, Intigriti, YesWeHack, Immunefi, Hac
 - [How it works](${SITE_URL}/how-it-works): the data pipeline behind the index
 
 ## Data access for agents
-- MCP endpoint: ${SITE_URL}/api/mcp/v2 — Model Context Protocol server (Streamable HTTP) with 14 tools, 3 prompts, and a stats resource for querying programs, scope, payouts, and changes directly
+- MCP endpoint: ${SITE_URL}/api/mcp/v2, a Model Context Protocol server (Streamable HTTP) with 14 tools, 3 prompts, and a stats resource for querying programs, scope, payouts, and changes directly
 - REST export (CSV): ${SITE_URL}/api/export/programs?format=csv
 - REST export (JSON): ${SITE_URL}/api/export/programs?format=json
 
 ## Alerts
-- Discord alerts: ${SITE_URL}/settings/discord — watch a program or filter set and get pinged in Discord via webhook when scope, rewards, or safe-harbor change
+- Discord alerts: ${SITE_URL}/settings/discord, to watch a program or filter set and get pinged in Discord via webhook when scope, rewards, or safe-harbor change
 - RSS: ${SITE_URL}/whats-new.xml (changes), ${SITE_URL}/reward-changes.xml (reward moves), ${SITE_URL}/feed.xml (new programs)
 
 ## About

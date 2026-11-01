@@ -35,7 +35,7 @@ export async function PresetView({ h1, intro, filters, fullFilterHref, answer }:
       </header>
 
       {rows.length === 0 ? (
-        <p className="mono text-xs text-neutral-500">— no programs match this preset yet —</p>
+        <p className="mono text-xs text-neutral-500">no programs match this preset yet</p>
       ) : (
         <>
           <div className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">

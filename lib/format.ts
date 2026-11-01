@@ -1,5 +1,5 @@
 export function formatBounty(amount: number | null | undefined, currency = 'USD'): string {
-  if (amount == null || amount <= 0) return '—';
+  if (amount == null || amount <= 0) return '·';
   const sym = currency === 'EUR' ? '€' : '$';
   if (amount >= 1_000_000) return `${sym}${(amount / 1_000_000).toFixed(amount % 1_000_000 === 0 ? 0 : 1)}M`;
   if (amount >= 10_000) return `${sym}${Math.round(amount / 1_000)}K`;
@@ -62,7 +62,7 @@ export function shortenIdentifier(id: string, maxLen = 64): string {
 }
 
 export function relativeTime(from: Date | null | undefined): string {
-  if (!from) return '—';
+  if (!from) return '·';
   const diffMs = Date.now() - new Date(from).getTime();
   const mins = Math.round(diffMs / 60000);
   if (mins < 1) return 'just now';

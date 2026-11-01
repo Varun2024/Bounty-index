@@ -104,7 +104,7 @@ export function ProgramNotes({ programId, initialNote }: ProgramNotesProps) {
             onChange={onChange}
             onBlur={onBlur}
             maxLength={NOTE_MAX_LEN}
-            placeholder="private notes — recon leads, endpoints of interest, response times, whatever helps you come back to this program."
+            placeholder="private notes: recon leads, endpoints of interest, response times, whatever helps you come back to this program."
             className="focus-ring w-full min-h-[140px] mono text-xs leading-relaxed px-4 py-3 bg-neutral-950/60 border border-neutral-900 rounded-lg text-neutral-200 placeholder:text-neutral-600 resize-y focus:outline-none focus:border-emerald-400/50"
           />
         </div>

@@ -18,8 +18,8 @@ export async function GET(req: Request): Promise<Response> {
       const link = `${origin}/programs/${encodeURIComponent(c.program.platform)}/${encodeSlug(c.program.slug)}`;
       const currency = c.program.currency ?? 'USD';
       const delta = c.diff.rewardDelta!;
-      const from = delta.from != null ? formatBounty(delta.from, currency) : '—';
-      const to = delta.to != null ? formatBounty(delta.to, currency) : '—';
+      const from = delta.from != null ? formatBounty(delta.from, currency) : '·';
+      const to = delta.to != null ? formatBounty(delta.to, currency) : '·';
       const direction =
         delta.from != null && delta.to != null
           ? delta.to > delta.from
@@ -44,7 +44,7 @@ export async function GET(req: Request): Promise<Response> {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Bounty Index — reward changes</title>
+    <title>Bounty Index: reward changes</title>
     <link>${origin}/reward-changes</link>
     <description>Just the money moves. Every max-payout bump or cut across all indexed platforms.</description>
     <language>en-us</language>

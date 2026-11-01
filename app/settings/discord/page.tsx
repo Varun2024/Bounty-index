@@ -89,7 +89,7 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
             Discord left rail <span className="text-neutral-100">+</span> &rarr;
             <span className="text-neutral-100"> Create My Own</span> &rarr;
             <span className="text-neutral-100"> For me and my friends</span>. Then follow either path below in that server.
-            This is the usual unblock — webhook creation needs the <span className="text-neutral-100">Manage Webhooks</span>{' '}
+            This is the usual unblock: webhook creation needs the <span className="text-neutral-100">Manage Webhooks</span>{' '}
             permission, which you won&rsquo;t have on servers you don&rsquo;t run.
           </p>
         </div>
@@ -138,17 +138,17 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
         {signedIn ? (
           <>
             <p className="text-sm text-neutral-500 mb-4 leading-relaxed">
-              Paste the URL you copied above. Pick which program should fire it — you can add more later. Optional label helps you tell subscriptions apart when you have several (e.g. <span className="mono text-neutral-400">#alerts</span>).
+              Paste the URL you copied above. Pick which program should fire it; you can add more later. Optional label helps you tell subscriptions apart when you have several (e.g. <span className="mono text-neutral-400">#alerts</span>).
             </p>
             <AddWebhookForm prefillProgram={prefillProgram} watchlistCount={watchlistCount} />
             <p className="mt-3 mono text-[11px] text-neutral-600">
-              {'// '}after saving, hit <span className="text-emerald-400">test</span> on the row to fire a sample embed right now — no need to wait for the daily cron.
+              {'// '}after saving, hit <span className="text-emerald-400">test</span> on the row to fire a sample embed right now, no need to wait for the daily cron.
             </p>
           </>
         ) : (
           <div className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-6">
             <p className="text-sm text-neutral-300 leading-relaxed">
-              Already copied your webhook URL? Sign in to connect it. GitHub OAuth, no email — your subscriptions follow you
+              Already copied your webhook URL? Sign in to connect it. GitHub OAuth, no email. Your subscriptions follow you
               between machines, not into your inbox. (Sign-in is only needed to save a subscription, so bounty.index can&rsquo;t
               be used to spam a channel anonymously.)
             </p>
@@ -165,13 +165,13 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
       {signedIn && (
         <section>
           <h2 className="text-lg font-semibold text-neutral-100 mb-3">
-            Your subscriptions <span className="mono text-xs text-neutral-500">· {rows?.length ?? '—'}</span>
+            Your subscriptions <span className="mono text-xs text-neutral-500">· {rows?.length ?? '·'}</span>
           </h2>
           {rows === null ? (
             <UnavailablePanel what="Subscription list" />
           ) : rows.length === 0 ? (
             <div className="border border-neutral-900 rounded-lg p-8 bg-neutral-950/40 text-center">
-              <p className="mono text-xs uppercase tracking-widest text-neutral-500">— zero webhooks —</p>
+              <p className="mono text-xs uppercase tracking-widest text-neutral-500">zero webhooks</p>
               <p className="mt-3 text-sm text-neutral-500">
                 The cron still runs. It&rsquo;s just talking to itself. Open a program and hit
                 <span className="mono text-emerald-400"> Discord alerts</span>, or paste a URL above.

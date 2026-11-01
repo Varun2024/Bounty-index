@@ -20,11 +20,11 @@ const COLUMNS: { key: keyof Omit<CompareRow, 'name' | 'active'>; label: string }
 
 export function Comparison() {
   const rows: CompareRow[] = [
-    { name: 'bounty.index', coverage: '6 of 6 · unified', lookup: '✓ paste a domain', history: '✓ daily + RSS', community: '✓ response times', mcp: '✓ /mcp endpoint', active: true },
-    { name: 'HackerOne directory', coverage: '1 of 6', lookup: '✗', history: '✗', community: '✗', mcp: '✗' },
-    { name: 'Bugcrowd programs page', coverage: '1 of 6', lookup: '✗', history: '✗', community: '✗', mcp: '✗' },
+    { name: 'bounty.index', coverage: '7 of 7 · unified', lookup: '✓ paste a domain', history: '✓ daily + RSS', community: '✓ response times', mcp: '✓ /mcp endpoint', active: true },
+    { name: 'HackerOne directory', coverage: '1 of 7', lookup: '✗', history: '✗', community: '✗', mcp: '✗' },
+    { name: 'Bugcrowd programs page', coverage: '1 of 7', lookup: '✗', history: '✗', community: '✗', mcp: '✗' },
     { name: 'disclose.io', coverage: 'VDP policies only', lookup: '✗', history: '✗', community: '✗', mcp: '✗' },
-    { name: 'bounty-targets-data', coverage: '6 of 6 · raw JSON', lookup: 'grep + jq', history: 'git log', community: '✗', mcp: '✗' },
+    { name: 'bounty-targets-data', coverage: '5 of 7 · raw JSON', lookup: 'grep + jq', history: 'git log', community: '✗', mcp: '✗' },
   ];
   return (
     <section className="border-t border-neutral-900 bg-neutral-950/40 relative">

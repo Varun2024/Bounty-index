@@ -21,7 +21,7 @@ export function datasetLd(s: DatasetStats): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
-    name: 'bounty.index — public bug bounty programs',
+    name: 'bounty.index: public bug bounty programs',
     description:
       `A continuously updated index of ${s.programs.toLocaleString()} public bug bounty and ` +
       `vulnerability disclosure programs across ${s.platforms} platforms (${PLATFORM_NAMES}), ` +

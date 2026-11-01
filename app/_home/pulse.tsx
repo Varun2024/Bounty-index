@@ -123,7 +123,7 @@ function diffBits(diff: Awaited<ReturnType<typeof getRecentChanges>>[number]['di
   if (diff.safeHarborChanged) {
     bits.push(
       <span key="sh" className="text-neutral-300">
-        safe-harbor {diff.safeHarborChanged.from ?? '—'} → {diff.safeHarborChanged.to ?? '—'}
+        safe-harbor {diff.safeHarborChanged.from ?? '·'} → {diff.safeHarborChanged.to ?? '·'}
       </span>,
     );
   }
@@ -131,7 +131,7 @@ function diffBits(diff: Awaited<ReturnType<typeof getRecentChanges>>[number]['di
 }
 
 function fmtReward(v: number | null): string {
-  if (v === null) return '—';
+  if (v === null) return '·';
   return formatBounty(v, 'USD');
 }
 

@@ -135,8 +135,8 @@ interface RewardDeltaRowProps {
 }
 
 function RewardDeltaRow({ delta, currency }: RewardDeltaRowProps) {
-  const from = delta.from != null ? formatBounty(delta.from, currency) : '—';
-  const to = delta.to != null ? formatBounty(delta.to, currency) : '—';
+  const from = delta.from != null ? formatBounty(delta.from, currency) : '·';
+  const to = delta.to != null ? formatBounty(delta.to, currency) : '·';
   const direction =
     delta.from != null && delta.to != null
       ? delta.to > delta.from

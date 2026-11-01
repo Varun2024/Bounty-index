@@ -119,7 +119,7 @@ export function ReportDialog({ programId, programName, existing, onClose, onSubm
 
           <p className="mono text-[11px] leading-relaxed text-neutral-600">
             <span className="text-neutral-700">{'// '}</span>
-            your report is <span className="text-neutral-400">anonymized in aggregates</span>. individual rows are not shown to other users. one report per program per account — resubmitting updates.
+            your report is <span className="text-neutral-400">anonymized in aggregates</span>. individual rows are not shown to other users. one report per program per account, resubmitting updates.
           </p>
         </div>
 

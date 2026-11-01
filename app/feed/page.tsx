@@ -7,7 +7,7 @@ import { EmptyState } from '@/app/_ui/empty-state';
 export const dynamic = 'force-dynamic';
 
 function isoDate(d: Date | null): string {
-  if (!d) return '—';
+  if (!d) return '·';
   return new Date(d).toISOString().slice(0, 10);
 }
 

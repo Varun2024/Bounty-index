@@ -95,12 +95,12 @@ function summaryLine(diff: SnapshotDiff, currency: string): string {
   if (diff.added.length) parts.push(`+${diff.added.length} added`);
   if (diff.removed.length) parts.push(`−${diff.removed.length} removed`);
   if (diff.rewardDelta) {
-    const from = diff.rewardDelta.from != null ? formatBounty(diff.rewardDelta.from, currency) : '—';
-    const to = diff.rewardDelta.to != null ? formatBounty(diff.rewardDelta.to, currency) : '—';
+    const from = diff.rewardDelta.from != null ? formatBounty(diff.rewardDelta.from, currency) : '·';
+    const to = diff.rewardDelta.to != null ? formatBounty(diff.rewardDelta.to, currency) : '·';
     parts.push(`reward ${from} → ${to}`);
   }
   if (diff.safeHarborChanged) {
-    parts.push(`safe-harbor ${diff.safeHarborChanged.from ?? '—'} → ${diff.safeHarborChanged.to ?? '—'}`);
+    parts.push(`safe-harbor ${diff.safeHarborChanged.from ?? '·'} → ${diff.safeHarborChanged.to ?? '·'}`);
   }
   return parts.join(' · ') || 'changes';
 }

@@ -14,7 +14,7 @@ export function WatchButton({ programId }: WatchButtonProps) {
     <button
       onClick={() => toggle(programId)}
       disabled={!hydrated}
-      title={active ? 'Stop watching — you can always come back' : 'Watch: we snapshot daily and tell you what changed. No email, promise.'}
+      title={active ? 'Stop watching, you can always come back' : 'Watch: we snapshot daily and tell you what changed. No email, promise.'}
       aria-pressed={active}
       className={`focus-ring mono text-xs px-3 py-2.5 rounded-md border transition inline-flex items-center gap-2 ${
         active

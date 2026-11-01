@@ -45,7 +45,7 @@ export default async function WatchlistPage({ searchParams }: PageProps) {
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Watchlist</h1>
         <p className="mt-3 text-sm text-neutral-400 max-w-2xl">
           Programs you watch, with the most recent scope and reward changes tracked from daily snapshots.
-          Selection lives in your browser — no account needed.
+          Selection lives in your browser. No account needed.
         </p>
         {ids.length > 0 && (
           <a
@@ -155,7 +155,7 @@ function WatchlistRow({ entry }: { entry: WatchlistEntry }) {
         </div>
       ) : (
         <p className="px-5 py-3 mono text-[11px] text-neutral-600">
-          {!previous ? '// only one snapshot on record — changes appear after the next ingest' : '// no changes since previous snapshot'}
+          {!previous ? '// only one snapshot on record, changes appear after the next ingest' : '// no changes since previous snapshot'}
         </p>
       )}
     </li>

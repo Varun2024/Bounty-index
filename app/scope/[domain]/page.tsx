@@ -63,7 +63,7 @@ export default async function ScopeDomainPage({ params }: PageProps) {
           <code className="mono text-emerald-300">{domain}</code>
         </h1>
         <p className="text-neutral-400 mt-3 max-w-xl">
-          Every program that lists this identifier — plus any that list it as explicitly out-of-scope.
+          Every program that lists this identifier, plus any that list it as explicitly out-of-scope.
         </p>
       </div>
 
@@ -81,7 +81,7 @@ export default async function ScopeDomainPage({ params }: PageProps) {
       </form>
 
       {dbError ? (
-        <p className="mono text-xs text-amber-400 mt-6">DB_NOT_CONNECTED — {dbError}</p>
+        <p className="mono text-xs text-amber-400 mt-6">DB_NOT_CONNECTED: {dbError}</p>
       ) : (
         <ScopeResults domain={domain} matches={matches} />
       )}

@@ -129,7 +129,7 @@ export default async function AdminPage() {
         <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Internal · noindex</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Admin</h1>
         <p className="mt-3 text-sm text-neutral-400">
-          Everything here is a live query — no caching. Refresh to re-run.
+          Everything here is a live query, no caching. Refresh to re-run.
         </p>
       </header>
 
@@ -157,7 +157,7 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">
-          MCP endpoint <span className="text-neutral-700">· unauthenticated — clients = distinct IPs</span>
+          MCP endpoint <span className="text-neutral-700">· unauthenticated · clients = distinct IPs</span>
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Tile label="Clients (all time)" value={mcpClients} />
@@ -188,9 +188,9 @@ export default async function AdminPage() {
       <section>
         <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">Recent sign-ups <span className="text-neutral-700">· latest 20</span></h2>
         {!recentUsers ? (
-          <p className="mono text-xs text-neutral-600">— unavailable (DB degraded) —</p>
+          <p className="mono text-xs text-neutral-600">unavailable (DB degraded)</p>
         ) : recentUsers.length === 0 ? (
-          <p className="mono text-xs text-neutral-500">— no users yet —</p>
+          <p className="mono text-xs text-neutral-500">no users yet</p>
         ) : (
           <ul className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 divide-y divide-neutral-900">
             {recentUsers.map((u) => (
@@ -219,7 +219,7 @@ export default async function AdminPage() {
           Pending signups <span className="text-neutral-700">· captured during DB outage</span>
         </h2>
         {pendingSignups.length === 0 ? (
-          <p className="mono text-xs text-neutral-500">— none —</p>
+          <p className="mono text-xs text-neutral-500">none</p>
         ) : (
           <ul className="border border-amber-500/20 rounded-lg overflow-hidden bg-amber-500/[0.03] divide-y divide-neutral-900">
             {pendingSignups.map((s) => (
@@ -253,7 +253,7 @@ export default async function AdminPage() {
       <section>
         <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">Most-watched programs <span className="text-neutral-700">· top 10</span></h2>
         {topWatched.length === 0 ? (
-          <p className="mono text-xs text-neutral-500">— nobody's watching anything yet —</p>
+          <p className="mono text-xs text-neutral-500">nobody&rsquo;s watching anything yet</p>
         ) : (
           <ul className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 divide-y divide-neutral-900">
             {topWatched.map((w) => (
@@ -292,7 +292,7 @@ function Tile({ label, value, tone }: TileProps) {
     <div className="border border-neutral-900 rounded-lg p-4 bg-neutral-950/40">
       <p className="mono text-[10px] uppercase tracking-widest text-neutral-500">{label}</p>
       <p className={`mt-1 text-2xl font-semibold tabular-nums ${color}`}>
-        {unavailable ? '—' : value.toLocaleString()}
+        {unavailable ? '·' : value.toLocaleString()}
       </p>
     </div>
   );

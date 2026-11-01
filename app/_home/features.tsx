@@ -52,7 +52,7 @@ export function Features({ s }: FeaturesProps) {
                 <p className="text-sm text-emerald-300">Index</p>
                 <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Unified index</h3>
                 <p className="text-neutral-400 mt-3 leading-relaxed">
-                  One table. Six platforms. Sort by max reward or opportunity score, filter by asset type,
+                  One table across seven platforms. Sort by max reward or opportunity score, filter by asset type,
                   jump to the highest payouts first. {s ? `${s.bountyPrograms.toLocaleString()} of ${s.programs.toLocaleString()} pay in cash right now.` : ''}
                 </p>
               </div>

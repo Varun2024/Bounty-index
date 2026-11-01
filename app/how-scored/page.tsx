@@ -5,7 +5,7 @@ import { WEIGHTS, opportunityScore } from '@/lib/opportunity';
 export const metadata: Metadata = {
   title: 'How the opportunity score works · Bounty Index',
   description:
-    'The full public formula behind the Opportunity score. No opaque tiers, no paid gates — just three signals, three weights, one linear sum.',
+    'The full public formula behind the Opportunity score. No opaque tiers, no paid gates. Just three signals, three weights, one linear sum.',
   alternates: { canonical: '/how-scored' },
 };
 
@@ -30,7 +30,7 @@ export default function HowScoredPage() {
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">How the opportunity score works</h1>
         <p className="text-neutral-400 mt-3 max-w-2xl leading-relaxed">
           A 0&ndash;100 ranking that tries to answer <em>&ldquo;which programs are worth an hour of my time this week&rdquo;</em>. Three
-          signals, three weights, one linear sum &mdash; nothing else, nothing hidden.
+          signals, three weights, one linear sum. Nothing else, nothing hidden.
         </p>
       </div>
 
@@ -70,7 +70,7 @@ export default function HowScoredPage() {
           <p className="text-sm text-neutral-400 leading-relaxed">
             <span className="text-emerald-300">+{WEIGHTS.bounty}</span> if the program actually pays cash,
             <span className="text-neutral-600"> 0</span> if it&rsquo;s a VDP (recognition-only). A tiny paying program still beats a
-            huge VDP on this axis &mdash; because <em>getting paid</em> is a categorical difference, not a gradient.
+            huge VDP on this axis, because <em>getting paid</em> is a categorical difference, not a gradient.
           </p>
         </div>
 

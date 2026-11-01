@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { stats } from '@/lib/db/queries';
 
-export const alt = 'bounty.index — every public bounty, one index';
+export const alt = 'bounty.index: every public bounty, one index';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 // Build-time static: zero per-request CPU, baked into the deployment.

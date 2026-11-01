@@ -36,8 +36,8 @@ export async function GET(req: Request): Promise<Response> {
       const parts: string[] = [];
       if (diff.added.length) parts.push(`+${diff.added.length} added: ${diff.added.slice(0, 10).join(', ')}${diff.added.length > 10 ? `, +${diff.added.length - 10} more` : ''}`);
       if (diff.removed.length) parts.push(`−${diff.removed.length} removed: ${diff.removed.slice(0, 10).join(', ')}${diff.removed.length > 10 ? `, +${diff.removed.length - 10} more` : ''}`);
-      if (diff.rewardDelta) parts.push(`Max reward: ${diff.rewardDelta.from ? formatBounty(diff.rewardDelta.from, cur) : '—'} → ${diff.rewardDelta.to ? formatBounty(diff.rewardDelta.to, cur) : '—'}`);
-      if (diff.safeHarborChanged) parts.push(`Safe harbor: ${diff.safeHarborChanged.from ?? '—'} → ${diff.safeHarborChanged.to ?? '—'}`);
+      if (diff.rewardDelta) parts.push(`Max reward: ${diff.rewardDelta.from ? formatBounty(diff.rewardDelta.from, cur) : '·'} → ${diff.rewardDelta.to ? formatBounty(diff.rewardDelta.to, cur) : '·'}`);
+      if (diff.safeHarborChanged) parts.push(`Safe harbor: ${diff.safeHarborChanged.from ?? '·'} → ${diff.safeHarborChanged.to ?? '·'}`);
 
       const titleBits: string[] = [];
       if (diff.added.length) titleBits.push(`+${diff.added.length}`);
@@ -62,7 +62,7 @@ export async function GET(req: Request): Promise<Response> {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Bounty Index — watchlist changes</title>
+    <title>Bounty Index: watchlist changes</title>
     <link>${origin}/watchlist${ids.length ? `?ids=${ids.join(',')}` : ''}</link>
     <description>Scope, reward, and safe-harbor changes for the programs you watch.</description>
     <language>en-us</language>

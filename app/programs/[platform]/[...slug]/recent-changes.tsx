@@ -36,7 +36,7 @@ export function RecentChanges({ snapshots, currency, limit = 5 }: RecentChangesP
         </span>
       </SectionHeading>
       {events.length === 0 ? (
-        <p className="mono text-xs text-neutral-600 py-6">— no diffs detected in snapshot history yet —</p>
+        <p className="mono text-xs text-neutral-600 py-6">no diffs detected in snapshot history yet</p>
       ) : (
         <ul className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">
           {events.map((e, i) => (
@@ -59,7 +59,7 @@ export function RecentChanges({ snapshots, currency, limit = 5 }: RecentChangesP
                   )}
                   {e.safeHarborChanged && (
                     <span className="text-neutral-300">
-                      safe-harbor {e.safeHarborChanged.from ?? '—'} → {e.safeHarborChanged.to ?? '—'}
+                      safe-harbor {e.safeHarborChanged.from ?? '·'} → {e.safeHarborChanged.to ?? '·'}
                     </span>
                   )}
                 </div>
@@ -93,7 +93,7 @@ export function RecentChanges({ snapshots, currency, limit = 5 }: RecentChangesP
 }
 
 function formatMoney(n: number | null, sym: string): string {
-  if (n === null) return '—';
+  if (n === null) return '·';
   if (n >= 1_000_000) return `${sym}${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)}M`;
   if (n >= 1000) return `${sym}${Math.round(n / 1000)}K`;
   return `${sym}${n}`;

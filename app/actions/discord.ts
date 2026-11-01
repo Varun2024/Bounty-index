@@ -156,7 +156,7 @@ export async function testWebhookUrl(
   const res = await postDiffToWebhook(v.normalized, embed);
   if (res.ok) return { ok: true };
   if (res.broken) {
-    return { ok: false, error: `Discord returned ${res.status} — check the URL is right and the webhook still exists.` };
+    return { ok: false, error: `Discord returned ${res.status}. Check the URL is right and the webhook still exists.` };
   }
   return { ok: false, error: `Discord returned ${res.status}` };
 }
@@ -293,7 +293,7 @@ export async function testWebhook(id: number): Promise<{ ok: true } | { ok: fals
   if (res.broken) {
     await db.update(discordWebhooks).set({ brokenAt: new Date() }).where(eq(discordWebhooks.id, id));
     revalidatePath('/settings/discord');
-    return { ok: false, error: `Discord returned ${res.status} — webhook likely deleted. Row marked broken.` };
+    return { ok: false, error: `Discord returned ${res.status}, webhook likely deleted. Row marked broken.` };
   }
   return { ok: false, error: `Discord returned ${res.status}` };
 }

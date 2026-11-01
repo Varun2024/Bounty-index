@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const typeWord = program.offersBounty ? 'Bug Bounty Program' : 'Vulnerability Disclosure Program';
   const payoutBit = formatPayoutForMeta(program.minBounty, program.maxBounty, program.currency ?? 'USD');
   const title = payoutBit
-    ? `${program.name} ${typeWord} on ${platformLabel} — Payout ${payoutBit}`
+    ? `${program.name} ${typeWord} on ${platformLabel} · Payout ${payoutBit}`
     : `${program.name} ${typeWord} on ${platformLabel}`;
   const description = buildProgramDescription(program.name, platformLabel, program.offersBounty, payoutBit, inScope);
   // Per-program OG card rendered by app/og/[platform]/[...slug]/route.tsx.
@@ -163,9 +163,9 @@ export default async function ProgramDetailPage({ params }: PageProps) {
     {
       question: `Does ${program.name} have a bug bounty program?`,
       answer: program.offersBounty
-        ? `Yes — ${program.name} runs a public bug bounty program on ${pLabel}` +
+        ? `Yes, ${program.name} runs a public bug bounty program on ${pLabel}` +
           `${payoutText ? `, with rewards ${payoutText}` : ''}. It currently lists ${inScope.length} in-scope asset${inScope.length === 1 ? '' : 's'}.`
-        : `${program.name} runs a public vulnerability disclosure program (VDP) on ${pLabel} — it accepts ` +
+        : `${program.name} runs a public vulnerability disclosure program (VDP) on ${pLabel}. It accepts ` +
           `good-faith security reports but does not offer cash rewards. It lists ${inScope.length} in-scope asset${inScope.length === 1 ? '' : 's'}.`,
     },
     ...(program.offersBounty && payoutText
@@ -177,7 +177,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
     ...(program.safeHarbor && program.safeHarbor !== 'none'
       ? [{
           question: `Does ${program.name} offer safe harbor for security researchers?`,
-          answer: `Yes — ${program.name} publishes a safe-harbor clause protecting good-faith security research conducted within the program's scope and rules.`,
+          answer: `Yes, ${program.name} publishes a safe-harbor clause protecting good-faith security research conducted within the program's scope and rules.`,
         }]
       : []),
   ];

@@ -314,7 +314,7 @@ export function registerCoreTools(server: McpServer): void {
     {
       title: 'Full snapshot timeline for one program',
       description:
-        'Every snapshot ever captured for a program (sparse — one row per real change). Oldest first. Use for lifecycle analysis.',
+        'Every snapshot ever captured for a program (sparse, one row per real change). Oldest first. Use for lifecycle analysis.',
       inputSchema: z.object({
         platform: z.string(),
         slug: z.string(),

@@ -44,7 +44,7 @@ export function ProgramTimeline({ snapshots, currency }: ProgramTimelineProps) {
       {snapshots.length === 1 && (
         <p className="mono text-[11px] text-neutral-600 mt-3">
           <span className="text-neutral-700">{'// '}</span>
-          only one snapshot on record — changes appear from the next ingest onward
+          only one snapshot on record, changes appear from the next ingest onward
         </p>
       )}
     </section>

@@ -24,7 +24,7 @@ const TOOLS: Capability[] = [
   { name: 'program_timeline', desc: 'Full snapshot timeline for one program.' },
   { name: 'list_platforms', desc: 'Platforms tracked + program count on each.' },
   { name: 'stats', desc: 'Site-wide totals: programs, paying programs, platforms, last ingest.', v2: true },
-  { name: 'top_payouts', desc: 'Leaderboard — top N programs by max bounty.', v2: true },
+  { name: 'top_payouts', desc: 'Leaderboard: top N programs by max bounty.', v2: true },
   { name: 'recently_added', desc: 'Programs first seen within the last N days.', v2: true },
   { name: 'trending_programs', desc: 'Highest-paying new additions in a rolling window.', v2: true },
   { name: 'programs_by_ids', desc: 'Bulk fetch up to 100 program summaries by numeric id.', v2: true },
@@ -91,7 +91,7 @@ export default function McpPage(): React.JSX.Element {
             bounty.index MCP
           </h1>
           <p className="mt-4 text-neutral-400 max-w-[58ch] leading-relaxed">
-            Wire your agent — Claude Desktop, Cursor, Codex, any Model Context Protocol client — into
+            Wire your agent (Claude Desktop, Cursor, Codex, any Model Context Protocol client) into
             the same index that powers this site. No API key, no signup.
           </p>
         </div>

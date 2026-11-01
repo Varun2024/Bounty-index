@@ -84,7 +84,7 @@ export function ScopeColumn({ kind, items }: ScopeColumnProps) {
         </span>
       </SectionHeading>
       {items.length === 0 ? (
-        <p className="mono text-xs text-neutral-600 py-6">— none listed —</p>
+        <p className="mono text-xs text-neutral-600 py-6">none listed</p>
       ) : shouldGroup ? (
         <div className="space-y-5">
           {buckets.map((bucket) => (

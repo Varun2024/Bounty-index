@@ -20,7 +20,7 @@ const STAGES: Stage[] = [
     key: 'extract',
     eyebrow: '01 · extract',
     title: 'Pull',
-    body: 'Seven platform feeds fetched daily — HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy via arkadiyt/bounty-targets-data; Immunefi and HackenProof scraped directly. One pipeline, normalized.',
+    body: 'Seven platform feeds fetched daily: HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy via arkadiyt/bounty-targets-data; Immunefi and HackenProof scraped directly. One pipeline, normalized.',
     detail: 'source · single mirror',
   },
   {
@@ -84,7 +84,7 @@ export default function HowItWorksPage() {
       <section className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10 reveal reveal-delay-3">
         <StackCol title="Data" items={[
           ['arkadiyt/bounty-targets-data', 'upstream JSON mirror of five platforms (+Immunefi & HackenProof scrape)'],
-          ['SHA-256 content hashes', 'snapshot dedupe — sparse history'],
+          ['SHA-256 content hashes', 'snapshot dedupe, sparse history'],
           ['program_snapshots', 'JSONB timeline per program'],
         ]} />
         <StackCol title="Runtime" items={[

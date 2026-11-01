@@ -38,19 +38,19 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
       {looksLikeOutage ? (
         <>
           <p className="mt-4 text-sm text-neutral-400 leading-relaxed">
-            The database that stores accounts is grumpy right now. New sign-ins are paused for a bit —
+            The database that stores accounts is grumpy right now. New sign-ins are paused for a bit,
             existing sessions are unaffected. Programs, scope lookup, and everything read-only still
             works. Watchlists and Discord alerts will pick up where you left off once the DB is back.
           </p>
           <p className="mt-3 mono text-[11px] text-neutral-600">
-            {'// nothing you did is broken — this is on our end.'}
+            {'// nothing you did is broken. this is on our end.'}
           </p>
         </>
       ) : (
         <>
           <p className="mt-4 text-sm text-neutral-400 leading-relaxed">
             Sign-in didn&rsquo;t complete. The GitHub handshake got interrupted somewhere.
-            Try again — it usually just works the second time.
+            Try again, it usually just works the second time.
           </p>
           <p className="mt-3 mono text-[11px] text-neutral-600">// error code: {error}</p>
         </>

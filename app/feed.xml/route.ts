@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     .map((p) => {
       const link = `${origin}/programs/${encodeURIComponent(p.platform)}/${encodeSlug(p.slug)}`;
       const pubDate = p.firstSeenAt ? new Date(p.firstSeenAt).toUTCString() : new Date().toUTCString();
-      const bounty = p.maxBounty ? ` — up to $${p.maxBounty.toLocaleString()}` : '';
+      const bounty = p.maxBounty ? `, up to $${p.maxBounty.toLocaleString()}` : '';
       const desc = `${p.platform} · ${p.programType}${bounty}`;
       return `<item>
   <title>${esc(p.name)}</title>
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Bounty Index — new programs</title>
+    <title>Bounty Index: new programs</title>
     <link>${origin}</link>
     <description>Newly discovered bug bounty and VDP programs.</description>
     <language>en-us</language>

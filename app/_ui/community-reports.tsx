@@ -63,18 +63,18 @@ export function CommunityReports({ programId, programName, initialStats, initial
         {stats.count === 0 ? (
           <div className="space-y-2">
             <p className="mono text-xs text-neutral-400">
-              <span className="text-emerald-300">No reports yet</span> — be the first to share your triage timing for {programName}.
+              <span className="text-emerald-300">No reports yet.</span> Be the first to share your triage timing for {programName}.
             </p>
             <p className="mono text-[11px] text-neutral-600 leading-relaxed">
               <span className="text-neutral-700">{'// '}</span>
-              peer-sourced response times. platforms won&rsquo;t publish this — hunters can. anonymized in aggregate.
+              peer-sourced response times. platforms won&rsquo;t publish this, hunters can. anonymized in aggregate.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 md:gap-8">
             <Stat
               label="median first response"
-              value={stats.medianFirstResponseDays !== null ? `${stats.medianFirstResponseDays}d` : '—'}
+              value={stats.medianFirstResponseDays !== null ? `${stats.medianFirstResponseDays}d` : '·'}
               hint={
                 stats.medianFirstResponseDays === null
                   ? `need ≥ 3 answered reports · currently ${stats.count - stats.waitingCount}`

@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const s = await stats().catch(() => null);
   const count = s ? s.programs.toLocaleString() : '';
   return {
-    title: 'Bug Bounty Statistics — bounty.index',
+    title: 'Bug Bounty Statistics · bounty.index',
     description: s
       ? `${count} public bug bounty programs across ${s.platforms} platforms, ${s.bountyPrograms.toLocaleString()} paying cash. Live aggregate stats, updated daily.`
       : 'Live aggregate statistics on public bug bounty programs across every major platform, updated daily.',
@@ -53,7 +53,7 @@ export default async function StatsPage() {
     },
     {
       question: 'Which platforms does bounty.index cover?',
-      answer: `${PLATFORMS.join(', ')} — ${s.platforms} platforms in total, aggregated into one searchable index and updated daily.`,
+      answer: `${PLATFORMS.join(', ')}. ${s.platforms} platforms in total, aggregated into one searchable index and updated daily.`,
     },
     ...(highest
       ? [{
@@ -73,7 +73,7 @@ export default async function StatsPage() {
       question: 'How often is the data updated, and is it free?',
       answer:
         `The index is rebuilt daily (last update: ${date}). All data is free to browse, filter, export as ` +
-        `CSV/JSON, and query via a public MCP endpoint for AI agents — no signup required.`,
+        `CSV/JSON, and query via a public MCP endpoint for AI agents. No signup required.`,
     },
   ];
 
