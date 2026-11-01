@@ -47,3 +47,7 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# personal study notes — never commit
+STUDY_MANUAL.md
+STUDY_MANUAL.html
