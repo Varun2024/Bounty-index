@@ -40,13 +40,13 @@ export const metadata: Metadata = {
     description: 'Every public bug bounty program across seven platforms, filterable by scope, payout, and asset type.',
     type: 'website',
     siteName: 'bounty.index',
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'bounty.index: every public bounty, one index' }],
+    images: [{ url: '/og/default', width: 1200, height: 630, alt: 'bounty.index: every public bounty, one index' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'bounty.index: every public bounty, one index',
     description: 'Every public bug bounty program across seven platforms.',
-    images: ['/og.png'],
+    images: ['/og/default'],
   },
 };
 
