@@ -27,6 +27,13 @@ import { SectionNav } from './section-nav';
 // they never land in the cached HTML. Global report stats are cacheable so they stay here.
 export const revalidate = 86400;
 
+// Prerender none, cache each program on-demand (ISR). Without an (empty)
+// generateStaticParams a dynamic-param route stays server-rendered every request,
+// so revalidate above has no effect — this is what actually enables the cache.
+export function generateStaticParams(): { platform: string; slug: string[] }[] {
+  return [];
+}
+
 interface PageProps {
   params: Promise<{ platform: string; slug: string[] }>;
 }
