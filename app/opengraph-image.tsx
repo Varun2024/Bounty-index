@@ -1,17 +1,18 @@
 import { ImageResponse } from 'next/og';
-import { stats } from '@/lib/db/queries';
+import { stats, topPayouts } from '@/lib/db/queries';
+import { formatBounty } from '@/lib/format';
 
 export const alt = 'bounty.index: every public bounty, one index';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-// Build-time static: zero per-request CPU, baked into the deployment.
-export const dynamic = 'force-static';
-export const revalidate = false;
+// ISR, not force-static: the build has no DB, so a static card freezes the fallback numbers
+// forever (that was the stale "1447 · 6 platforms" card). Render on demand against live data
+// and cache for a day; scrapers fetch it once and the CDN serves the rest.
+export const revalidate = 86400;
 
-// Fallback stats baked in — read at build; if the DB is cold or Neon is throttled,
-// the file-system fallback kicks in. The actual OG served to Twitter/LinkedIn is a
-// cached CDN artifact after first fetch, so a bad build won't poison production.
-const FALLBACK = { programs: 1447, platforms: 6 };
+// Last-resort numbers if the DB is down at render time. Kept current so a cold miss still
+// reads plausibly, but the live query above is the normal path.
+const FALLBACK = { programs: 1800, platforms: 7 };
 
 const PLATFORM_DOTS: Record<string, string> = {
   hackerone: '#34d399',
@@ -23,18 +24,32 @@ const PLATFORM_DOTS: Record<string, string> = {
   hackenproof: '#e879f9',
 };
 
-const ROWS = [
-  { name: 'Shopify', platform: 'hackerone', payout: '$50K', active: true },
-  { name: 'Coinbase', platform: 'hackerone', payout: '$1M' },
-  { name: 'TikTok', platform: 'bugcrowd', payout: '$10K' },
+// Shown only if the live top-payouts query fails. Real rows are fetched below.
+const FALLBACK_ROWS = [
+  { name: 'Coinbase', platform: 'hackerone', payout: '$1M', active: true },
   { name: 'LayerZero', platform: 'immunefi', payout: '$15M' },
-  { name: 'Visa', platform: 'intigriti', payout: '$6K' },
+  { name: 'Shopify', platform: 'hackerone', payout: '$50K' },
+  { name: 'TikTok', platform: 'bugcrowd', payout: '$10K' },
+  { name: 'Intel', platform: 'intigriti', payout: '$100K' },
 ];
 
 export default async function OG() {
-  const live = await stats().catch(() => null);
+  const [live, top] = await Promise.all([
+    stats().catch(() => null),
+    topPayouts(5).catch(() => []),
+  ]);
+
   const programs = (live?.programs ?? FALLBACK.programs).toLocaleString();
   const platforms = live?.platforms ?? FALLBACK.platforms;
+
+  const rows = top.length
+    ? top.map((p, i) => ({
+        name: p.name.length > 18 ? p.name.slice(0, 17) + '…' : p.name,
+        platform: p.platform,
+        payout: formatBounty(p.maxBounty, p.currency ?? 'USD'),
+        active: i === 0,
+      }))
+    : FALLBACK_ROWS;
 
   return new ImageResponse(
     (
@@ -84,11 +99,11 @@ export default async function OG() {
             <span style={{ color: '#fafafa' }}>{platforms}</span>
             <span>platforms</span>
             <span style={{ color: '#404040' }}>·</span>
-            <span>updated hourly</span>
+            <span>updated daily</span>
           </div>
         </div>
 
-        {/* right column — stylized index */}
+        {/* right column — live top payouts */}
         <div style={{ display: 'flex', flexDirection: 'column', width: 440, marginLeft: 48, zIndex: 1, justifyContent: 'center' }}>
           <div
             style={{
@@ -112,10 +127,10 @@ export default async function OG() {
                 textTransform: 'uppercase',
               }}
             >
-              <span style={{ flex: 1 }}>program</span>
+              <span style={{ flex: 1 }}>paying the most</span>
               <span>reward</span>
             </div>
-            {ROWS.map((r) => (
+            {rows.map((r) => (
               <div
                 key={r.name}
                 style={{
@@ -144,7 +159,7 @@ export default async function OG() {
             ))}
           </div>
           <div style={{ display: 'flex', marginTop: 14, fontSize: 13, color: '#525252', justifyContent: 'space-between', letterSpacing: 2 }}>
-            <span>$ bounty-index --list</span>
+            <span>$ bounty-index --top</span>
             <span>{programs} rows</span>
           </div>
         </div>
