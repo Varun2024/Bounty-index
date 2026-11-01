@@ -20,6 +20,7 @@ export default function WildcardPresetPage() {
   return (
     <PresetView
       h1="Wildcard-Scope Bug Bounty Programs"
+      answer={(n) => `${n.toLocaleString()} public bug bounty programs offer wildcard scope (e.g. *.example.com) — the broadest attack surface for subdomain discovery and reconnaissance.`}
       intro="Programs with wildcard scope (*.example.com). The broadest attack surface for reconnaissance and subdomain discovery."
       filters={{ assetType: ['wildcard'], sort: 'reward' }}
       fullFilterHref="/programs?assetType=wildcard&sort=reward"

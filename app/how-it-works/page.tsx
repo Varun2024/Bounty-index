@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'How it works · Bounty Index',
   description:
-    'The engineering pipeline behind bounty.index: how five bug bounty platforms are pulled, normalized, indexed, and delivered.',
+    'The engineering pipeline behind bounty.index: how seven bug bounty platforms are pulled, normalized, indexed, and delivered.',
 };
 
 interface Stage {
@@ -41,7 +41,7 @@ const STAGES: Stage[] = [
     key: 'deliver',
     eyebrow: '04 · deliver',
     title: 'Render',
-    body: 'Next.js 16 App Router. Force-dynamic routes with per-route loading.tsx skeletons. Static assets on Vercel Edge, Vercel Analytics for real-user metrics.',
+    body: 'Next.js 16 App Router. Read-only pages are ISR-cached and served from the CDN; per-route loading.tsx skeletons cover the rest. Vercel Analytics for real-user metrics.',
     detail: 'ttfb · sub-100ms',
   },
 ];
@@ -55,7 +55,7 @@ export default function HowItWorksPage() {
           How it&apos;s built.
         </h1>
         <p className="mt-6 text-neutral-400 text-lg max-w-2xl leading-relaxed">
-          One quiet daily job, indexed for scan speed. Every public bounty program on six platforms flows through
+          One quiet daily job, indexed for scan speed. Every public bounty program on seven platforms flows through
           this pipeline into a single searchable index.
         </p>
       </header>
@@ -83,7 +83,7 @@ export default function HowItWorksPage() {
 
       <section className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10 reveal reveal-delay-3">
         <StackCol title="Data" items={[
-          ['arkadiyt/bounty-targets-data', 'upstream JSON mirror of five platforms (+Immunefi scrape)'],
+          ['arkadiyt/bounty-targets-data', 'upstream JSON mirror of five platforms (+Immunefi & HackenProof scrape)'],
           ['SHA-256 content hashes', 'snapshot dedupe — sparse history'],
           ['program_snapshots', 'JSONB timeline per program'],
         ]} />

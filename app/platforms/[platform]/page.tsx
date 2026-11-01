@@ -75,6 +75,15 @@ export default async function PlatformLandingPage({ params }: PageProps) {
           <span className={`w-2 h-2 rounded-full ${dot}`} />
           <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-50">{label}</h1>
         </div>
+        {/* Answer-first lead with the live count, then the editorial blurb for context. */}
+        {top.total > 0 && (
+          <p className="text-neutral-200 text-lg mt-4 max-w-2xl leading-relaxed">
+            bounty.index tracks{' '}
+            <span className="tabular-nums text-neutral-50 mono">{top.total.toLocaleString()}</span> public {label} bug
+            bounty {top.total === 1 ? 'program' : 'programs'}
+            {sharePct !== null && <> — {sharePct}% of all programs in the index</>}, updated daily.
+          </p>
+        )}
         <p className="text-neutral-400 mt-4 max-w-2xl leading-relaxed">
           {BLURBS[id]}
         </p>

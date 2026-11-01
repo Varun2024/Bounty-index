@@ -20,6 +20,7 @@ export default function SafeHarborPresetPage() {
   return (
     <PresetView
       h1="Bug Bounty Programs with Safe Harbor"
+      answer={(n) => `${n.toLocaleString()} public bug bounty programs publish a confirmed safe-harbor clause protecting good-faith security research from legal action.`}
       intro="Programs with a confirmed safe-harbor clause protecting good-faith security research. Coverage is currently strongest for Bugcrowd — other platforms don't publish this field structurally yet."
       filters={{ safeHarbor: true, sort: 'reward' }}
       fullFilterHref="/programs?safeHarbor=1&sort=reward"

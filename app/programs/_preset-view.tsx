@@ -8,12 +8,15 @@ export interface PresetViewProps {
   intro: string;
   filters: ProgramFilters;
   fullFilterHref: string;
+  // Answer-first lead sentence built from the live total. Rendered before the intro so
+  // answer engines can lift a direct, numeric answer ("There are N …") as the first line.
+  answer?: (total: number) => string;
 }
 
 // Shared body for pretty-URL preset pages. Renders unique content at each preset URL so
 // search engines can index the H1 and description — the exact query-based /programs URL
 // stays reachable via the "browse all with filters" link.
-export async function PresetView({ h1, intro, filters, fullFilterHref }: PresetViewProps) {
+export async function PresetView({ h1, intro, filters, fullFilterHref, answer }: PresetViewProps) {
   const { rows, total } = await listPrograms({ ...filters, pageSize: 20 }).catch(() => ({ rows: [], total: 0 }));
 
   return (
@@ -21,6 +24,9 @@ export async function PresetView({ h1, intro, filters, fullFilterHref }: PresetV
       <header className="mb-10">
         <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">Preset</p>
         <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-50 leading-tight">{h1}</h1>
+        {answer && total > 0 && (
+          <p className="mt-5 text-lg text-neutral-200 max-w-2xl leading-relaxed">{answer(total)}</p>
+        )}
         <p className="mt-4 text-neutral-400 max-w-2xl leading-relaxed">{intro}</p>
         <div className="mt-6 mono text-xs text-neutral-500 inline-flex items-center gap-3">
           <span className="tabular-nums text-neutral-100">{total.toLocaleString()}</span>
