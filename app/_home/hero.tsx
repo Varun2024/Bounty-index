@@ -52,7 +52,7 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
             <HeroScopeCheck programCount={programCount} />
 
             <p className="mt-12 text-sm text-neutral-400 max-w-xl">
-              Used weekly by 2,000+ hunters. Free, no signup.
+              2,000+ hunters use this every week. Free, no signup, and it stays that way.
               {lastIngest && <> Index refreshed {lastIngest}.</>}
             </p>
 

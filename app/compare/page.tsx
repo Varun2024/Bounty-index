@@ -55,8 +55,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
             </>
           }
         >
-          Open any two programs and hit <span className="mono text-emerald-300">+ compare</span>. Payouts, scope
-          size, safe harbor, and status line up side by side so the trade-offs are obvious.
+          Nothing here yet. Open any two programs, hit <span className="mono text-emerald-300">+ compare</span>, and
+          payouts, scope size, safe harbor, and status line up side by side so the trade-offs are obvious.
         </EmptyState>
       ) : (
         <div className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 overflow-x-auto">

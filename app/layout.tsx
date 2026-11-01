@@ -249,7 +249,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
                 </Link>
                 <p className="mt-4 text-sm text-neutral-400 leading-relaxed max-w-xs">
-                  The bug bounty market, live-indexed. Every public program across seven platforms, filterable in one view.
+                  The bug bounty market, live-indexed. Every public program across seven platforms, in one view. Thanks for using it.
                 </p>
                 <a
                   href="https://buymeacoffee.com/varun_builds"

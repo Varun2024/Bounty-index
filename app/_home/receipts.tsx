@@ -18,7 +18,8 @@ export function Receipts({ s }: ReceiptsProps) {
             Why trust this.
           </h2>
           <p className="text-neutral-300 mt-4 max-w-xl leading-relaxed">
-            No funnel, no VC, no dark pattern. Everything load-bearing is public and verifiable.
+            No funnel, no VC, no dark pattern. Everything load-bearing is public and verifiable,
+            so you never have to take my word for it.
           </p>
         </div>
 
@@ -55,7 +56,7 @@ export function Receipts({ s }: ReceiptsProps) {
             <div className="max-w-xl">
               <p className="text-sm text-emerald-300 mb-2">Who runs this</p>
               <p className="text-neutral-200 leading-relaxed">
-                Built and maintained by{' '}
+                I build and maintain this on my own, I&rsquo;m{' '}
                 <a
                   href="https://github.com/Varun2024"
                   target="_blank"
@@ -64,7 +65,7 @@ export function Receipts({ s }: ReceiptsProps) {
                 >
                   Varun
                 </a>
-                . Solo, no team, no funding. If something&rsquo;s broken, missing, or wrong,{' '}
+                . No team, no funding. If something&rsquo;s broken, missing, or wrong,{' '}
                 <a
                   href="https://github.com/Varun2024/Bounty-index/issues"
                   target="_blank"
@@ -73,7 +74,7 @@ export function Receipts({ s }: ReceiptsProps) {
                 >
                   open an issue
                 </a>{' '}
-                . I actually read them.
+                , I read every one. Thanks for being here.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 shrink-0">

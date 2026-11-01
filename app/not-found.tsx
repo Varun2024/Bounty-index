@@ -11,10 +11,10 @@ export default function NotFound() {
       <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">// route not found</p>
       <h1 className="text-5xl font-semibold tracking-tight text-neutral-50">404</h1>
       <p className="mt-4 text-sm text-neutral-400 leading-relaxed">
-        No such route. We looked. It&rsquo;s not here.
+        I looked, and there&rsquo;s nothing at this route.
         <br />
         <span className="text-neutral-500">
-          The bug is probably in the URL, not in scope.
+          The bug is probably in the URL, not in scope. Let&rsquo;s get you back on track.
         </span>
       </p>
       <div className="mt-8 flex items-center justify-center gap-3">

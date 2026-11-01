@@ -23,7 +23,7 @@ export function FinalCTA({ s }: FinalCTAProps) {
           )}
         </h2>
         <p className="text-neutral-300 mt-8 max-w-lg mx-auto">
-          Filter the list, save an RSS, find the ones that fit your stack.
+          Filter the list, save an RSS, find the ones that fit your stack. Thanks for hunting with this.
         </p>
         <div className="mt-10 flex flex-wrap gap-3 justify-center">
           <Link
