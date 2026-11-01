@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getProgramBySlug, getProgramSnapshots, getSimilarPrograms, getProgramReportStats, type ProgramSnapshot, type SimilarProgram } from '@/lib/db/queries';
 import { formatPayoutRange, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 import { summarizeActivity } from '@/lib/snapshots';
+import { faqLd, jsonLdScript, type FaqItem } from '@/lib/structured-data';
 import { extractCompanyDomain } from '@/lib/program-domain';
 import { ExternalIcon, RssIcon } from '@/app/_ui/icons';
 import { SectionHeading } from '@/app/_ui/section-heading';
@@ -52,11 +53,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? `${program.name} ${typeWord} on ${platformLabel} — Payout ${payoutBit}`
     : `${program.name} ${typeWord} on ${platformLabel}`;
   const description = buildProgramDescription(program.name, platformLabel, program.offersBounty, payoutBit, inScope);
+  // Per-program OG card rendered by app/og/[platform]/[...slug]/route.tsx.
+  const encodedSlug = program.slug.split('/').map(encodeURIComponent).join('/');
+  const ogImage = `/og/${encodeURIComponent(program.platform)}/${encodedSlug}`;
   return {
     title,
     description,
-    openGraph: { title, description, type: 'article' },
-    twitter: { card: 'summary', title, description },
+    openGraph: { title, description, type: 'article', images: [{ url: ogImage, width: 1200, height: 630, alt: `${program.name} on ${platformLabel}` }] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
     alternates: {
       canonical: `/programs/${program.platform}/${program.slug}`,
       types: { 'application/rss+xml': `/rss/programs/${program.platform}/${program.slug}` },
@@ -149,11 +153,44 @@ export default async function ProgramDetailPage({ params }: PageProps) {
     ],
   };
 
+  // Per-program FAQ: "does X have a bug bounty?" is a real query. Answers are built only
+  // from this program's own fields — no claim asserted when the data doesn't support it
+  // (e.g. absence of safe-harbor is not stated as "no", since platforms don't all publish it).
+  const pLabel = platformLabel(program.platform);
+  // payout is { label, value } | null — flatten to a readable string for the FAQ text.
+  const payoutText = payout ? (payout.label === 'payout up to' ? `up to ${payout.value}` : payout.value) : '';
+  const faqItems: FaqItem[] = [
+    {
+      question: `Does ${program.name} have a bug bounty program?`,
+      answer: program.offersBounty
+        ? `Yes — ${program.name} runs a public bug bounty program on ${pLabel}` +
+          `${payoutText ? `, with rewards ${payoutText}` : ''}. It currently lists ${inScope.length} in-scope asset${inScope.length === 1 ? '' : 's'}.`
+        : `${program.name} runs a public vulnerability disclosure program (VDP) on ${pLabel} — it accepts ` +
+          `good-faith security reports but does not offer cash rewards. It lists ${inScope.length} in-scope asset${inScope.length === 1 ? '' : 's'}.`,
+    },
+    ...(program.offersBounty && payoutText
+      ? [{
+          question: `How much does ${program.name} pay for bug bounties?`,
+          answer: `${program.name}'s published reward range on ${pLabel} is ${payoutText}. Actual payouts depend on severity and scope.`,
+        }]
+      : []),
+    ...(program.safeHarbor && program.safeHarbor !== 'none'
+      ? [{
+          question: `Does ${program.name} offer safe harbor for security researchers?`,
+          answer: `Yes — ${program.name} publishes a safe-harbor clause protecting good-faith security research conducted within the program's scope and rules.`,
+        }]
+      : []),
+  ];
+
   return (
     <div className="relative">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(faqLd(faqItems)) }}
       />
       {/* Breadcrumb */}
       <div className="border-b border-neutral-900">
