@@ -126,8 +126,10 @@ export function SiteNav() {
 
   return (
     <div ref={containerRef} className="flex items-center">
-      {/* Desktop: primary link + grouped dropdowns */}
-      <nav className="hidden md:flex items-center gap-0.5">
+      {/* Desktop: primary link + grouped dropdowns. Switches at lg, not md: the four nav
+          groups + MCP pill + command palette + theme + user menu need ~820px to fit, so at
+          md (768) the row overflowed the viewport by ~30px on portrait tablets. */}
+      <nav className="hidden lg:flex items-center gap-0.5">
         <Link
           href="/programs"
           className={`px-3 py-1.5 rounded-md transition focus-ring text-sm whitespace-nowrap ${
@@ -187,7 +189,7 @@ export function SiteNav() {
         aria-expanded={mobileOpen}
         aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
         onClick={() => setMobileOpen((v) => !v)}
-        className="md:hidden inline-flex items-center justify-center w-10 h-10 -mr-1 rounded-md text-neutral-300 hover:text-neutral-100 hover:bg-neutral-900 transition focus-ring"
+        className="lg:hidden inline-flex items-center justify-center w-10 h-10 -mr-1 rounded-md text-neutral-300 hover:text-neutral-100 hover:bg-neutral-900 transition focus-ring"
       >
         <svg aria-hidden viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
           {mobileOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></>}
@@ -195,7 +197,7 @@ export function SiteNav() {
       </button>
 
       {mobileOpen && (
-        <div className="md:hidden fixed left-0 right-0 top-14 z-30 max-h-[calc(100vh-3.5rem)] overflow-y-auto border-b border-neutral-900 bg-background/98 backdrop-blur-md px-4 py-4">
+        <div className="lg:hidden fixed left-0 right-0 top-14 z-30 max-h-[calc(100vh-3.5rem)] overflow-y-auto border-b border-neutral-900 bg-background/98 backdrop-blur-md px-4 py-4">
           <Link
             href="/programs"
             onClick={() => setMobileOpen(false)}
