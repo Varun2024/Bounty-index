@@ -80,7 +80,7 @@ interface RootLayoutProps {
 function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-sm text-neutral-400 mb-4">{title}</p>
+      <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-4">{title}</p>
       <ul className="space-y-2.5">{children}</ul>
     </div>
   );
@@ -242,33 +242,47 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
         <footer className="border-t border-neutral-900 relative overflow-hidden">
           <div className="relative max-w-[1400px] mx-auto px-6 pt-16 pb-10">
-            <div className="grid grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-10">
-              <div>
+            <div className="grid grid-cols-2 md:grid-cols-[1.4fr_repeat(4,1fr)] gap-x-8 gap-y-10">
+              <div className="col-span-2 md:col-span-1">
                 <Link href="/" className="mono text-sm tracking-tight flex items-center gap-2.5 group focus-ring rounded-md py-1 -my-1 w-fit">
                   <Logo size={22} className="text-neutral-500 group-hover:text-neutral-300 transition" />
                   <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
                 </Link>
                 <p className="mt-4 text-sm text-neutral-400 leading-relaxed max-w-xs">
-                  The bug bounty market, live-indexed. Every public program across seven platforms, in one view. Thanks for using it.
+                  Every public bug bounty program across seven platforms, indexed live and in one view. Thanks for using it.
                 </p>
+                <a
+                  href="mailto:varunshukla747@gmail.com"
+                  className="mt-5 inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-emerald-400 transition focus-ring rounded w-fit"
+                >
+                  <svg aria-hidden viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="m3 7 9 6 9-6" />
+                  </svg>
+                  varunshukla747@gmail.com
+                </a>
                 <a
                   href="https://buymeacoffee.com/varun_builds"
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="mt-5 inline-flex items-center gap-2 mono text-xs px-3 py-2 border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300 rounded-md hover:border-emerald-400/60 hover:bg-emerald-400/[0.12] transition focus-ring"
+                  className="mt-4 inline-flex items-center gap-2 mono text-xs px-3 py-2 border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300 rounded-md hover:border-emerald-400/60 hover:bg-emerald-400/[0.12] transition focus-ring w-fit"
                 >
-                  <span aria-hidden>☕</span>
                   buy me a coffee · goes straight to Neon
                 </a>
               </div>
 
-              <FooterCol title="Product">
+              <FooterCol title="Browse">
                 <FooterLink href="/programs">Programs</FooterLink>
                 <FooterLink href="/compare">Compare</FooterLink>
                 <FooterLink href="/watchlist">Watchlist</FooterLink>
                 <FooterLink href="/scope-lookup">Scope lookup</FooterLink>
+                <FooterLink href="/stats">Stats</FooterLink>
+              </FooterCol>
+
+              <FooterCol title="Track">
                 <FooterLink href="/whats-new">What&rsquo;s new</FooterLink>
                 <FooterLink href="/reward-changes">Reward changes</FooterLink>
+                <FooterLink href="/feed">New programs</FooterLink>
                 <FooterLink href="/settings/discord">Discord alerts</FooterLink>
                 <FooterLink href="/how-scored">Opportunity score</FooterLink>
               </FooterCol>
@@ -283,63 +297,60 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <FooterLink href="/programs?platform=hackenproof" platform="hackenproof">HackenProof</FooterLink>
               </FooterCol>
 
-              <FooterCol title="Resources">
+              <FooterCol title="Build">
                 <FooterLink href="/how-it-works">How it works</FooterLink>
                 <FooterLink href="/mcp">MCP server (beta)</FooterLink>
-                <FooterLink href="/feed">New programs</FooterLink>
+                <FooterLink href="https://github.com/Varun2024/Bounty-index" external>Source code</FooterLink>
+                <FooterLink href="https://github.com/arkadiyt/bounty-targets-data" external>Data source</FooterLink>
                 <FooterLink href="/whats-new.xml" external>Changelog RSS</FooterLink>
                 <FooterLink href="/reward-changes.xml" external>Reward RSS</FooterLink>
                 <FooterLink href="/feed.xml" external>New-programs RSS</FooterLink>
-                <FooterLink href="https://github.com/Varun2024/Bounty-index" external>Source code</FooterLink>
-                <FooterLink href="https://github.com/arkadiyt/bounty-targets-data" external>Data source</FooterLink>
               </FooterCol>
             </div>
 
-            <div className="mt-16 pt-6 border-t border-neutral-900 flex flex-wrap items-center justify-between gap-4 mono text-xs text-neutral-400">
-              <div className="flex flex-wrap items-center gap-3">
+            <div className="mt-16 pt-6 border-t border-neutral-900 flex flex-wrap items-center justify-between gap-x-3 gap-y-4 mono text-xs text-neutral-500">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60" />
-                <span>© 2026 bounty.index</span>
+                <span className="text-neutral-400">© 2026 bounty.index</span>
+                <span className="text-neutral-800">·</span>
+                <a href="/privacy" className="hover:text-emerald-400 transition">Privacy</a>
+                <span className="text-neutral-800">·</span>
+                <a href="/terms" className="hover:text-emerald-400 transition">Terms</a>
                 <span className="text-neutral-800">·</span>
                 <span>not affiliated with any platform</span>
                 <span className="text-neutral-800">·</span>
-                <span className="inline-flex items-center gap-2 text-neutral-400">
-                  built by
-                  <a
-                    href="https://varuncodes.tech/"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="text-emerald-300 hover:text-emerald-200 transition focus-ring rounded underline decoration-emerald-400/30 underline-offset-4 hover:decoration-emerald-300/60"
-                  >
-                    Varun
-                  </a>
-                  <span className="text-neutral-700">·</span>
-                  <a
-                    href="https://x.com/TheV_Stack"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    aria-label="Varun on X"
-                    className="text-neutral-200 hover:text-emerald-400 transition focus-ring rounded"
-                  >
-                    X
-                  </a>
-                  <span className="text-neutral-700">·</span>
-                  <a
-                    href="https://github.com/Varun2024"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    aria-label="Varun on GitHub"
-                    className="text-neutral-200 hover:text-emerald-400 transition focus-ring rounded"
-                  >
-                    GitHub
-                  </a>
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span>data · <a href="https://github.com/arkadiyt/bounty-targets-data" className="hover:text-emerald-400 transition">arkadiyt/bounty-targets-data</a></span>
-                <span className="text-neutral-800">·</span>
                 <span>MIT licensed</span>
-                <span className="text-neutral-800">·</span>
-                <span>updated daily</span>
+              </div>
+              <div className="inline-flex items-center gap-2 text-neutral-400">
+                built by
+                <a
+                  href="https://varuncodes.tech/"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-emerald-300 hover:text-emerald-200 transition focus-ring rounded underline decoration-emerald-400/30 underline-offset-4 hover:decoration-emerald-300/60"
+                >
+                  Varun
+                </a>
+                <span className="text-neutral-700">·</span>
+                <a
+                  href="https://x.com/TheV_Stack"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label="Varun on X"
+                  className="text-neutral-200 hover:text-emerald-400 transition focus-ring rounded"
+                >
+                  X
+                </a>
+                <span className="text-neutral-700">·</span>
+                <a
+                  href="https://github.com/Varun2024"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label="Varun on GitHub"
+                  className="text-neutral-200 hover:text-emerald-400 transition focus-ring rounded"
+                >
+                  GitHub
+                </a>
               </div>
             </div>
           </div>
