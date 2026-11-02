@@ -16,6 +16,9 @@ const PLACEHOLDER: Record<FeedbackTopic, string> = {
   'discord-setup': 'What tripped you up setting up the Discord alerts?',
 };
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SEEN_KEY = 'bi:feedback-seen'; // once they've opened it, stop the pointing nudge
+
 export function FeedbackTab() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -25,8 +28,34 @@ export function FeedbackTab() {
   const [website, setWebsite] = useState(''); // honeypot
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [seen, setSeen] = useState(true); // default true: no pointer flash before localStorage reads
   const [pending, startTransition] = useTransition();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const emailValid = EMAIL_RE.test(email.trim());
+
+  // Show the pointing nudge only until the first time they open the dialog. Defer the
+  // setState past the effect body (rAF) to avoid the set-state-in-effect lint rule.
+  useEffect(() => {
+    let seenAlready = true;
+    try {
+      seenAlready = !!localStorage.getItem(SEEN_KEY);
+    } catch {
+      // Blocked storage: leave the nudge off, no harm.
+    }
+    if (seenAlready) return;
+    const id = requestAnimationFrame(() => setSeen(false));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  function openDialog() {
+    setOpen(true);
+    setSeen(true);
+    try {
+      localStorage.setItem(SEEN_KEY, '1');
+    } catch {
+      // ignore
+    }
+  }
 
   // Focus the textarea when the dialog opens; Esc closes it.
   useEffect(() => {
@@ -55,6 +84,10 @@ export function FeedbackTab() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!emailValid) {
+      setError('add an email so I can reply');
+      return;
+    }
     startTransition(async () => {
       const res = await submitFeedback({ topic, message, email, website, path: pathname });
       if (res.ok) {
@@ -67,17 +100,41 @@ export function FeedbackTab() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Send feedback"
-        className="fixed right-0 top-1/2 -translate-y-1/2 z-30 inline-flex items-center gap-1.5 rounded-l-lg border border-r-0 border-neutral-800 bg-neutral-950/90 backdrop-blur px-1.5 py-3 text-neutral-400 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.8)] hover:text-emerald-300 hover:border-emerald-400/40 hover:bg-neutral-900/90 transition focus-ring"
-      >
-        <svg aria-hidden viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z" />
-        </svg>
-        <span className="mono text-[11px] tracking-wide [writing-mode:vertical-rl]">feedback</span>
-      </button>
+      {/* Scoped keyframes. The beckon nudge and the pointer run only until first open,
+          and both stop entirely under prefers-reduced-motion. */}
+      <style>{`
+        @keyframes fb-beckon { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-5px); } }
+        @keyframes fb-point  { 0%,100% { transform: translateX(0); opacity: .45; } 50% { transform: translateX(5px); opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .fb-beckon, .fb-point { animation: none !important; } }
+      `}</style>
+
+      {/* Outer wrapper owns the vertical centering so the inner translateX animation
+          doesn't fight it. The pointer sits to the left, nudging toward the tab. */}
+      <div className="fixed right-0 top-1/2 -translate-y-1/2 z-30 flex items-center gap-1">
+        {!seen && (
+          <span
+            aria-hidden
+            className="fb-point text-emerald-400"
+            style={{ animation: 'fb-point 1.1s ease-in-out infinite' }}
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h13M13 6l6 6-6 6" />
+            </svg>
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={openDialog}
+          aria-label="Send feedback"
+          className="fb-beckon inline-flex items-center gap-1.5 rounded-l-lg border border-r-0 border-neutral-800 bg-neutral-950/90 backdrop-blur px-2.5 py-2 text-neutral-400 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.8)] hover:text-emerald-300 hover:border-emerald-400/40 hover:bg-neutral-900/90 transition focus-ring"
+          style={seen ? undefined : { animation: 'fb-beckon 2.6s ease-in-out infinite' }}
+        >
+          <svg aria-hidden viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z" />
+          </svg>
+          <span className="mono text-[11px] tracking-wide">feedback</span>
+        </button>
+      </div>
 
       {open && (
         <div
@@ -99,7 +156,7 @@ export function FeedbackTab() {
               <div className="py-4 text-center">
                 <p className="text-base font-medium text-neutral-100">Got it. Thank you.</p>
                 <p className="mt-2 text-sm text-neutral-400 leading-relaxed">
-                  I read every one of these myself. If you left an email, I&rsquo;ll reply when I can.
+                  I read every one of these myself, and I&rsquo;ll reply to your email when I can.
                 </p>
                 <button
                   type="button"
@@ -158,9 +215,10 @@ export function FeedbackTab() {
 
                 <input
                   type="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email (optional, if you want a reply)"
+                  placeholder="your email (so I can reply)"
                   maxLength={200}
                   className="mt-2 w-full text-sm px-3 py-2 bg-neutral-950 border border-neutral-800 rounded text-neutral-100 placeholder:text-neutral-600 focus:border-emerald-400/60 focus:outline-none"
                 />
@@ -180,7 +238,7 @@ export function FeedbackTab() {
                   <span className="mono text-[11px] text-red-400">{error ? `✗ ${error}` : ''}</span>
                   <button
                     type="submit"
-                    disabled={pending || message.trim().length < 4}
+                    disabled={pending || message.trim().length < 4 || !emailValid}
                     className="mono text-xs px-4 py-2 border border-emerald-400/40 bg-emerald-400/[0.06] text-emerald-300 rounded hover:bg-emerald-400/[0.12] transition disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {pending ? 'sending…' : 'send →'}

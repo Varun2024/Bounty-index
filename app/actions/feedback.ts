@@ -24,10 +24,16 @@ const TOPIC_COLOR: Record<FeedbackTopic, number> = {
   'discord-setup': 0xa78bfa, // violet
 };
 
+// Email is required: it's the only reply path. Validated here too, never trust the client.
 const schema = z.object({
   topic: z.enum(FEEDBACK_TOPICS),
   message: z.string().trim().min(4, 'add a bit more').max(2000),
-  email: z.string().trim().max(200).optional().default(''),
+  email: z
+    .string()
+    .trim()
+    .min(1, 'add your email so I can reply')
+    .max(200)
+    .refine((v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'that email looks off'),
   path: z.string().trim().max(300).optional().default(''),
 });
 
