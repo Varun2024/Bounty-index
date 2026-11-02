@@ -12,6 +12,7 @@ import { CommandPalette } from './_ui/command-palette';
 import { ShortcutsHelp } from './_ui/shortcuts-help';
 import { NavProgress } from './_ui/nav-progress';
 import { SupportNudge } from './_ui/support-nudge';
+import { FeedbackTab } from './_ui/feedback-dialog';
 import { Suspense } from 'react';
 import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
@@ -160,6 +161,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <GlobalKeyboard />
         <ShortcutsHelp />
         <SupportNudge />
+        <FeedbackTab />
         <CompareTray />
         <AuthSync />
         <Analytics />
