@@ -34,8 +34,8 @@ export function ScopeMixBar({ mix }: ScopeMixBarProps) {
   return (
     <section className="mt-6">
       <div className="flex items-baseline justify-between mb-2">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500">Attack surface</p>
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400">Attack surface</p>
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
           {total} in-scope
         </p>
       </div>
@@ -62,7 +62,7 @@ export function ScopeMixBar({ mix }: ScopeMixBarProps) {
           const color = COLORS[b.type] ?? COLORS.other;
           const label = LABELS[b.type] ?? b.type;
           return (
-            <li key={b.type} className="inline-flex items-center gap-1.5 text-neutral-500">
+            <li key={b.type} className="inline-flex items-center gap-1.5 text-neutral-400">
               <span
                 aria-hidden
                 className="w-1.5 h-1.5 rounded-full shrink-0"

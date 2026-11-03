@@ -19,7 +19,6 @@ import { ProgramTimeline } from './timeline';
 import { ProgramSignalsStrip } from './program-signals';
 import { OpportunityBreakdown } from './opportunity-breakdown';
 import { ScopeMixBar } from './scope-mix-bar';
-import { RecentChanges } from './recent-changes';
 import { SimilarPrograms } from './similar-programs';
 import { CopyScope } from './copy-scope';
 import { SectionNav } from './section-nav';
@@ -204,9 +203,9 @@ export default async function ProgramDetailPage({ params }: PageProps) {
       {/* Breadcrumb */}
       <div className="border-b border-neutral-900">
         <div className="max-w-[1100px] mx-auto px-6 py-4 mono text-xs flex items-center gap-2">
-          <Link href="/programs" className="text-neutral-500 hover:text-neutral-300 transition">programs</Link>
+          <Link href="/programs" className="text-neutral-400 hover:text-neutral-300 transition">programs</Link>
           <span className="text-neutral-700">/</span>
-          <Link href={`/platforms/${program.platform}`} className="text-neutral-500 hover:text-neutral-300 transition inline-flex items-center gap-1.5">
+          <Link href={`/platforms/${program.platform}`} className="text-neutral-400 hover:text-neutral-300 transition inline-flex items-center gap-1.5">
             <span className={`w-1.5 h-1.5 rounded-full ${platformDot}`} />
             {platformLabel(program.platform)}
           </Link>
@@ -225,7 +224,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                 <CompanyLogo domain={companyDomain} name={program.name} size={48} className="mt-1 shrink-0" />
                 <div className="min-w-0">
                   <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-50 break-words">{program.name}</h1>
-                  <div className="mt-3 mono text-xs text-neutral-500 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <div className="mt-3 mono text-xs text-neutral-400 flex flex-wrap items-center gap-x-3 gap-y-1">
                     <span className="inline-flex items-center gap-2">
                       <PlatformLogo platform={program.platform} size="sm" />
                       {platformLabel(program.platform)}
@@ -247,7 +246,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                           {activity.addedCount > 0 && <span>+{activity.addedCount}</span>}
                           {activity.removedCount > 0 && <span className="text-amber-300">−{activity.removedCount}</span>}
                           {activity.rewardChanged && <span>reward</span>}
-                          <span className="text-neutral-500">· {activity.windowDays}d</span>
+                          <span className="text-neutral-400">· {activity.windowDays}d</span>
                         </span>
                       </>
                     )}
@@ -290,23 +289,23 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                   {payout ? (
                     <span className="text-emerald-300" title="Stated by the program. A ceiling, not a typical or guaranteed payout.">{payout.value}</span>
                   ) : (
-                    <span className="text-neutral-600">no bounty</span>
+                    <span className="text-neutral-400">no bounty</span>
                   )}
                 </KeyFact>
                 <KeyFact label="scope">
                   <span className="text-neutral-200">{inScope.length} in</span>
-                  <span className="text-neutral-600"> · {outOfScope.length} out</span>
+                  <span className="text-neutral-400"> · {outOfScope.length} out</span>
                 </KeyFact>
                 <KeyFact label="safe harbor">
                   <SafeHarborValue value={program.safeHarbor} />
                 </KeyFact>
                 <KeyFact label="response">
                   {initialReportStats.medianFirstResponseDays === null ? (
-                    <span className="text-neutral-600">no reports</span>
+                    <span className="text-neutral-400">no reports</span>
                   ) : (
                     <>
                       <span className="text-neutral-200">{formatResponseDays(initialReportStats.medianFirstResponseDays)}</span>
-                      <span className="text-neutral-500"> median</span>
+                      <span className="text-neutral-400"> median</span>
                     </>
                   )}
                 </KeyFact>
@@ -350,7 +349,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         </div>
 
         <div id="changes" className="scroll-mt-28">
-          <RecentChanges snapshots={snapshots} currency={program.currency ?? 'USD'} />
+          <ProgramTimeline snapshots={snapshots} currency={program.currency ?? 'USD'} />
         </div>
 
         <div id="community" className="scroll-mt-28">
@@ -368,11 +367,9 @@ export default async function ProgramDetailPage({ params }: PageProps) {
           <ProgramNotes programId={program.id} initialNote={initialNote} />
         </div>
 
-        <ProgramTimeline snapshots={snapshots} currency={program.currency ?? 'USD'} />
-
         {program.raw != null && (
           <details className="mt-10 group">
-            <summary className="mono text-[10px] uppercase tracking-widest text-neutral-500 hover:text-emerald-300 transition cursor-pointer list-none">
+            <summary className="mono text-[10px] uppercase tracking-widest text-neutral-400 hover:text-emerald-300 transition cursor-pointer list-none">
               <span className="text-neutral-700 group-open:hidden">▸</span>
               <span className="text-neutral-700 hidden group-open:inline">▾</span>{' '}
               raw source payload
@@ -391,7 +388,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
 function KeyFact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-3">
-      <dt className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">{label}</dt>
+      <dt className="mono text-[10px] uppercase tracking-widest text-neutral-400 shrink-0">{label}</dt>
       <dd className="mono text-sm text-right tabular-nums truncate">{children}</dd>
     </div>
   );
@@ -400,7 +397,7 @@ function KeyFact({ label, children }: { label: string; children: React.ReactNode
 // Safe harbor (legal protection for good-faith research) is a top decision signal, so it gets
 // a color. Null means the platform doesn't publish it structurally yet.
 function SafeHarborValue({ value }: { value: string | null }) {
-  if (!value) return <span className="text-neutral-600">unknown</span>;
+  if (!value) return <span className="text-neutral-400">unknown</span>;
   const tone = value === 'full' ? 'text-emerald-300' : value === 'partial' ? 'text-amber-300' : 'text-red-400';
   return <span className={tone}>{value}</span>;
 }

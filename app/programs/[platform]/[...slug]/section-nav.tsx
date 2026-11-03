@@ -42,7 +42,7 @@ export function SectionNav() {
       className="sticky top-14 z-10 -mx-6 mb-2 border-b border-neutral-900 bg-background/90 backdrop-blur-md"
     >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-6 py-3 text-sm">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">On this page</span>
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">On this page</span>
         {SECTIONS.map((s) => {
           const isActive = active === s.id;
           return (

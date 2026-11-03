@@ -105,7 +105,7 @@ export function ProgramNotes({ programId, initialNote }: ProgramNotesProps) {
             onBlur={onBlur}
             maxLength={NOTE_MAX_LEN}
             placeholder="private notes: recon leads, endpoints of interest, response times, whatever helps you come back to this program."
-            className="focus-ring w-full min-h-[140px] mono text-xs leading-relaxed px-4 py-3 bg-neutral-950/60 border border-neutral-900 rounded-lg text-neutral-200 placeholder:text-neutral-600 resize-y focus:outline-none focus:border-emerald-400/50"
+            className="focus-ring w-full min-h-[140px] mono text-xs leading-relaxed px-4 py-3 bg-neutral-950/60 border border-neutral-900 rounded-lg text-neutral-200 placeholder:text-neutral-400 resize-y focus:outline-none focus:border-emerald-400/50"
           />
         </div>
       )}
@@ -125,14 +125,14 @@ function StatusPill({ isAuthed, sessionLoading, status, updatedAt, length }: Sta
   if (sessionLoading) return null;
   if (!isAuthed) {
     return (
-      <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">sign in to save</span>
+      <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">sign in to save</span>
     );
   }
   const pctFull = length / NOTE_MAX_LEN;
   const counterColor =
-    pctFull >= 0.95 ? 'text-amber-300' : pctFull >= 0.8 ? 'text-neutral-400' : 'text-neutral-600';
+    pctFull >= 0.95 ? 'text-amber-300' : pctFull >= 0.8 ? 'text-neutral-400' : 'text-neutral-400';
   return (
-    <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums flex items-center gap-3">
+    <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums flex items-center gap-3">
       {status === 'saving' && <span className="text-neutral-400">saving…</span>}
       {status === 'saved' && updatedAt && (
         <span className="text-emerald-400/70">saved {relativeTime(new Date(updatedAt))}</span>
@@ -160,7 +160,7 @@ function SignedOutPlaceholder({ onSignIn }: { onSignIn: () => void }) {
         <span className="text-emerald-400 group-hover:text-emerald-300">Sign in with GitHub</span>
         {' '}to add private notes on this program.
       </p>
-      <p className="mono text-[11px] text-neutral-600 mt-2 leading-relaxed">
+      <p className="mono text-[11px] text-neutral-400 mt-2 leading-relaxed">
         <span className="text-neutral-700">{'// '}</span>
         notes are per-account and never public. Autosaved as you type. Cross-device.
       </p>

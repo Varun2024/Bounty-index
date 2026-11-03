@@ -79,12 +79,12 @@ export function ScopeColumn({ kind, items }: ScopeColumnProps) {
   return (
     <section>
       <SectionHeading title={title} variant={isIn ? 'prominent' : 'subtle'}>
-        <span className={`mono text-xs tabular-nums ${isIn ? 'text-neutral-400' : 'text-neutral-600 uppercase tracking-widest text-[10px]'}`}>
+        <span className={`mono text-xs tabular-nums ${isIn ? 'text-neutral-400' : 'text-neutral-400 uppercase tracking-widest text-[10px]'}`}>
           {items.length.toString().padStart(3, '0')}
         </span>
       </SectionHeading>
       {items.length === 0 ? (
-        <p className="mono text-xs text-neutral-600 py-6">none listed</p>
+        <p className="mono text-xs text-neutral-400 py-6">none listed</p>
       ) : shouldGroup ? (
         <div className="space-y-5">
           {buckets.map((bucket) => (
@@ -118,7 +118,7 @@ function ScopeBucket({ type, items, kind, showTypeTag }: ScopeBucketProps) {
         <span className="mono text-[10px] uppercase tracking-widest text-emerald-400/80">
           {ASSET_TYPE_LABEL[type] ?? type}
         </span>
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
           {items.length.toString().padStart(2, '0')}
         </span>
       </div>
@@ -140,7 +140,7 @@ const SCOPE_LIST_INLINE_LIMIT = 10;
 function ScopeList({ items, kind, showTypeTag }: ScopeListProps) {
   const isIn = kind === 'in';
   const glyph = isIn ? '+' : '−';
-  const glyphColor = isIn ? 'text-emerald-400' : 'text-neutral-600';
+  const glyphColor = isIn ? 'text-emerald-400' : 'text-neutral-400';
 
   const overflow = Math.max(0, items.length - SCOPE_LIST_INLINE_LIMIT);
   const inline = overflow > 0 ? items.slice(0, SCOPE_LIST_INLINE_LIMIT) : items;
@@ -174,17 +174,17 @@ function ScopeList({ items, kind, showTypeTag }: ScopeListProps) {
           <Link
             href={`/scope/${encodeURIComponent(scopeRoot)}`}
             prefetch={false}
-            className="mono text-[10px] uppercase tracking-widest text-neutral-600 hover:text-emerald-300 transition shrink-0 border border-neutral-800 hover:border-emerald-400/40 rounded px-1.5 py-0.5"
+            className="mono text-[10px] uppercase tracking-widest text-neutral-400 hover:text-emerald-300 transition shrink-0 border border-neutral-800 hover:border-emerald-400/40 rounded px-1.5 py-0.5"
             title={`See all programs touching ${scopeRoot}`}
           >
             scope
           </Link>
         )}
         {showTypeTag && (
-          <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 shrink-0">{s.assetType}</span>
+          <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 shrink-0">{s.assetType}</span>
         )}
         {s.severity && (
-          <span className="mono text-[10px] uppercase tracking-widest text-neutral-500 shrink-0">· {s.severity}</span>
+          <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 shrink-0">· {s.severity}</span>
         )}
       </li>
     );
@@ -196,7 +196,7 @@ function ScopeList({ items, kind, showTypeTag }: ScopeListProps) {
       {overflow > 0 && (
         <li>
           <details className="group/details">
-            <summary className="mono text-[11px] uppercase tracking-widest text-neutral-500 hover:text-emerald-400 cursor-pointer list-none px-4 py-3 flex items-center gap-2 transition select-none">
+            <summary className="mono text-[11px] uppercase tracking-widest text-neutral-400 hover:text-emerald-400 cursor-pointer list-none px-4 py-3 flex items-center gap-2 transition select-none">
               <span className="text-neutral-700 group-open/details:hidden">▸</span>
               <span className="text-neutral-700 hidden group-open/details:inline">▾</span>
               <span className="group-open/details:hidden">show <span className="text-neutral-200 tabular-nums">{overflow}</span> more</span>

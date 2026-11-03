@@ -27,9 +27,9 @@ export function ProgramTimeline({ snapshots, currency }: ProgramTimelineProps) {
   const meaningfulChanges = reversed.filter((e) => e.isFirst || !isEmptyDiff(e.diff));
 
   return (
-    <section className="mt-14 reveal reveal-delay-2">
-      <SectionHeading title="History" className="mb-4">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
+    <section className="mt-10 reveal reveal-delay-2">
+      <SectionHeading title="Change history" variant="prominent" className="mb-4">
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
           {meaningfulChanges.length} event{meaningfulChanges.length === 1 ? '' : 's'}
         </span>
       </SectionHeading>
@@ -42,7 +42,7 @@ export function ProgramTimeline({ snapshots, currency }: ProgramTimelineProps) {
         ))}
       </ol>
       {snapshots.length === 1 && (
-        <p className="mono text-[11px] text-neutral-600 mt-3">
+        <p className="mono text-[11px] text-neutral-400 mt-3">
           <span className="text-neutral-700">{'// '}</span>
           only one snapshot on record, changes appear from the next ingest onward
         </p>
@@ -68,12 +68,12 @@ function TimelineEntry({ entry, currency }: TimelineEntryProps) {
   if (entry.isFirst) {
     return (
       <div className="flex items-start gap-4 px-4 py-3">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums shrink-0 w-24 mt-0.5">
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums shrink-0 w-24 mt-0.5">
           {dateLabel}
         </span>
         <div className="flex-1">
           <p className="mono text-xs text-neutral-300">first indexed</p>
-          <p className="mono text-[10px] text-neutral-600 mt-0.5">{rel} · {entry.payload.inScopeCount} in-scope assets</p>
+          <p className="mono text-[10px] text-neutral-400 mt-0.5">{rel} · {entry.payload.inScopeCount} in-scope assets</p>
         </div>
       </div>
     );
@@ -84,22 +84,22 @@ function TimelineEntry({ entry, currency }: TimelineEntryProps) {
 
   return (
     <div className="flex items-start gap-4 px-4 py-3">
-      <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums shrink-0 w-24 mt-0.5">
+      <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums shrink-0 w-24 mt-0.5">
         {dateLabel}
       </span>
       <div className="flex-1 space-y-1">
         {diff.rewardDelta !== null && (
           <p className="mono text-xs">
-            <span className="text-neutral-500">reward: </span>
-            <span className="text-neutral-500 line-through">{formatBounty(diff.rewardDelta.from, currency)}</span>
+            <span className="text-neutral-400">reward: </span>
+            <span className="text-neutral-400 line-through">{formatBounty(diff.rewardDelta.from, currency)}</span>
             <span className="text-neutral-700"> → </span>
             <span className="text-emerald-300">{formatBounty(diff.rewardDelta.to, currency)}</span>
           </p>
         )}
         {diff.safeHarborChanged && (
           <p className="mono text-xs">
-            <span className="text-neutral-500">safe harbor: </span>
-            <span className="text-neutral-500 line-through">{diff.safeHarborChanged.from ?? 'unknown'}</span>
+            <span className="text-neutral-400">safe harbor: </span>
+            <span className="text-neutral-400 line-through">{diff.safeHarborChanged.from ?? 'unknown'}</span>
             <span className="text-neutral-700"> → </span>
             <span className="text-emerald-300">{diff.safeHarborChanged.to ?? 'unknown'}</span>
           </p>
@@ -115,8 +115,8 @@ function TimelineEntry({ entry, currency }: TimelineEntryProps) {
         )}
         {diff.statusChange && (
           <p className="mono text-xs">
-            <span className="text-neutral-500">status: </span>
-            <span className="text-neutral-500 line-through">{diff.statusChange.from ?? 'unknown'}</span>
+            <span className="text-neutral-400">status: </span>
+            <span className="text-neutral-400 line-through">{diff.statusChange.from ?? 'unknown'}</span>
             <span className="text-neutral-700"> → </span>
             <span className="text-neutral-200">{diff.statusChange.to ?? 'unknown'}</span>
           </p>
@@ -124,22 +124,22 @@ function TimelineEntry({ entry, currency }: TimelineEntryProps) {
         {diff.added.length > 0 && (
           <p className="mono text-xs">
             <span className="text-emerald-400">+ added </span>
-            <span className="text-neutral-500">{diff.added.length} scope{diff.added.length === 1 ? '' : 's'}</span>
+            <span className="text-neutral-400">{diff.added.length} scope{diff.added.length === 1 ? '' : 's'}</span>
             {diff.added.length <= 3 && (
-              <span className="text-neutral-600"> · {diff.added.join(', ')}</span>
+              <span className="text-neutral-400"> · {diff.added.join(', ')}</span>
             )}
           </p>
         )}
         {diff.removed.length > 0 && (
           <p className="mono text-xs">
             <span className="text-red-400">− removed </span>
-            <span className="text-neutral-500">{diff.removed.length} scope{diff.removed.length === 1 ? '' : 's'}</span>
+            <span className="text-neutral-400">{diff.removed.length} scope{diff.removed.length === 1 ? '' : 's'}</span>
             {diff.removed.length <= 3 && (
-              <span className="text-neutral-600"> · {diff.removed.join(', ')}</span>
+              <span className="text-neutral-400"> · {diff.removed.join(', ')}</span>
             )}
           </p>
         )}
-        <p className="mono text-[10px] text-neutral-600">{rel}</p>
+        <p className="mono text-[10px] text-neutral-400">{rel}</p>
       </div>
     </div>
   );

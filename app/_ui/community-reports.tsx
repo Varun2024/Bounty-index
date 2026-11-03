@@ -54,7 +54,7 @@ export function CommunityReports({ programId, programName, initialStats, initial
   return (
     <section className="mt-14 reveal reveal-delay-2">
       <SectionHeading title="Community reports">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
           {stats.count} {stats.count === 1 ? 'report' : 'reports'}
         </span>
       </SectionHeading>
@@ -65,7 +65,7 @@ export function CommunityReports({ programId, programName, initialStats, initial
             <p className="mono text-xs text-neutral-400">
               <span className="text-emerald-300">No reports yet.</span> Be the first to share your triage timing for {programName}.
             </p>
-            <p className="mono text-[11px] text-neutral-600 leading-relaxed">
+            <p className="mono text-[11px] text-neutral-400 leading-relaxed">
               <span className="text-neutral-700">{'// '}</span>
               peer-sourced response times. platforms won&rsquo;t publish this, hunters can. anonymized in aggregate.
             </p>
@@ -98,7 +98,7 @@ export function CommunityReports({ programId, programName, initialStats, initial
             {userReport ? 'update your report' : isAuthed ? '+ report your times' : 'sign in to report'}
           </button>
           {userReport && (
-            <span className="mono text-[10px] text-neutral-600">
+            <span className="mono text-[10px] text-neutral-400">
               your report: submitted <span className="text-neutral-400 tabular-nums">{userReport.submittedAt}</span>
               {userReport.firstResponseAt && (
                 <>
@@ -127,9 +127,9 @@ export function CommunityReports({ programId, programName, initialStats, initial
 function Stat({ label, value, hint }: { label: string; value: string; hint: string }) {
   return (
     <div>
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-600">{label}</p>
+      <p className="mono text-[10px] uppercase tracking-widest text-neutral-400">{label}</p>
       <p className="mt-1 font-semibold text-2xl text-neutral-100 tabular-nums">{value}</p>
-      <p className="mono text-[10px] text-neutral-600 mt-1">{hint}</p>
+      <p className="mono text-[10px] text-neutral-400 mt-1">{hint}</p>
     </div>
   );
 }

@@ -46,7 +46,7 @@ export function ProgramSignalsStrip({ snapshots }: ProgramSignalsStripProps) {
   return (
     <section className="mt-6 reveal reveal-delay-1" aria-label="Derived signals from change history">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">signals</span>
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">signals</span>
         {chips.map((c) => (
           <span
             key={c.text}
@@ -61,7 +61,7 @@ export function ProgramSignalsStrip({ snapshots }: ProgramSignalsStripProps) {
             {c.text}
           </span>
         ))}
-        <span className="mono text-[10px] text-neutral-600">derived from our snapshot history</span>
+        <span className="mono text-[10px] text-neutral-400">derived from our snapshot history</span>
       </div>
     </section>
   );

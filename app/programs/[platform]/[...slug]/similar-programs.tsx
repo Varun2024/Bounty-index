@@ -12,7 +12,7 @@ export function SimilarPrograms({ items }: SimilarProgramsProps) {
   return (
     <section className="mt-10">
       <SectionHeading title="Similar programs">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">
           by shared scope
         </span>
       </SectionHeading>
@@ -30,7 +30,7 @@ export function SimilarPrograms({ items }: SimilarProgramsProps) {
                 className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-900/40 transition group"
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${dot} shrink-0`} />
-                <span className="mono text-xs text-neutral-500 shrink-0 hidden sm:inline">
+                <span className="mono text-xs text-neutral-400 shrink-0 hidden sm:inline">
                   {platformLabel(p.platform)}
                 </span>
                 <span className="text-neutral-200 group-hover:text-emerald-300 truncate flex-1">
@@ -42,7 +42,7 @@ export function SimilarPrograms({ items }: SimilarProgramsProps) {
                   </span>
                 )}
                 <span
-                  className="mono text-[10px] uppercase tracking-widest text-neutral-600 shrink-0 tabular-nums"
+                  className="mono text-[10px] uppercase tracking-widest text-neutral-400 shrink-0 tabular-nums"
                   title="shared in-scope identifiers"
                 >
                   {overlap}× overlap

@@ -36,7 +36,7 @@ export function SectionHeading({
   }
   return (
     <div className={`flex items-baseline justify-between ${className ?? 'mb-3'}`}>
-      <Comp className="mono text-[10px] uppercase tracking-widest text-neutral-500">{title}</Comp>
+      <Comp className="mono text-[10px] uppercase tracking-widest text-neutral-400">{title}</Comp>
       {children}
     </div>
   );
