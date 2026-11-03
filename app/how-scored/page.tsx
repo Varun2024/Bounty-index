@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { WEIGHTS, opportunityScore } from '@/lib/opportunity';
 
 export const metadata: Metadata = {
-  title: 'How the opportunity score works · Bounty Index',
+  title: 'How the Hunt Score works · Bounty Index',
   description:
-    'The full public formula behind the Opportunity score. No opaque tiers, no paid gates. Just three signals, three weights, one linear sum.',
+    'The full public formula behind the Hunt Score, the sort signal that ranks the index. No opaque tiers, no paid gates. Three signals, three weights, one linear sum. Not an estimate of what a program pays.',
   alternates: { canonical: '/how-scored' },
 };
 
@@ -27,10 +27,10 @@ export default function HowScoredPage() {
     <div className="max-w-[900px] mx-auto px-6 py-10">
       <div className="border-b border-neutral-900 pb-6 reveal">
         <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Methodology · public formula</p>
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">How the opportunity score works</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">How the Hunt Score works</h1>
         <p className="text-neutral-400 mt-3 max-w-2xl leading-relaxed">
-          A 0&ndash;100 ranking that tries to answer <em>&ldquo;which programs are worth an hour of my time this week&rdquo;</em>. Three
-          signals, three weights, one linear sum. Nothing else, nothing hidden.
+          A 0&ndash;100 sort signal for the question <em>&ldquo;which programs are worth an hour of my time this week&rdquo;</em>. Three
+          signals, three weights, one linear sum. It ranks the index; it is not an estimate of what a program will pay you.
         </p>
       </div>
 
@@ -97,7 +97,7 @@ export default function HowScoredPage() {
                 <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">Payout</th>
                 <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">Bounty</th>
                 <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">Fresh</th>
-                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-emerald-400 font-normal w-20">Score</th>
+                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-emerald-400 font-normal w-20">Hunt</th>
               </tr>
             </thead>
             <tbody>

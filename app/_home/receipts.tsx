@@ -34,7 +34,7 @@ export function Receipts({ s }: ReceiptsProps) {
           <Row
             label="scoring"
             value="/how-scored"
-            desc="The 0–100 opportunity score formula is published in full. Payout (55) + bounty (20) + freshness (25). No opaque tiers."
+            desc="The 0–100 hunt score formula is published in full. Payout (55) + bounty (20) + freshness (25). A sort signal, not a payout estimate. No opaque tiers."
             href="/how-scored"
           />
           <Row

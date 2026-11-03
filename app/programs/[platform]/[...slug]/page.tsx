@@ -324,6 +324,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             maxBounty: program.maxBounty,
             offersBounty: program.offersBounty,
             lastUpdatedAt: program.lastUpdatedAt,
+            firstSeenAt: program.firstSeenAt,
           }}
         />
 

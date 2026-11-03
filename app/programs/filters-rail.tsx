@@ -134,9 +134,9 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
       </FilterGroup>
 
       <FilterGroup label="Sort">
-        {(['opportunity', 'newest', 'reward', 'name'] as const).map((s) => (
+        {([['opportunity', 'hunt score'], ['newest', 'newest'], ['reward', 'reward'], ['name', 'name']] as const).map(([s, label]) => (
           <Chip key={s} active={(filters.sort ?? 'newest') === s} onClick={() => update({ sort: s })}>
-            {s}
+            {label}
           </Chip>
         ))}
       </FilterGroup>

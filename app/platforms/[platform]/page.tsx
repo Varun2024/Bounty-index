@@ -130,7 +130,10 @@ export default async function PlatformLandingPage({ params }: PageProps) {
                     <span className="mono text-xs text-neutral-400 tabular-nums shrink-0">
                       {formatBounty(p.maxBounty, p.currency ?? 'USD')}
                     </span>
-                    <span className="mono text-[11px] text-emerald-400/80 tabular-nums shrink-0 w-10 text-right">
+                    <span
+                      className="mono text-[11px] text-emerald-400/80 tabular-nums shrink-0 w-10 text-right"
+                      title={`Hunt score ${score}/100 · how we sort, not expected payout`}
+                    >
                       {score}
                     </span>
                   </Link>

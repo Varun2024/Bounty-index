@@ -52,7 +52,7 @@ export function Features({ s }: FeaturesProps) {
                 <p className="text-sm text-emerald-300">Index</p>
                 <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Unified index</h3>
                 <p className="text-neutral-400 mt-3 leading-relaxed">
-                  One table across seven platforms. Sort by max reward or opportunity score, filter by asset type,
+                  One table across seven platforms. Sort by max reward or hunt score, filter by asset type,
                   jump to the highest payouts first. {s ? `${s.bountyPrograms.toLocaleString()} of ${s.programs.toLocaleString()} pay in cash right now.` : ''}
                 </p>
               </div>
@@ -107,9 +107,9 @@ export function Features({ s }: FeaturesProps) {
           <Link href="/how-scored" className="block h-full focus-ring rounded-2xl">
           <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
             <p className="text-sm text-emerald-300">Score</p>
-            <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Opportunity score</h3>
+            <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Hunt score</h3>
             <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
-              A single 0–100 number. Payout, bounty vs VDP, freshness. The formula is public.
+              A 0–100 sort signal from payout, bounty vs VDP, and freshness. The formula is public. It ranks the index, it does not predict payouts.
             </p>
             <div className="mt-6 flex items-center gap-3">
               <span className="mono text-4xl font-semibold text-emerald-300 tabular-nums leading-none">87</span>

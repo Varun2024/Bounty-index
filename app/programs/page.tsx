@@ -154,7 +154,7 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
                   <th className="hidden md:table-cell text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-40">Platform</th>
                   <th className="hidden md:table-cell text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-24">Type</th>
                   <th className="hidden md:table-cell text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">
-                    <Link href="/how-scored" className="hover:text-emerald-400 transition" title="How the opportunity score is calculated">Opp</Link>
+                    <Link href="/how-scored" className="hover:text-emerald-400 transition" title="Hunt score: how we sort the index, not expected payout. See /how-scored.">Hunt</Link>
                   </th>
                   <th className="text-right px-4 md:px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-24 md:w-32">Reward</th>
                 </tr>
@@ -263,7 +263,7 @@ function OpportunityBadge({ program }: OpportunityBadgeProps) {
     total >= 75 ? 'bg-emerald-300' : total >= 50 ? 'bg-emerald-400/70' : total >= 25 ? 'bg-neutral-500' : 'bg-neutral-700';
   // Number plus a tiny gauge so the flagship score reads as a level, not a bare digit.
   return (
-    <span className="inline-flex flex-col items-end gap-1" title={`Opportunity score ${total}/100 · see /how-scored`}>
+    <span className="inline-flex flex-col items-end gap-1" title={`Hunt score ${total}/100 · a sort signal, not expected payout · see /how-scored`}>
       <span className={tone}>{total}</span>
       <span className="block w-9 h-[3px] rounded-full bg-neutral-900 overflow-hidden">
         <span className={`block h-full rounded-full ${bar}`} style={{ width: `${total}%` }} />

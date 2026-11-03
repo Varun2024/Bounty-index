@@ -44,7 +44,7 @@ const GROUPS: NavGroup[] = [
     id: 'tools',
     label: 'Tools',
     items: [
-      { href: '/how-scored', label: 'Opportunity score', desc: 'How the 0 to 100 ranking is built' },
+      { href: '/how-scored', label: 'Hunt score', desc: 'How the 0 to 100 sort signal is built' },
       { href: '/how-it-works', label: 'How it works', desc: 'Where the data comes from, and how often' },
     ],
   },

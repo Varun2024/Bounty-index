@@ -286,7 +286,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <FooterLink href="/reward-changes">Reward changes</FooterLink>
                 <FooterLink href="/feed">New programs</FooterLink>
                 <FooterLink href="/settings/discord">Discord alerts</FooterLink>
-                <FooterLink href="/how-scored">Opportunity score</FooterLink>
+                <FooterLink href="/how-scored">Hunt score</FooterLink>
               </FooterCol>
 
               <FooterCol title="Platforms">

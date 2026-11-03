@@ -183,7 +183,7 @@ const handler = createMcpHandler(
       {
         title: 'Shortlist high-paying programs by asset type',
         description:
-          'Sort by opportunity score to surface high-payout, broad-scope programs matching an asset type.',
+          'Sort by the hunt score (sort: "opportunity") to surface high-payout, broad-scope programs matching an asset type.',
         argsSchema: z.object({
           // Prompt args are strings on the wire; coerce.
           minReward: z.string().describe('Minimum max-bounty in USD, e.g. "10000".'),
