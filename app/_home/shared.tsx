@@ -15,7 +15,7 @@ interface SectionEyebrowProps {
 export function SectionEyebrow({ n, label, centered }: SectionEyebrowProps) {
   void n;
   return (
-    <p className={`text-sm text-neutral-500 ${centered ? 'text-center' : ''}`}>
+    <p className={`text-sm text-neutral-400 ${centered ? 'text-center' : ''}`}>
       {label}
     </p>
   );

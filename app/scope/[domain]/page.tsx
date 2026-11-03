@@ -54,7 +54,7 @@ export default async function ScopeDomainPage({ params }: PageProps) {
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10">
       <div className="reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">
           <Link href="/scope-lookup" className="hover:text-neutral-300 transition">scope</Link>
           <span className="text-neutral-700"> / </span>
           <span className="text-neutral-300">{domain}</span>
@@ -69,7 +69,7 @@ export default async function ScopeDomainPage({ params }: PageProps) {
 
       <form action="/scope-lookup" method="get" className="mt-8 flex gap-2 max-w-xl">
         <div className="relative flex-1">
-          <SearchIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600 pointer-events-none" />
+          <SearchIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
           <input
             name="domain"
             defaultValue={domain}

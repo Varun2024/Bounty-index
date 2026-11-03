@@ -9,7 +9,7 @@ export default function Loading() {
           <Skeleton className="h-9 w-full" />
           {['Platform', 'Asset type', 'Min reward', 'Program', 'Sort'].map((label) => (
             <div key={label}>
-              <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">{label}</p>
+              <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">{label}</p>
               <div className="flex flex-wrap gap-1.5">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Skeleton key={i} className="h-6 w-16" />

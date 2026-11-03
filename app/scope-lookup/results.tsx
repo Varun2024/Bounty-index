@@ -28,7 +28,7 @@ export function ScopeResults({ domain, matches }: ScopeResultsProps) {
       />
 
       {verdict === 'none' && (
-        <p className="mono text-xs text-neutral-500 mt-6">
+        <p className="mono text-xs text-neutral-400 mt-6">
           Try a broader query (drop the subdomain, or use the parent domain), or{' '}
           <Link href="/programs" className="text-emerald-300 hover:text-emerald-200 transition">browse the full index</Link>.
         </p>
@@ -78,7 +78,7 @@ function Verdict({ domain, verdict, inScopePrograms, outOfScopePrograms, inScope
           }
         : {
             border: 'border-neutral-800', bg: 'bg-neutral-950/40', rail: 'via-neutral-700/40',
-            chipText: 'text-neutral-500', chipBg: 'bg-neutral-900/60', chipBorder: 'border-neutral-800',
+            chipText: 'text-neutral-400', chipBg: 'bg-neutral-900/60', chipBorder: 'border-neutral-800',
             label: 'no match', domainColor: 'text-neutral-300',
           };
 
@@ -96,7 +96,7 @@ function Verdict({ domain, verdict, inScopePrograms, outOfScopePrograms, inScope
               <span className="text-neutral-400"> appears in </span>
               <span className="mono text-neutral-100 tabular-nums">{inScopePrograms}</span>
               <span className="text-neutral-400"> program{inScopePrograms === 1 ? '' : 's'} · </span>
-              <span className="mono text-neutral-500 tabular-nums">{inScopeEntries}</span>
+              <span className="mono text-neutral-400 tabular-nums">{inScopeEntries}</span>
               <span className="text-neutral-400"> scope entr{inScopeEntries === 1 ? 'y' : 'ies'}</span>
               {outOfScopePrograms > 0 && (
                 <>
@@ -168,11 +168,11 @@ function MatchList({ title, matches, kind, note }: MatchListProps) {
   }
   const glyph = kind === 'in' ? '+' : '−';
   const glyphColor = kind === 'in' ? 'text-emerald-400' : 'text-amber-400';
-  const identifierColor = kind === 'in' ? 'text-neutral-500' : 'text-amber-300/70';
+  const identifierColor = kind === 'in' ? 'text-neutral-400' : 'text-amber-300/70';
 
   return (
     <div className="mt-8">
-      <p className={`mono text-[10px] uppercase tracking-widest mb-3 ${kind === 'in' ? 'text-neutral-500' : 'text-amber-400'}`}>
+      <p className={`mono text-[10px] uppercase tracking-widest mb-3 ${kind === 'in' ? 'text-neutral-400' : 'text-amber-400'}`}>
         {title}
       </p>
       {note && (
@@ -192,7 +192,7 @@ function MatchList({ title, matches, kind, note }: MatchListProps) {
                 <p className={`text-sm truncate transition ${kind === 'in' ? 'text-neutral-100 group-hover:text-emerald-400' : 'text-neutral-100 group-hover:text-amber-300'}`}>
                   {g.program.name}
                   {dupNames.has(`${g.program.platform}:${g.program.name}`) && (
-                    <span className="mono text-[11px] text-neutral-600 ml-2 font-normal">/{g.program.slug}</span>
+                    <span className="mono text-[11px] text-neutral-400 ml-2 font-normal">/{g.program.slug}</span>
                   )}
                 </p>
                 <ul className="mt-0.5 space-y-0.5">

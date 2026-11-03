@@ -22,29 +22,29 @@ export async function PresetView({ h1, intro, filters, fullFilterHref, answer }:
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10 md:py-14">
       <header className="mb-10">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">Preset</p>
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">Preset</p>
         <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-neutral-50 leading-tight">{h1}</h1>
         {answer && total > 0 && (
           <p className="mt-5 text-lg text-neutral-200 max-w-2xl leading-relaxed">{answer(total)}</p>
         )}
         <p className="mt-4 text-neutral-400 max-w-2xl leading-relaxed">{intro}</p>
-        <div className="mt-6 mono text-xs text-neutral-500 inline-flex items-center gap-3">
+        <div className="mt-6 mono text-xs text-neutral-400 inline-flex items-center gap-3">
           <span className="tabular-nums text-neutral-100">{total.toLocaleString()}</span>
           <span>matching programs</span>
         </div>
       </header>
 
       {rows.length === 0 ? (
-        <p className="mono text-xs text-neutral-500">no programs match this preset yet</p>
+        <p className="mono text-xs text-neutral-400">no programs match this preset yet</p>
       ) : (
         <>
           <div className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-neutral-900 bg-neutral-950/60">
-                  <th className="text-left px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal">Program</th>
-                  <th className="hidden md:table-cell text-left px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-40">Platform</th>
-                  <th className="text-right px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-28">Reward</th>
+                  <th className="text-left px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal">Program</th>
+                  <th className="hidden md:table-cell text-left px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-40">Platform</th>
+                  <th className="text-right px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-28">Reward</th>
                 </tr>
               </thead>
               <tbody>
@@ -65,7 +65,7 @@ export async function PresetView({ h1, intro, filters, fullFilterHref, answer }:
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-right mono text-sm tabular-nums">
-                      <span className={p.maxBounty ? 'text-emerald-300' : 'text-neutral-600'}>
+                      <span className={p.maxBounty ? 'text-emerald-300' : 'text-neutral-400'}>
                         {formatBounty(p.maxBounty, p.currency ?? 'USD')}
                       </span>
                     </td>
@@ -76,7 +76,7 @@ export async function PresetView({ h1, intro, filters, fullFilterHref, answer }:
           </div>
 
           <div className="mt-8 flex items-center justify-between mono text-xs">
-            <span className="text-neutral-500">
+            <span className="text-neutral-400">
               showing {rows.length} of {total.toLocaleString()}
             </span>
             <Link

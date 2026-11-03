@@ -25,7 +25,7 @@ export function RemoveColumnButton({ programId }: RemoveColumnButtonProps) {
       onClick={onClick}
       aria-label="Remove from comparison"
       title="Remove"
-      className="mono text-neutral-600 hover:text-neutral-200 text-sm w-6 h-6 rounded hover:bg-neutral-900 transition"
+      className="mono text-neutral-400 hover:text-neutral-200 text-sm w-6 h-6 rounded hover:bg-neutral-900 transition"
     >
       ×
     </button>

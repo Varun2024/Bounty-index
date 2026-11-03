@@ -20,12 +20,12 @@ export default function RouteError({ error, reset }: ErrorProps) {
       <p className="mt-4 text-sm text-neutral-400 leading-relaxed">
         This page tripped on the way up. Not your fault.
         <br />
-        <span className="text-neutral-500">
+        <span className="text-neutral-400">
           Reported. Try again, or head somewhere that still works.
         </span>
       </p>
       {error.digest && (
-        <p className="mt-4 mono text-[10px] text-neutral-600 tracking-widest">
+        <p className="mt-4 mono text-[10px] text-neutral-400 tracking-widest">
           ref: {error.digest}
         </p>
       )}

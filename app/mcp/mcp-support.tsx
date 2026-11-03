@@ -46,7 +46,7 @@ export function McpSupport() {
       )}
 
       {!authed && (
-        <p className="mt-3 mono text-[11px] text-neutral-500 leading-relaxed">
+        <p className="mt-3 mono text-[11px] text-neutral-400 leading-relaxed">
           Saves programs and syncs your watchlist across devices. GitHub only, no email, we
           can&rsquo;t spam you.
         </p>
@@ -54,7 +54,7 @@ export function McpSupport() {
 
       <Link
         href="/how-it-works"
-        className="mt-4 inline-block mono text-xs text-neutral-500 hover:text-emerald-300 transition"
+        className="mt-4 inline-block mono text-xs text-neutral-400 hover:text-emerald-300 transition"
       >
         how the index is built &rarr;
       </Link>

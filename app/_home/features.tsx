@@ -39,7 +39,7 @@ export function Features({ s }: FeaturesProps) {
           <SectionEyebrow n="03" label="What it does" />
           <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50 max-w-2xl">
             Start with the index.<br />
-            <span className="text-neutral-500">Then track, compare, and catch every scope change.</span>
+            <span className="text-neutral-400">Then track, compare, and catch every scope change.</span>
           </h2>
         </div>
 
@@ -56,13 +56,13 @@ export function Features({ s }: FeaturesProps) {
                   jump to the highest payouts first. {s ? `${s.bountyPrograms.toLocaleString()} of ${s.programs.toLocaleString()} pay in cash right now.` : ''}
                 </p>
               </div>
-              <code className="mono text-[11px] text-neutral-600 group-hover:text-emerald-400 transition shrink-0">
+              <code className="mono text-[11px] text-neutral-400 group-hover:text-emerald-400 transition shrink-0">
                 /programs
               </code>
             </div>
             {/* Mini table preview */}
             <div className="mt-6 border border-neutral-900 rounded-lg bg-neutral-950/60 overflow-hidden">
-              <div className="text-xs text-neutral-500 px-4 py-2 border-b border-neutral-900 flex justify-between">
+              <div className="text-xs text-neutral-400 px-4 py-2 border-b border-neutral-900 flex justify-between">
                 <span>Program</span>
                 <span>Max reward</span>
               </div>
@@ -93,10 +93,10 @@ export function Features({ s }: FeaturesProps) {
               Paste a domain. Instant verdict: in-scope somewhere, or not.
             </p>
             <div className="mt-8 mono text-xs">
-              <p className="text-neutral-500">$ /scope/tesla.com</p>
+              <p className="text-neutral-400">$ /scope/tesla.com</p>
               <p className="text-emerald-300 mt-1">→ in scope · 2 programs</p>
             </div>
-            <code className="mono text-[11px] text-neutral-600 group-hover:text-emerald-400 transition block mt-6">
+            <code className="mono text-[11px] text-neutral-400 group-hover:text-emerald-400 transition block mt-6">
               /scope/&lt;domain&gt;
             </code>
           </div>
@@ -119,7 +119,7 @@ export function Features({ s }: FeaturesProps) {
                 <AxisPreview label="fresh" pct={70} />
               </div>
             </div>
-            <code className="mono text-[11px] text-neutral-600 group-hover:text-emerald-400 transition block mt-6">
+            <code className="mono text-[11px] text-neutral-400 group-hover:text-emerald-400 transition block mt-6">
               /how-scored
             </code>
           </div>
@@ -137,25 +137,25 @@ export function Features({ s }: FeaturesProps) {
                   New programs surface within an hour, grouped as a dated log. Subscribe by RSS or read the web view.
                 </p>
               </div>
-              <code className="mono text-[11px] text-neutral-600 group-hover:text-emerald-400 transition shrink-0">
+              <code className="mono text-[11px] text-neutral-400 group-hover:text-emerald-400 transition shrink-0">
                 /feed
               </code>
             </div>
             <div className="mt-6 mono text-[11px] space-y-1.5">
-              <div className="flex items-center gap-3 text-neutral-500">
+              <div className="flex items-center gap-3 text-neutral-400">
                 <span className="text-neutral-700">2026-08-03</span>
                 <span className="text-neutral-300">OpenSea</span>
                 <span className="text-emerald-300 text-[11px]">new</span>
               </div>
-              <div className="flex items-center gap-3 text-neutral-500">
+              <div className="flex items-center gap-3 text-neutral-400">
                 <span className="text-neutral-700">2026-08-03</span>
                 <span className="text-neutral-300">Fireblocks MPC</span>
                 <span className="text-emerald-300 text-[11px]">new</span>
               </div>
-              <div className="flex items-center gap-3 text-neutral-500">
+              <div className="flex items-center gap-3 text-neutral-400">
                 <span className="text-neutral-700">2026-08-02</span>
                 <span className="text-neutral-300">Twilio</span>
-                <span className="text-neutral-600 text-[11px]">scope+</span>
+                <span className="text-neutral-400 text-[11px]">scope+</span>
               </div>
             </div>
           </div>
@@ -169,7 +169,7 @@ export function Features({ s }: FeaturesProps) {
             draws the dividers, so they stay correct at one column (mobile) and two (desktop)
             without per-cell border math. */}
         <div className="mt-6 border border-neutral-900 rounded-2xl bg-neutral-950/40 overflow-hidden">
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 px-6 pt-5 pb-4">
+          <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 px-6 pt-5 pb-4">
             And once you are hunting
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-neutral-900 border-t border-neutral-900">
@@ -190,7 +190,7 @@ export function Features({ s }: FeaturesProps) {
                   </span>
                   <span className="block text-xs text-neutral-400 mt-0.5">{m.desc}</span>
                 </span>
-                <code className="mono text-[11px] text-neutral-600 group-hover:text-emerald-400 transition shrink-0">
+                <code className="mono text-[11px] text-neutral-400 group-hover:text-emerald-400 transition shrink-0">
                   {m.href}
                 </code>
               </Link>

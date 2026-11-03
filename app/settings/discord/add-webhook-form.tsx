@@ -92,9 +92,9 @@ export function AddWebhookForm({ prefillProgram, watchlistCount }: Props) {
     <form onSubmit={onSubmit} className="border border-neutral-900 rounded-lg p-5 bg-neutral-950/40 space-y-4">
       {prefillProgram ? (
         <div>
-          <label className="mono text-[10px] uppercase tracking-widest text-neutral-500">Program</label>
+          <label className="mono text-[10px] uppercase tracking-widest text-neutral-400">Program</label>
           <p className="mt-1 text-sm text-neutral-100">
-            {prefillProgram.name} <span className="mono text-xs text-neutral-500">· {prefillProgram.platform}</span>
+            {prefillProgram.name} <span className="mono text-xs text-neutral-400">· {prefillProgram.platform}</span>
           </p>
           <input type="hidden" value={prefillProgram.id} />
         </div>
@@ -109,7 +109,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount }: Props) {
       )}
 
       <div>
-        <label htmlFor="webhook-url" className="mono text-[10px] uppercase tracking-widest text-neutral-500 block mb-1">Discord webhook URL</label>
+        <label htmlFor="webhook-url" className="mono text-[10px] uppercase tracking-widest text-neutral-400 block mb-1">Discord webhook URL</label>
         <input
           id="webhook-url"
           type="url"
@@ -133,12 +133,12 @@ export function AddWebhookForm({ prefillProgram, watchlistCount }: Props) {
               {testMsg.ok ? '✓' : '✗'} {testMsg.text}
             </span>
           )}
-          {!testMsg && <span className="mono text-[11px] text-neutral-600">{'// '}fire a sample embed now, before you save</span>}
+          {!testMsg && <span className="mono text-[11px] text-neutral-400">{'// '}fire a sample embed now, before you save</span>}
         </div>
       </div>
 
       <div>
-        <label htmlFor="webhook-label" className="mono text-[10px] uppercase tracking-widest text-neutral-500 block mb-1">Label <span className="text-neutral-700">(optional)</span></label>
+        <label htmlFor="webhook-label" className="mono text-[10px] uppercase tracking-widest text-neutral-400 block mb-1">Label <span className="text-neutral-700">(optional)</span></label>
         <input
           id="webhook-label"
           type="text"
@@ -162,7 +162,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount }: Props) {
       </button>
 
       <div className="pt-4 border-t border-neutral-900">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">or subscribe in bulk</p>
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">or subscribe in bulk</p>
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
@@ -181,14 +181,14 @@ export function AddWebhookForm({ prefillProgram, watchlistCount }: Props) {
           >
             top 10 paying
           </button>
-          {bulkPending && <span className="mono text-[11px] text-neutral-500">adding…</span>}
+          {bulkPending && <span className="mono text-[11px] text-neutral-400">adding…</span>}
           {bulkMsg && (
             <span className={`mono text-[11px] ${bulkMsg.ok ? 'text-emerald-400' : 'text-red-400'}`}>
               {bulkMsg.ok ? '✓' : '✗'} {bulkMsg.text}
             </span>
           )}
         </div>
-        <p className="mono text-[10px] text-neutral-600 mt-2">{'// '}points the URL above at every matching program at once</p>
+        <p className="mono text-[10px] text-neutral-400 mt-2">{'// '}points the URL above at every matching program at once</p>
       </div>
     </form>
   );
@@ -227,7 +227,7 @@ function ProgramPicker({ value, onSelect }: ProgramPickerProps) {
 
   return (
     <div className="relative">
-      <label htmlFor="program-search" className="mono text-[10px] uppercase tracking-widest text-neutral-500 block mb-1">Program</label>
+      <label htmlFor="program-search" className="mono text-[10px] uppercase tracking-widest text-neutral-400 block mb-1">Program</label>
       <input
         id="program-search"
         type="text"
@@ -251,7 +251,7 @@ function ProgramPicker({ value, onSelect }: ProgramPickerProps) {
                 }}
                 className="w-full text-left px-3 py-2 text-sm text-neutral-200 hover:bg-neutral-900"
               >
-                {r.name} <span className="mono text-xs text-neutral-500">· {r.platform}</span>
+                {r.name} <span className="mono text-xs text-neutral-400">· {r.platform}</span>
               </button>
             </li>
           ))}

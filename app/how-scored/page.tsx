@@ -26,7 +26,7 @@ export default function HowScoredPage() {
   return (
     <div className="max-w-[900px] mx-auto px-6 py-10">
       <div className="border-b border-neutral-900 pb-6 reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Methodology · public formula</p>
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Methodology · public formula</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">How the Hunt Score works</h1>
         <p className="text-neutral-400 mt-3 max-w-2xl leading-relaxed">
           A 0&ndash;100 sort signal for the question <em>&ldquo;which programs are worth an hour of my time this week&rdquo;</em>. Three
@@ -41,7 +41,7 @@ export default function HowScoredPage() {
       + bounty × ${WEIGHTS.bounty}
       + freshness × ${WEIGHTS.freshness}`}
         </pre>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-400">
           Each axis is normalized to <code className="mono text-neutral-300">0..1</code> and multiplied by its weight, so the max
           possible score is <span className="text-neutral-100 tabular-nums">100</span>.
         </p>
@@ -52,8 +52,8 @@ export default function HowScoredPage() {
 
         <div className="border border-neutral-900 rounded-lg p-5 bg-neutral-950/40">
           <div className="flex items-baseline justify-between mb-2">
-            <h3 className="text-neutral-100 font-medium">Payout <span className="text-neutral-500 mono text-xs">· {WEIGHTS.payout}%</span></h3>
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">log-scale</span>
+            <h3 className="text-neutral-100 font-medium">Payout <span className="text-neutral-400 mono text-xs">· {WEIGHTS.payout}%</span></h3>
+            <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">log-scale</span>
           </div>
           <p className="text-sm text-neutral-400 leading-relaxed">
             <code className="mono text-neutral-200">max_bounty</code> on a natural-log scale between <span className="text-neutral-200 tabular-nums">$500</span> (floor,
@@ -64,20 +64,20 @@ export default function HowScoredPage() {
 
         <div className="border border-neutral-900 rounded-lg p-5 bg-neutral-950/40">
           <div className="flex items-baseline justify-between mb-2">
-            <h3 className="text-neutral-100 font-medium">Bounty vs VDP <span className="text-neutral-500 mono text-xs">· {WEIGHTS.bounty}%</span></h3>
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">binary</span>
+            <h3 className="text-neutral-100 font-medium">Bounty vs VDP <span className="text-neutral-400 mono text-xs">· {WEIGHTS.bounty}%</span></h3>
+            <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">binary</span>
           </div>
           <p className="text-sm text-neutral-400 leading-relaxed">
             <span className="text-emerald-300">+{WEIGHTS.bounty}</span> if the program actually pays cash,
-            <span className="text-neutral-600"> 0</span> if it&rsquo;s a VDP (recognition-only). A tiny paying program still beats a
+            <span className="text-neutral-400"> 0</span> if it&rsquo;s a VDP (recognition-only). A tiny paying program still beats a
             huge VDP on this axis, because <em>getting paid</em> is a categorical difference, not a gradient.
           </p>
         </div>
 
         <div className="border border-neutral-900 rounded-lg p-5 bg-neutral-950/40">
           <div className="flex items-baseline justify-between mb-2">
-            <h3 className="text-neutral-100 font-medium">Freshness <span className="text-neutral-500 mono text-xs">· {WEIGHTS.freshness}%</span></h3>
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">linear decay 30 &rarr; 180 days</span>
+            <h3 className="text-neutral-100 font-medium">Freshness <span className="text-neutral-400 mono text-xs">· {WEIGHTS.freshness}%</span></h3>
+            <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">linear decay 30 &rarr; 180 days</span>
           </div>
           <p className="text-sm text-neutral-400 leading-relaxed">
             Full credit if <code className="mono text-neutral-200">last_updated_at</code> is within 30 days. Linear decay to zero at
@@ -93,10 +93,10 @@ export default function HowScoredPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-neutral-900 bg-neutral-950/60">
-                <th className="text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal">Scenario</th>
-                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">Payout</th>
-                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">Bounty</th>
-                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">Fresh</th>
+                <th className="text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal">Scenario</th>
+                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-20">Payout</th>
+                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-20">Bounty</th>
+                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-20">Fresh</th>
                 <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-emerald-400 font-normal w-20">Hunt</th>
               </tr>
             </thead>
@@ -125,17 +125,17 @@ export default function HowScoredPage() {
           <li><strong className="text-neutral-200">Scope breadth.</strong> The <code className="mono text-neutral-300">in_scope_count</code> lives on snapshots, not on the program row. A denormalization pass is needed before this can be sorted at DB level.</li>
           <li><strong className="text-neutral-200">Safe-harbor status.</strong> Signal is present but too binary at the population level to weight without distorting.</li>
         </ul>
-        <p className="text-sm text-neutral-500">These are v2 candidates. If you&rsquo;d weight them differently than what&rsquo;s above, open an issue.</p>
+        <p className="text-sm text-neutral-400">These are v2 candidates. If you&rsquo;d weight them differently than what&rsquo;s above, open an issue.</p>
       </section>
 
       <section className="mt-12 border-t border-neutral-900 pt-6 flex items-center justify-between">
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-400">
           Sort the whole index by this score:{' '}
           <Link href="/programs?sort=opportunity" className="text-emerald-400 hover:underline">/programs?sort=opportunity</Link>
         </p>
         <a
           href="https://github.com/Varun2024/Bounty-index/blob/main/lib/opportunity.ts"
-          className="mono text-xs text-neutral-500 hover:text-emerald-400 transition"
+          className="mono text-xs text-neutral-400 hover:text-emerald-400 transition"
           target="_blank"
           rel="noreferrer"
         >

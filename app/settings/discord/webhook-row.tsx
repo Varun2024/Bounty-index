@@ -53,14 +53,14 @@ export function WebhookRow({ row }: Props) {
           >
             {row.programName}
           </Link>
-          <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">{row.programPlatform}</span>
+          <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">{row.programPlatform}</span>
           {row.brokenAt && (
             <span className="mono text-[10px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-red-400/40 text-red-300 bg-red-400/[0.06]">
               broken, resave URL
             </span>
           )}
         </div>
-        <p className="mono text-[11px] text-neutral-500 mt-1 truncate">
+        <p className="mono text-[11px] text-neutral-400 mt-1 truncate">
           {row.label ? <span className="text-neutral-300">{row.label} · </span> : null}
           {row.webhookUrlHint}
           <span className="text-neutral-700"> · </span>
@@ -83,7 +83,7 @@ export function WebhookRow({ row }: Props) {
         <button
           onClick={onDelete}
           disabled={pending}
-          className="mono text-[11px] px-2.5 py-1 border border-neutral-800 rounded text-neutral-500 hover:text-red-300 hover:border-red-400/40 transition disabled:opacity-40"
+          className="mono text-[11px] px-2.5 py-1 border border-neutral-800 rounded text-neutral-400 hover:text-red-300 hover:border-red-400/40 transition disabled:opacity-40"
         >
           remove
         </button>

@@ -66,7 +66,7 @@ export default async function PlatformLandingPage({ params }: PageProps) {
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10">
       <header className="reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">
           <Link href="/programs" className="hover:text-neutral-300 transition">programs</Link>
           <span className="text-neutral-700"> / platforms / </span>
           <span className="text-neutral-300">{id}</span>
@@ -108,13 +108,13 @@ export default async function PlatformLandingPage({ params }: PageProps) {
           </h2>
           <Link
             href={`/programs?platform=${id}`}
-            className="mono text-xs text-neutral-500 hover:text-emerald-300 transition"
+            className="mono text-xs text-neutral-400 hover:text-emerald-300 transition"
           >
             all {top.total.toLocaleString()} →
           </Link>
         </div>
         {top.rows.length === 0 ? (
-          <p className="mono text-xs text-neutral-600 py-6">index unavailable right now</p>
+          <p className="mono text-xs text-neutral-400 py-6">index unavailable right now</p>
         ) : (
           <ul className="border border-neutral-900 rounded-lg bg-neutral-950/40 overflow-hidden">
             {top.rows.slice(0, 10).map((p, i) => {
@@ -125,7 +125,7 @@ export default async function PlatformLandingPage({ params }: PageProps) {
                     href={`/programs/${p.platform}/${p.slug}`}
                     className="flex items-center gap-4 px-5 py-3 hover:bg-neutral-900/50 transition group"
                   >
-                    <span className="mono text-xs text-neutral-600 tabular-nums w-6">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="mono text-xs text-neutral-400 tabular-nums w-6">{String(i + 1).padStart(2, '0')}</span>
                     <span className="flex-1 min-w-0 truncate text-neutral-100 group-hover:text-emerald-300 transition">{p.name}</span>
                     <span className="mono text-xs text-neutral-400 tabular-nums shrink-0">
                       {formatBounty(p.maxBounty, p.currency ?? 'USD')}
@@ -171,10 +171,10 @@ export default async function PlatformLandingPage({ params }: PageProps) {
 function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="border border-neutral-900 rounded-lg bg-neutral-950/40 px-4 py-3">
-      <div className="mono text-[10px] uppercase tracking-widest text-neutral-500">{label}</div>
+      <div className="mono text-[10px] uppercase tracking-widest text-neutral-400">{label}</div>
       <div className="mt-1 text-neutral-100 text-lg tabular-nums">{value}</div>
       {sub && (
-        <div className="mono text-[10px] uppercase tracking-widest text-neutral-600 truncate">{sub}</div>
+        <div className="mono text-[10px] uppercase tracking-widest text-neutral-400 truncate">{sub}</div>
       )}
     </div>
   );

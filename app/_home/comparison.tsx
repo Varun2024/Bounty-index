@@ -32,7 +32,7 @@ export function Comparison() {
         <div className="reveal">
           <SectionEyebrow n="02" label="Why this exists" />
           <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50 max-w-3xl">
-            Every alternative is <span className="text-neutral-500">fragmented.</span>
+            Every alternative is <span className="text-neutral-400">fragmented.</span>
           </h2>
           <p className="mt-5 text-neutral-400 max-w-2xl leading-relaxed">
             Platforms only list their own programs. Directories show policies, not live scope. Raw JSON

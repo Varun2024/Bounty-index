@@ -41,7 +41,7 @@ export function SavedFiltersSection() {
   return (
     <div className="space-y-2.5">
       <div className="flex items-baseline justify-between">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-500">Saved filters</span>
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">Saved filters</span>
         {filters.length > 0 && (
           <span className="mono text-[10px] uppercase tracking-widest text-neutral-700 tabular-nums">
             {filters.length.toString().padStart(2, '0')}
@@ -50,7 +50,7 @@ export function SavedFiltersSection() {
       </div>
 
       {filters.length === 0 ? (
-        <p className="mono text-[10px] leading-relaxed text-neutral-600">
+        <p className="mono text-[10px] leading-relaxed text-neutral-400">
           <span className="text-neutral-700">{'// '}</span>
           save the <span className="text-neutral-400">current filter combo</span> to jump back to it later.
           {!isAuthed && (
@@ -97,7 +97,7 @@ export function SavedFiltersSection() {
         <button
           type="button"
           onClick={onSave}
-          className="focus-ring mono text-[11px] w-full px-2 py-1.5 border border-dashed border-neutral-800 text-neutral-500 hover:text-emerald-300 hover:border-emerald-400/40 rounded transition"
+          className="focus-ring mono text-[11px] w-full px-2 py-1.5 border border-dashed border-neutral-800 text-neutral-400 hover:text-emerald-300 hover:border-emerald-400/40 rounded transition"
         >
           + save current filter
         </button>

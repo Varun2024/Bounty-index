@@ -40,7 +40,7 @@ export function FilterDrawer({ children, activeCount }: FilterDrawerProps) {
             <FilterIcon size={14} />
             Filters
           </span>
-          <span className={activeCount > 0 ? 'text-emerald-400' : 'text-neutral-600'}>
+          <span className={activeCount > 0 ? 'text-emerald-400' : 'text-neutral-400'}>
             {activeCount > 0 ? `${activeCount} active` : 'tap to filter'}
           </span>
         </button>
@@ -55,13 +55,13 @@ export function FilterDrawer({ children, activeCount }: FilterDrawerProps) {
             <div className="relative bg-[#0a0a0b] border-t border-neutral-800 rounded-t-2xl max-h-[85vh] flex flex-col animate-[slide-up_.28s_cubic-bezier(0.16,1,0.3,1)_both]">
               <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-neutral-900">
                 <div className="mx-auto absolute left-1/2 -translate-x-1/2 -top-1 w-10 h-1 rounded-full bg-neutral-800" />
-                <span className="mono text-[10px] uppercase tracking-widest text-neutral-500 inline-flex items-center gap-2">
+                <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 inline-flex items-center gap-2">
                   <FilterIcon size={12} />
                   Filters
                 </span>
                 <button
                   onClick={() => setOpen(false)}
-                  className="mono text-xs text-neutral-500 hover:text-neutral-200 transition px-2 py-1"
+                  className="mono text-xs text-neutral-400 hover:text-neutral-200 transition px-2 py-1"
                 >
                   done
                 </button>

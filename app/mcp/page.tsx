@@ -72,8 +72,8 @@ function Card({ item }: { item: Capability }) {
 function SectionLabel({ children, count }: { children: React.ReactNode; count?: number }) {
   return (
     <div className="flex items-baseline gap-2 mb-3">
-      <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-500">{children}</h2>
-      {count !== undefined && <span className="mono text-[10px] text-neutral-600">{count}</span>}
+      <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400">{children}</h2>
+      {count !== undefined && <span className="mono text-[10px] text-neutral-400">{count}</span>}
     </div>
   );
 }
@@ -97,19 +97,19 @@ export default function McpPage(): React.JSX.Element {
         </div>
         <dl className="grid grid-cols-4 md:grid-cols-2 gap-x-6 gap-y-3 mono text-[11px] md:text-right">
           <div>
-            <dt className="text-neutral-500">tools</dt>
+            <dt className="text-neutral-400">tools</dt>
             <dd className="text-neutral-100 tabular-nums text-base">14</dd>
           </div>
           <div>
-            <dt className="text-neutral-500">prompts</dt>
+            <dt className="text-neutral-400">prompts</dt>
             <dd className="text-neutral-100 tabular-nums text-base">3</dd>
           </div>
           <div>
-            <dt className="text-neutral-500">resources</dt>
+            <dt className="text-neutral-400">resources</dt>
             <dd className="text-neutral-100 tabular-nums text-base">1</dd>
           </div>
           <div>
-            <dt className="text-neutral-500">rate limit</dt>
+            <dt className="text-neutral-400">rate limit</dt>
             <dd className="text-neutral-100 tabular-nums text-base">60/min</dd>
           </div>
         </dl>
@@ -127,7 +127,7 @@ export default function McpPage(): React.JSX.Element {
           <code className="mono text-sm text-emerald-300 break-all bg-neutral-950/60 border border-neutral-900 rounded-lg px-4 py-3 block">
             {MCP_URL_V2}
           </code>
-          <p className="mono text-[11px] text-neutral-500 mt-3 leading-relaxed">
+          <p className="mono text-[11px] text-neutral-400 mt-3 leading-relaxed">
             Streamable HTTP · stateless. v1 remains at{' '}
             <code className="text-neutral-300 break-all">{MCP_URL_V1}</code> for existing clients (8 tools, no prompts).
           </p>
@@ -138,7 +138,7 @@ export default function McpPage(): React.JSX.Element {
           <pre className="mono text-[12px] text-neutral-300 bg-neutral-950/60 border border-neutral-900 rounded-lg p-4 overflow-x-auto">
 {CONFIG_SNIPPET}
           </pre>
-          <p className="mono text-[11px] text-neutral-500 mt-3 leading-relaxed">
+          <p className="mono text-[11px] text-neutral-400 mt-3 leading-relaxed">
             Same JSON works for Claude Desktop (<code className="text-neutral-300">claude_desktop_config.json</code>)
             and Cursor (<code className="text-neutral-300">~/.cursor/mcp.json</code>). Restart the client.
           </p>

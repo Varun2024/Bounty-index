@@ -15,7 +15,7 @@ export default function TermsPage() {
   return (
     <div className="max-w-[900px] mx-auto px-6 py-10">
       <div className="border-b border-neutral-900 pb-6 reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Terms · effective {EFFECTIVE}</p>
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Terms · effective {EFFECTIVE}</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Terms of use</h1>
         <p className="text-neutral-400 mt-3 max-w-2xl leading-relaxed">
           The short, honest contract for using bounty.index. By using the site, the API, or the MCP endpoint, you agree to
@@ -90,11 +90,11 @@ export default function TermsPage() {
       </section>
 
       <section className="mt-12 border-t border-neutral-900 pt-6 flex flex-wrap items-center justify-between gap-4">
-        <p className="text-sm text-neutral-500 leading-relaxed">
+        <p className="text-sm text-neutral-400 leading-relaxed">
           Questions? Email{' '}
           <a href={`mailto:${CONTACT_EMAIL}`} className="text-emerald-400 hover:underline">{CONTACT_EMAIL}</a>.
         </p>
-        <Link href="/privacy" className="mono text-xs text-neutral-500 hover:text-emerald-400 transition">privacy →</Link>
+        <Link href="/privacy" className="mono text-xs text-neutral-400 hover:text-emerald-400 transition">privacy →</Link>
       </section>
     </div>
   );

@@ -13,7 +13,7 @@ export function Receipts({ s }: ReceiptsProps) {
     <section className="border-t border-neutral-900">
       <div className="max-w-[1200px] mx-auto px-6 py-24">
         <div className="reveal">
-          <p className="text-sm text-neutral-500 mb-3">Receipts</p>
+          <p className="text-sm text-neutral-400 mb-3">Receipts</p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50 max-w-2xl">
             Why trust this.
           </h2>

@@ -70,7 +70,7 @@ export function HeroScopeCheck({ programCount }: { programCount: string | null }
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="is a domain in scope? e.g. shopify.com"
-            className="flex-1 min-w-0 bg-transparent h-full px-3.5 text-base md:text-[17px] text-neutral-50 placeholder:text-neutral-500 outline-none"
+            className="flex-1 min-w-0 bg-transparent h-full px-3.5 text-base md:text-[17px] text-neutral-50 placeholder:text-neutral-400 outline-none"
           />
           <kbd className="hidden md:inline-flex items-center justify-center mono text-[10px] text-neutral-400 h-6 px-1.5 mr-2 rounded border border-neutral-800 bg-neutral-900/80 pointer-events-none">
             /
@@ -104,7 +104,7 @@ export function HeroScopeCheck({ programCount }: { programCount: string | null }
 function Idle({ onExample, programCount }: { onExample: (ex: string) => void; programCount: string | null }) {
   return (
     <p className="text-sm text-neutral-400 flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-      <span className="text-neutral-500">try</span>
+      <span className="text-neutral-400">try</span>
       {EXAMPLES.map((ex) => (
         <button
           key={ex}
@@ -125,7 +125,7 @@ function Idle({ onExample, programCount }: { onExample: (ex: string) => void; pr
 
 function LoadingLine({ domain }: { domain: string }) {
   return (
-    <p className="mono text-sm text-neutral-500 flex items-center gap-2">
+    <p className="mono text-sm text-neutral-400 flex items-center gap-2">
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/70 motion-safe:animate-pulse" aria-hidden />
       checking <span className="text-neutral-300">{domain}</span> against the index…
     </p>
@@ -222,7 +222,7 @@ function MatchRow({ match }: { match: HeroScopeMatch }) {
         <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${PLATFORM_META[match.platform]?.dot ?? 'bg-neutral-500'}`} aria-hidden />
         <span className="min-w-0 flex-1">
           <span className="text-sm text-neutral-200 group-hover:text-emerald-300 transition truncate block">{match.name}</span>
-          <code className="mono text-[11px] text-neutral-500 truncate block">
+          <code className="mono text-[11px] text-neutral-400 truncate block">
             <span className={`${glyphColor} mr-0.5`}>{glyph}</span>
             {match.identifier}
           </code>

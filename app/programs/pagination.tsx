@@ -24,7 +24,7 @@ export function Pagination({ page, pageSize, total, sp }: PaginationProps) {
   const hasNext = page < totalPages;
 
   return (
-    <nav className="mt-6 flex items-center justify-between mono text-xs text-neutral-500">
+    <nav className="mt-6 flex items-center justify-between mono text-xs text-neutral-400">
       <span>
         page {page} / {totalPages}
       </span>

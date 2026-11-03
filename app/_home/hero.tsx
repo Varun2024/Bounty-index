@@ -30,7 +30,7 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
                 pitch, so they stay neutral-50; the descriptive middle drops to neutral-500 so the
                 load-bearing words land first. neutral-500 on the bg clears WCAG AA for large text. */}
             <h1 className="lowercase text-[2.75rem] sm:text-5xl md:text-6xl xl:text-[4.5rem] font-medium tracking-[-0.035em] leading-[0.98] text-neutral-50">
-              every <span className="text-neutral-500">public bounty program,</span> one index.
+              every <span className="text-neutral-400">public bounty program,</span> one index.
             </h1>
 
             <p className="mt-8 text-lg md:text-xl text-neutral-300 leading-snug max-w-xl">
@@ -72,7 +72,7 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
                 <>
                   <span aria-hidden className="text-neutral-700">·</span>
                   <span className="mono tabular-nums text-emerald-300">{mcpRequests.toLocaleString()}</span>
-                  <span className="text-neutral-500">
+                  <span className="text-neutral-400">
                     request{mcpRequests === 1 ? '' : 's'} served
                   </span>
                 </>

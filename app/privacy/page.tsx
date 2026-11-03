@@ -17,7 +17,7 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-[900px] mx-auto px-6 py-10">
       <div className="border-b border-neutral-900 pb-6 reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Privacy · effective {EFFECTIVE}</p>
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Privacy · effective {EFFECTIVE}</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Privacy</h1>
         <p className="text-neutral-400 mt-3 max-w-2xl leading-relaxed">
           I&rsquo;m Varun, and I run bounty.index on my own. This page is the honest version of what the site collects and
@@ -106,7 +106,7 @@ export default function PrivacyPage() {
           <li><span className="text-neutral-200">Vercel</span> hosts the site, the cookieless analytics, and the brief sign-in queue.</li>
           <li><span className="text-neutral-200">Discord</span> receives alert messages, but only for subscriptions you create.</li>
         </ul>
-        <p className="text-sm text-neutral-500 leading-relaxed">
+        <p className="text-sm text-neutral-400 leading-relaxed">
           These providers may process data in the US or the EU. That is the only sharing that happens.
         </p>
       </section>
@@ -159,11 +159,11 @@ export default function PrivacyPage() {
       </section>
 
       <section className="mt-12 border-t border-neutral-900 pt-6 flex flex-wrap items-center justify-between gap-4">
-        <p className="text-sm text-neutral-500 leading-relaxed">
+        <p className="text-sm text-neutral-400 leading-relaxed">
           Questions, or want to exercise any of the above? Email{' '}
           <a href={`mailto:${CONTACT_EMAIL}`} className="text-emerald-400 hover:underline">{CONTACT_EMAIL}</a>.
         </p>
-        <Link href="/terms" className="mono text-xs text-neutral-500 hover:text-emerald-400 transition">terms →</Link>
+        <Link href="/terms" className="mono text-xs text-neutral-400 hover:text-emerald-400 transition">terms →</Link>
       </section>
     </div>
   );

@@ -33,7 +33,7 @@ export default async function FeedPage() {
     <div className="max-w-[1000px] mx-auto px-6 py-10">
       <div className="flex items-end justify-between gap-4 border-b border-neutral-900 pb-6 reveal">
         <div className="min-w-0">
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">Log</p>
+          <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Log</p>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">New programs</h1>
           <p className="text-neutral-400 mt-2">The freshest programs added to the index.</p>
         </div>
@@ -62,7 +62,7 @@ export default async function FeedPage() {
           {[...groups.entries()].map(([date, entries]) => (
             <section key={date} className="md:grid md:grid-cols-[92px_minmax(0,1fr)] md:gap-6">
               <div className="mb-3 md:mb-0 md:pt-1 flex md:block items-baseline gap-3">
-                <p className="mono text-xs text-neutral-500 tabular-nums">{date}</p>
+                <p className="mono text-xs text-neutral-400 tabular-nums">{date}</p>
                 <p className="mono text-[10px] uppercase tracking-widest text-neutral-700 md:mt-1">{entries.length} added</p>
               </div>
               <ul className="min-w-0">
@@ -78,7 +78,7 @@ export default async function FeedPage() {
                       <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${PLATFORM_META[p.platform]?.dot ?? 'bg-neutral-500'}`} />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm text-neutral-100 group-hover:text-emerald-400 transition truncate">{p.name}</p>
-                        <p className="mono text-[11px] text-neutral-500 mt-0.5">{platformLabel(p.platform)}</p>
+                        <p className="mono text-[11px] text-neutral-400 mt-0.5">{platformLabel(p.platform)}</p>
                       </div>
                       <span className="mono text-[10px] uppercase tracking-widest text-emerald-300 bg-emerald-400/[0.06] border border-emerald-400/25 px-2 py-1 rounded shrink-0">
                         new

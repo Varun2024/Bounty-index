@@ -42,7 +42,7 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
             existing sessions are unaffected. Programs, scope lookup, and everything read-only still
             works. Watchlists and Discord alerts will pick up where you left off once the DB is back.
           </p>
-          <p className="mt-3 mono text-[11px] text-neutral-600">
+          <p className="mt-3 mono text-[11px] text-neutral-400">
             {'// nothing you did is broken. this is on our end.'}
           </p>
         </>
@@ -52,7 +52,7 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
             Sign-in didn&rsquo;t complete. The GitHub handshake got interrupted somewhere.
             Try again, it usually just works the second time.
           </p>
-          <p className="mt-3 mono text-[11px] text-neutral-600">// error code: {error}</p>
+          <p className="mt-3 mono text-[11px] text-neutral-400">// error code: {error}</p>
         </>
       )}
 

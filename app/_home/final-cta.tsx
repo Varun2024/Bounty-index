@@ -15,7 +15,7 @@ export function FinalCTA({ s }: FinalCTAProps) {
           {s ? (
             <>
               <span className="mono text-emerald-300 tabular-nums">{s.bountyPrograms.toLocaleString()}</span> programs<br />
-              are <span className="text-neutral-500">paying bounties</span><br />
+              are <span className="text-neutral-400">paying bounties</span><br />
               right now.
             </>
           ) : (

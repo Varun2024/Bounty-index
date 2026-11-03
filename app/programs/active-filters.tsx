@@ -33,7 +33,7 @@ export function ActiveFilters({ filters }: ActiveFiltersProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 mb-6">
-      <span className="mono text-[10px] uppercase tracking-widest text-neutral-500 mr-1">
+      <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 mr-1">
         {active.length} active
       </span>
       {active.map((a) => (
@@ -49,7 +49,7 @@ export function ActiveFilters({ filters }: ActiveFiltersProps) {
       ))}
       <button
         onClick={clearAll}
-        className="mono text-[11px] px-2 py-1 rounded text-neutral-500 hover:text-neutral-200 transition ml-1"
+        className="mono text-[11px] px-2 py-1 rounded text-neutral-400 hover:text-neutral-200 transition ml-1"
       >
         clear all
       </button>

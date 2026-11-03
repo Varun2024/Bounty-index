@@ -55,7 +55,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
   return (
     <aside className="md:sticky md:top-20 self-start space-y-5 text-sm">
       <div className="flex items-center justify-between pb-3 border-b border-neutral-900">
-        <span className="flex items-center gap-2 mono text-[10px] uppercase tracking-widest text-neutral-500">
+        <span className="flex items-center gap-2 mono text-[10px] uppercase tracking-widest text-neutral-400">
           <FilterIcon size={12} />
           Filters
           {activeCount > 0 && <span className="text-emerald-300 tabular-nums">{activeCount}</span>}
@@ -63,7 +63,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         {activeCount > 0 && (
           <Link
             href="/programs"
-            className="focus-ring rounded mono text-[10px] uppercase tracking-widest text-neutral-500 hover:text-amber-300 transition"
+            className="focus-ring rounded mono text-[10px] uppercase tracking-widest text-neutral-400 hover:text-amber-300 transition"
           >
             clear all
           </Link>
@@ -71,7 +71,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
       </div>
       <div>
         <div className="relative">
-          <SearchIcon size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600 pointer-events-none" />
+          <SearchIcon size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
           <input
             type="search"
             placeholder="program or scope…"
@@ -82,7 +82,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
             className="focus-ring w-full mono text-xs pl-8 pr-3 py-2 bg-neutral-900 border border-neutral-800 rounded focus:outline-none focus:border-emerald-400/50"
           />
         </div>
-        <p className="mono text-[10px] text-neutral-600 mt-1.5">matches a name or any in-scope identifier</p>
+        <p className="mono text-[10px] text-neutral-400 mt-1.5">matches a name or any in-scope identifier</p>
       </div>
 
       <SavedFiltersSection />
@@ -152,7 +152,7 @@ interface FilterGroupProps {
 function FilterGroup({ label, children }: FilterGroupProps) {
   return (
     <div>
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">{label}</p>
+      <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">{label}</p>
       <div className="flex flex-wrap gap-1.5">{children}</div>
     </div>
   );

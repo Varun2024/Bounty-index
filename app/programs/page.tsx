@@ -80,9 +80,9 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
       <section>
         <div className="flex items-end justify-between mb-8 reveal">
           <div>
-            <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">The index</p>
+            <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">The index</p>
             <h1 className="text-3xl font-semibold text-neutral-100 tracking-tight">Programs</h1>
-            <p className="mono text-[11px] text-neutral-600 mt-2 max-w-md hidden md:block">
+            <p className="mono text-[11px] text-neutral-400 mt-2 max-w-md hidden md:block">
               Open any program for <span className="text-neutral-400">copyable scope</span>,{' '}
               <span className="text-neutral-400">change history</span>,{' '}
               <span className="text-neutral-400">community response times</span>, and{' '}
@@ -90,19 +90,19 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
             </p>
           </div>
           <div className="text-right">
-            <p className="mono text-xs text-neutral-500">
+            <p className="mono text-xs text-neutral-400">
               {dbError ? 'DB not connected' : (
                 <>
                   <span className="text-neutral-100 tabular-nums">{total.toLocaleString()}</span>
-                  <span className="text-neutral-500"> results</span>
+                  <span className="text-neutral-400"> results</span>
                 </>
               )}
             </p>
-            <p className="mono text-[10px] uppercase tracking-widest text-neutral-600 mt-1">
+            <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mt-1">
               sorted by {filters.sort}
             </p>
             {!dbError && total > 0 && (
-              <p className="mono text-[10px] uppercase tracking-widest text-neutral-600 mt-2 flex items-center gap-2 justify-end">
+              <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mt-2 flex items-center gap-2 justify-end">
                 <span>export</span>
                 <a
                   href={`/api/export/programs?format=csv${exportQs ? '&' + exportQs : ''}`}
@@ -150,13 +150,13 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
             <table className="w-full table-fixed">
               <thead>
                 <tr className="border-b border-neutral-900 bg-neutral-950/60">
-                  <th className="text-left px-4 md:px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal">Program</th>
-                  <th className="hidden md:table-cell text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-40">Platform</th>
-                  <th className="hidden md:table-cell text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-24">Type</th>
-                  <th className="hidden md:table-cell text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">
+                  <th className="text-left px-4 md:px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal">Program</th>
+                  <th className="hidden md:table-cell text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-40">Platform</th>
+                  <th className="hidden md:table-cell text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-24">Type</th>
+                  <th className="hidden md:table-cell text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-20">
                     <Link href="/how-scored" className="hover:text-emerald-400 transition" title="Hunt score: how we sort the index, not expected payout. See /how-scored.">Hunt</Link>
                   </th>
-                  <th className="text-right px-4 md:px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-24 md:w-32">
+                  <th className="text-right px-4 md:px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-24 md:w-32">
                     <span title="Stated reward band (or max). A ceiling set by the program, not a typical payout.">Stated reward</span>
                   </th>
                 </tr>
@@ -175,12 +175,12 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
                           <span className={`md:hidden shrink-0 w-1.5 h-1.5 rounded-full ${PLATFORM_META[p.platform]?.dot ?? 'bg-neutral-500'}`} />
                           <p className="text-neutral-100 group-hover:text-emerald-400 transition font-medium truncate">{p.name}</p>
                         </div>
-                        <p className="mono text-[11px] text-neutral-500 mt-0.5 md:hidden">
+                        <p className="mono text-[11px] text-neutral-400 mt-0.5 md:hidden">
                           {platformLabel(p.platform)}
-                          {p.offersBounty ? <span className="text-emerald-400/80"> · bounty</span> : <span className="text-neutral-600"> · vdp</span>}
+                          {p.offersBounty ? <span className="text-emerald-400/80"> · bounty</span> : <span className="text-neutral-400"> · vdp</span>}
                         </p>
                         {p.handle && p.handle !== p.slug ? (
-                          <p className="mono text-[11px] text-neutral-500 mt-0.5 hidden md:block">@{p.handle}</p>
+                          <p className="mono text-[11px] text-neutral-400 mt-0.5 hidden md:block">@{p.handle}</p>
                         ) : null}
                       </Link>
                     </td>
@@ -195,7 +195,7 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
                         className={`mono text-[10px] uppercase tracking-widest px-2 py-1 rounded border ${
                           p.offersBounty
                             ? 'text-emerald-300 border-emerald-400/30 bg-emerald-400/[0.06]'
-                            : 'text-neutral-500 border-neutral-800 bg-neutral-900/50'
+                            : 'text-neutral-400 border-neutral-800 bg-neutral-900/50'
                         }`}
                       >
                         {p.programType}
@@ -223,7 +223,7 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
         )}
 
         {!dbError && rows.length > 0 && (
-          <p className="mt-6 mono text-[10px] uppercase tracking-widest text-neutral-600 flex items-center gap-4">
+          <p className="mt-6 mono text-[10px] uppercase tracking-widest text-neutral-400 flex items-center gap-4">
             <span className="inline-flex items-center gap-1.5">
               <kbd className="px-1.5 py-0.5 border border-neutral-800 rounded text-neutral-400">/</kbd>
               search
@@ -262,7 +262,7 @@ function OpportunityBadge({ program }: OpportunityBadgeProps) {
         ? 'text-emerald-400/70'
         : total >= 25
           ? 'text-neutral-300'
-          : 'text-neutral-600';
+          : 'text-neutral-400';
   const bar =
     total >= 75 ? 'bg-emerald-300' : total >= 50 ? 'bg-emerald-400/70' : total >= 25 ? 'bg-neutral-500' : 'bg-neutral-700';
   // Number plus a tiny gauge so the flagship score reads as a level, not a bare digit.

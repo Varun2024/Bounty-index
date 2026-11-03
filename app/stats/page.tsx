@@ -90,7 +90,7 @@ export default async function StatsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(faqLd(faqs)) }} />
 
       <header>
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-3">Live aggregate</p>
+        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">Live aggregate</p>
         <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50 leading-[1.03]">
           Bug bounty statistics
         </h1>
@@ -135,10 +135,10 @@ export default async function StatsPage() {
                   href={`/programs/${p.platform}/${p.slug}`}
                   className="flex items-center gap-4 py-3 group focus-ring rounded-md -mx-2 px-2 hover:bg-neutral-900/40 transition"
                 >
-                  <span className="mono text-xs text-neutral-600 tabular-nums w-5">{i + 1}</span>
+                  <span className="mono text-xs text-neutral-400 tabular-nums w-5">{i + 1}</span>
                   <span className="flex-1 min-w-0 text-sm text-neutral-100 truncate group-hover:text-emerald-300 transition">
                     {p.name}
-                    <span className="text-neutral-500"> · {platformLabel(p.platform)}</span>
+                    <span className="text-neutral-400"> · {platformLabel(p.platform)}</span>
                   </span>
                   <span className="mono text-sm text-neutral-100 shrink-0 tabular-nums">
                     up to {formatBounty(p.maxBounty, p.currency ?? 'USD')}
@@ -162,7 +162,7 @@ export default async function StatsPage() {
         </div>
       </section>
 
-      <div className="mt-16 pt-6 border-t border-neutral-900 flex flex-wrap items-center gap-x-4 gap-y-2 mono text-xs text-neutral-500">
+      <div className="mt-16 pt-6 border-t border-neutral-900 flex flex-wrap items-center gap-x-4 gap-y-2 mono text-xs text-neutral-400">
         <span className="inline-flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60" />
           updated daily
