@@ -156,7 +156,9 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
                   <th className="hidden md:table-cell text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-20">
                     <Link href="/how-scored" className="hover:text-emerald-400 transition" title="Hunt score: how we sort the index, not expected payout. See /how-scored.">Hunt</Link>
                   </th>
-                  <th className="text-right px-4 md:px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-24 md:w-32">Reward</th>
+                  <th className="text-right px-4 md:px-5 py-3 mono text-[10px] uppercase tracking-widest text-neutral-500 font-normal w-24 md:w-32">
+                    <span title="Stated reward band (or max). A ceiling set by the program, not a typical payout.">Stated reward</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -204,7 +206,9 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
                     </td>
                     <td className="px-4 md:px-5 py-4 mono text-sm text-right tabular-nums">
                       <span className={p.maxBounty ? 'text-neutral-100' : 'text-neutral-700'}>
-                        {formatBounty(p.maxBounty, p.currency ?? 'USD')}
+                        {p.minBounty && p.maxBounty
+                          ? `${formatBounty(p.minBounty, p.currency ?? 'USD')}–${formatBounty(p.maxBounty, p.currency ?? 'USD')}`
+                          : formatBounty(p.maxBounty, p.currency ?? 'USD')}
                       </span>
                     </td>
                   </tr>

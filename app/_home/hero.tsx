@@ -39,7 +39,7 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
                   <span className="mono text-neutral-100 tabular-nums">{programCount}</span> programs across {platformCount} platforms.
                   Filter by scope, asset, payout.
                   {topBounty && (
-                    <> Highest live today: <span className="mono text-neutral-100 tabular-nums">{topBounty}</span>.</>
+                    <> Biggest stated max today: <span className="mono text-neutral-100 tabular-nums" title="Highest maximum bounty a program states. A ceiling, not a typical payout.">{topBounty}</span>.</>
                   )}
                 </>
               ) : (
@@ -82,11 +82,11 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
 
           {top.length > 0 && (
             <aside
-              aria-label="Highest-paying programs right now"
+              aria-label="Programs with the highest stated maximum bounty"
               className="lg:mt-6 lg:sticky lg:top-24"
             >
               <div className="flex items-baseline justify-between mb-4">
-                <p className="text-sm text-neutral-400">paying the most, right now</p>
+                <p className="text-sm text-neutral-400" title="Ranked by the maximum bounty each program states. A ceiling, not a typical payout.">biggest stated max, right now</p>
                 <Link
                   href="/programs?sort=reward"
                   className="mono text-xs text-neutral-400 hover:text-emerald-300 transition focus-ring rounded"

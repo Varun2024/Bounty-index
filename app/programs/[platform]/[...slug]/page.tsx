@@ -129,6 +129,14 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const outOfScope = scopes.filter((s) => !s.inScope);
   const platformDot = PLATFORM_META[program.platform]?.dot ?? 'bg-neutral-500';
   const payout = formatPayoutRange(program.minBounty, program.maxBounty, program.currency ?? 'USD');
+  // Honest label: a lone max is a ceiling, not "the payout". A band is the stated range.
+  const payoutFactLabel = payout
+    ? payout.label === 'payout up to'
+      ? 'max reward'
+      : payout.label === 'payout from'
+        ? 'min reward'
+        : 'reward band'
+    : 'payout';
   const companyDomain = extractCompanyDomain(scopes, program.name);
   const activity = summarizeActivity(snapshots, 7);
   const hasActivity = activity.hasBaseline && (activity.addedCount > 0 || activity.removedCount > 0 || activity.rewardChanged);
@@ -278,9 +286,9 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             {/* Key facts */}
             <div className="w-full">
               <dl className="rounded-xl border border-neutral-900 bg-neutral-950/60 divide-y divide-neutral-900 overflow-hidden">
-                <KeyFact label="payout">
+                <KeyFact label={payoutFactLabel}>
                   {payout ? (
-                    <span className="text-emerald-300">{payout.value}</span>
+                    <span className="text-emerald-300" title="Stated by the program. A ceiling, not a typical or guaranteed payout.">{payout.value}</span>
                   ) : (
                     <span className="text-neutral-600">no bounty</span>
                   )}
