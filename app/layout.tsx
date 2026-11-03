@@ -81,7 +81,7 @@ interface RootLayoutProps {
 function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-4">{title}</p>
+      <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-4">{title}</p>
       <ul className="space-y-2.5">{children}</ul>
     </div>
   );
@@ -139,7 +139,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <header className="sticky top-0 z-20 backdrop-blur-md bg-background/80 border-b border-neutral-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
             <Link href="/" className="mono text-sm tracking-tight flex items-center gap-2.5 group focus-ring rounded-md py-1 -my-1">
-              <Logo size={22} className="text-neutral-500 group-hover:text-neutral-300 transition" />
+              <Logo size={22} className="text-neutral-400 group-hover:text-neutral-300 transition" />
               <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
             </Link>
             <div className="flex items-center gap-1 md:gap-2 text-sm">
@@ -247,7 +247,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <div className="grid grid-cols-2 md:grid-cols-[1.4fr_repeat(4,1fr)] gap-x-8 gap-y-10">
               <div className="col-span-2 md:col-span-1">
                 <Link href="/" className="mono text-sm tracking-tight flex items-center gap-2.5 group focus-ring rounded-md py-1 -my-1 w-fit">
-                  <Logo size={22} className="text-neutral-500 group-hover:text-neutral-300 transition" />
+                  <Logo size={22} className="text-neutral-400 group-hover:text-neutral-300 transition" />
                   <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
                 </Link>
                 <p className="mt-4 text-sm text-neutral-400 leading-relaxed max-w-xs">
@@ -310,7 +310,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </FooterCol>
             </div>
 
-            <div className="mt-16 pt-6 border-t border-neutral-900 flex flex-wrap items-center justify-between gap-x-3 gap-y-4 mono text-xs text-neutral-500">
+            <div className="mt-16 pt-6 border-t border-neutral-900 flex flex-wrap items-center justify-between gap-x-3 gap-y-4 mono text-xs text-neutral-400">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60" />
                 <span className="text-neutral-400">© 2026 bounty.index</span>

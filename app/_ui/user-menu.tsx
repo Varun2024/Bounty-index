@@ -48,7 +48,7 @@ export function UserMenu() {
 
         <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-neutral-800 bg-neutral-950/95 backdrop-blur-md shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7)] overflow-hidden z-30">
           <div className="px-3 pt-3 pb-1">
-            <p className="mono text-[10px] uppercase tracking-widest text-neutral-500">
+            <p className="mono text-[10px] uppercase tracking-widest text-neutral-400">
               no account needed
             </p>
           </div>
@@ -57,7 +57,7 @@ export function UserMenu() {
             <MenuLink href="/compare" icon="◫" label="Compare" />
           </ul>
           <div className="p-3 border-t border-neutral-900">
-            <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2">
+            <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">
               sync across devices
             </p>
             <button
@@ -72,7 +72,7 @@ export function UserMenu() {
               <span className="w-1 h-1 rounded-full bg-emerald-400" />
               2,000+ hunters use this weekly
             </p>
-            <p className="mono text-[10px] text-neutral-600 text-center mt-1">
+            <p className="mono text-[10px] text-neutral-400 text-center mt-1">
               <span className="text-neutral-700">{'// '}</span>
               no emails. we literally don&rsquo;t ask.
             </p>
@@ -109,10 +109,10 @@ export function UserMenu() {
 
       <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-neutral-800 bg-neutral-950/95 backdrop-blur-md shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7)] overflow-hidden z-30">
         <div className="px-4 py-3 border-b border-neutral-900">
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-500">Signed in</p>
+          <p className="mono text-[10px] uppercase tracking-widest text-neutral-400">Signed in</p>
           <p className="mt-1 text-sm text-neutral-100 truncate">{user.name ?? user.email}</p>
           {user.name && user.email ? (
-            <p className="mono text-[11px] text-neutral-500 truncate">{user.email}</p>
+            <p className="mono text-[11px] text-neutral-400 truncate">{user.email}</p>
           ) : null}
         </div>
 
@@ -129,7 +129,7 @@ export function UserMenu() {
             onClick={() => void signOut({ callbackUrl: '/' })}
             className="w-full text-left px-4 py-2 text-sm text-neutral-400 hover:text-neutral-100 hover:bg-neutral-900 transition focus-ring inline-flex items-center gap-3"
           >
-            <span aria-hidden className="text-neutral-600 w-4 text-center">↩</span>
+            <span aria-hidden className="text-neutral-400 w-4 text-center">↩</span>
             sign out
           </button>
         </div>

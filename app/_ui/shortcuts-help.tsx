@@ -106,7 +106,7 @@ export function ShortcutsHelp() {
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close"
-            className="text-neutral-500 hover:text-neutral-200 transition focus-ring rounded h-7 w-7 inline-flex items-center justify-center"
+            className="text-neutral-400 hover:text-neutral-200 transition focus-ring rounded h-7 w-7 inline-flex items-center justify-center"
           >
             <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M6 6l12 12M18 6L6 18" />
@@ -117,7 +117,7 @@ export function ShortcutsHelp() {
         <div className="px-5 py-4 space-y-5">
           {SECTIONS.map((section) => (
             <div key={section.title}>
-              <p className="mono text-[10px] uppercase tracking-widest text-neutral-500 mb-2.5">{section.title}</p>
+              <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2.5">{section.title}</p>
               <ul className="space-y-2">
                 {section.rows.map((row) => (
                   <li key={row.label} className="flex items-center justify-between gap-4">
@@ -126,7 +126,7 @@ export function ShortcutsHelp() {
                       <Keys keys={row.keys} />
                       {row.alt && (
                         <>
-                          <span className="text-neutral-600 text-xs">or</span>
+                          <span className="text-neutral-400 text-xs">or</span>
                           <Keys keys={row.alt} />
                         </>
                       )}

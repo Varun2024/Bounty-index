@@ -18,7 +18,7 @@ interface EmptyStateProps {
 export function EmptyState({ title, children, action, footnote }: EmptyStateProps) {
   return (
     <div className="border border-neutral-900 rounded-lg p-12 bg-neutral-950/40 text-center">
-      <p className="mono text-xs uppercase tracking-widest text-neutral-500">{title}</p>
+      <p className="mono text-xs uppercase tracking-widest text-neutral-400">{title}</p>
       <div className="mt-3 text-sm text-neutral-400 max-w-md mx-auto leading-relaxed">{children}</div>
       {action && (
         <Link
@@ -28,7 +28,7 @@ export function EmptyState({ title, children, action, footnote }: EmptyStateProp
           {action.label}
         </Link>
       )}
-      {footnote && <p className="mt-4 mono text-[11px] text-neutral-500">{footnote}</p>}
+      {footnote && <p className="mt-4 mono text-[11px] text-neutral-400">{footnote}</p>}
     </div>
   );
 }

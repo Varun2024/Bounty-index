@@ -194,7 +194,7 @@ export function CommandPalette() {
             className="relative w-full max-w-[560px] rounded-xl border border-neutral-800 bg-background shadow-[0_24px_80px_-16px_rgba(0,0,0,0.8)] overflow-hidden"
           >
             <div className="flex items-center gap-3 px-4 h-14 border-b border-neutral-900">
-              <svg aria-hidden viewBox="0 0 24 24" width="18" height="18" className="shrink-0 text-neutral-500" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg aria-hidden viewBox="0 0 24 24" width="18" height="18" className="shrink-0 text-neutral-400" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="7" />
                 <path d="m20 20-3.5-3.5" />
               </svg>
@@ -212,16 +212,16 @@ export function CommandPalette() {
                 aria-activedescendant={items[activeIndex] ? `${listboxId}-${activeIndex}` : undefined}
                 aria-label="Search pages, actions, and programs"
                 placeholder="Jump to a page, action, or program"
-                className="flex-1 min-w-0 bg-transparent text-base text-neutral-50 placeholder:text-neutral-500 outline-none"
+                className="flex-1 min-w-0 bg-transparent text-base text-neutral-50 placeholder:text-neutral-400 outline-none"
                 autoComplete="off"
                 spellCheck={false}
               />
-              <kbd className="mono text-[10px] text-neutral-500 px-1.5 py-0.5 border border-neutral-800 rounded">esc</kbd>
+              <kbd className="mono text-[10px] text-neutral-400 px-1.5 py-0.5 border border-neutral-800 rounded">esc</kbd>
             </div>
 
             <ul id={listboxId} role="listbox" aria-label="Results" className="max-h-[52vh] overflow-y-auto py-1.5">
               {items.length === 0 ? (
-                <li className="px-4 py-6 text-sm text-neutral-500 text-center">No matches.</li>
+                <li className="px-4 py-6 text-sm text-neutral-400 text-center">No matches.</li>
               ) : (
                 items.map((item, i) => (
                   <li key={item.key} role="presentation">
@@ -240,9 +240,9 @@ export function CommandPalette() {
                         {item.kind === 'program' ? (
                           <span aria-hidden className="shrink-0 w-1.5 h-1.5 rounded-full bg-emerald-400/70" />
                         ) : item.kind === 'search' ? (
-                          <span aria-hidden className="shrink-0 text-neutral-500 text-xs">↵</span>
+                          <span aria-hidden className="shrink-0 text-neutral-400 text-xs">↵</span>
                         ) : (
-                          <span aria-hidden className="shrink-0 text-neutral-600 text-xs">→</span>
+                          <span aria-hidden className="shrink-0 text-neutral-400 text-xs">→</span>
                         )}
                         <span className="truncate text-sm text-neutral-100">{item.label}</span>
                         {item.kind === 'command' && item.beta && (
@@ -250,7 +250,7 @@ export function CommandPalette() {
                         )}
                       </span>
                       {'hint' in item && item.hint && (
-                        <span className="shrink-0 mono text-[11px] text-neutral-500 truncate max-w-[45%]">{item.hint}</span>
+                        <span className="shrink-0 mono text-[11px] text-neutral-400 truncate max-w-[45%]">{item.hint}</span>
                       )}
                     </button>
                   </li>

@@ -5,7 +5,7 @@ export function UnavailablePanel({ what }: { what: string }) {
         Temporarily unavailable
       </p>
       <p className="text-sm text-neutral-300">{what} paused during a database outage.</p>
-      <p className="mt-2 text-xs text-neutral-500">
+      <p className="mt-2 text-xs text-neutral-400">
         Existing subscriptions and data are safe. Reload in a few minutes.
       </p>
     </div>

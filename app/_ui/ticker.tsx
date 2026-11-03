@@ -17,7 +17,7 @@ export async function Ticker() {
     <div className="border-y border-neutral-900 bg-neutral-950/60 overflow-hidden relative">
       <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-background to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-background to-transparent" />
-      <div className="flex items-center gap-4 md:gap-6 px-4 md:px-8 py-4 md:py-5 mono text-xs text-neutral-500">
+      <div className="flex items-center gap-4 md:gap-6 px-4 md:px-8 py-4 md:py-5 mono text-xs text-neutral-400">
         <span className="mono text-[10px] uppercase tracking-widest text-emerald-400 shrink-0 inline-flex items-center gap-2">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
@@ -33,9 +33,9 @@ export async function Ticker() {
                 <span className={`w-1.5 h-1.5 rounded-full ${PLATFORM_META[p.platform]?.dot ?? 'bg-neutral-500'}`} />
                 <span className="text-neutral-300">{p.name}</span>
                 <span className="text-neutral-700">·</span>
-                <span className="text-neutral-500">{platformLabel(p.platform)}</span>
+                <span className="text-neutral-400">{platformLabel(p.platform)}</span>
                 <span className="text-neutral-700">·</span>
-                <span className={p.maxBounty ? 'text-emerald-300' : 'text-neutral-600'}>
+                <span className={p.maxBounty ? 'text-emerald-300' : 'text-neutral-400'}>
                   {formatBounty(p.maxBounty, p.currency ?? 'USD')}
                 </span>
               </span>

@@ -113,7 +113,7 @@ export function SupportNudge() {
             type="button"
             onClick={() => dismiss(DISMISS_DAYS)}
             aria-label="Dismiss"
-            className="shrink-0 -mt-0.5 h-6 w-6 inline-flex items-center justify-center rounded text-neutral-500 hover:text-neutral-200 transition focus-ring"
+            className="shrink-0 -mt-0.5 h-6 w-6 inline-flex items-center justify-center rounded text-neutral-400 hover:text-neutral-200 transition focus-ring"
           >
             <svg aria-hidden viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M6 6l12 12M18 6L6 18" />
@@ -137,7 +137,7 @@ export function SupportNudge() {
           <span aria-hidden>☕</span> buy me a coffee
         </a>
 
-        <div className="mt-2.5 flex items-center justify-center gap-3 mono text-[11px] text-neutral-500">
+        <div className="mt-2.5 flex items-center justify-center gap-3 mono text-[11px] text-neutral-400">
           {!authed && (
             <>
               <button
