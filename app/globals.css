@@ -230,7 +230,7 @@ html.light .hdb-item { color: rgba(10, 10, 11, 0.9); }
 /* Focus ring, unified */
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 1px var(--background), 0 0 0 3px rgba(52, 211, 153, 0.5);
+  box-shadow: 0 0 0 1px var(--background), 0 0 0 3px rgba(52, 211, 153, 0.7);
   border-radius: 6px;
 }
 
