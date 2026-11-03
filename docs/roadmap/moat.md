@@ -1,6 +1,46 @@
 # moat.md
 
-Retention options for bounty.index, grouped by *mechanism* — the reason a user comes back — because that's the actual moat question, not the feature list. Complement to `ROADMAP.md` (which sequences the shortlist).
+> **Part 1 is the STANDING STRATEGY — decisions, not suggestions.** Every session follows it. Part 2 is the tactical retention catalogue that implements it. If a proposed feature conflicts with Part 1, Part 1 wins.
+
+---
+
+## Part 1 — Standing strategy (locked)
+
+### Core truth
+
+The raw program list comes from a **public upstream mirror** (`arkadiyt/bounty-targets-data`). It is **NOT defensible** — anyone can fork it in a weekend. Our only moat is the **DERIVED layer + distribution**. We are a **sharp neutral cross-platform utility, not a platform.** Staying sharp IS the moat; bloat is how we lose to a cleaner fork.
+
+### Defensibility rules (compounding — a forker starts at zero)
+
+1. **History depth is the #1 asset.** Retain full daily snapshots **forever**, immutable / append-only. Never lose a snapshot. The gap widens every day we run.
+2. **Keep the raw public source public** (trust story), but the **COMPUTED layer** (diffs, resolved scope, history, scores) is **query-only — never a bulk download.**
+3. **Surface derived signals upstream can't have:** per-program change timelines, "expanded scope Nx in 90 days", reward-raised-N-times, volatility ranking.
+4. **Scope resolution is judgment/work, not copyable data** — keep improving accuracy.
+5. **Alerts + watchlist create switching cost.** Push users from "visit the site" to "the site pushes to me" (Discord, RSS, watchlist as the default action).
+
+### Distribution moat (often beats product moat here)
+
+6. **Be the DEFAULT surface, not a bookmark.** The **MCP server is our sharpest edge** — make agents (Claude / Cursor) query our endpoint by default for scope. Every integration = switching cost.
+7. **Long-tail SEO:** a page per program / platform / "is X in scope". Own every indexed URL.
+
+### Honesty rules (non-negotiable — they're why devs trust us)
+
+8. **"Hunt score" ranks the index, it does NOT predict payouts.** Keep the weights published. Never reframe it as expected return.
+9. **Payout headlines are STATED MAX ceilings**, always labeled "up to" / "max" — never shown bare. We do **not** have actual-paid data yet — the fix is scoped in `docs/plans/PLAN_DISCLOSED_REPORTS.md`.
+
+### When to stop (anti-bloat)
+
+No enterprise features, no accounts-as-product, no dashboards, no "platform" ambitions. Don't try to out-data HackerOne — **we win by being the neutral cross-platform layer they'll never build.**
+
+### Monetization (deferred, not decided)
+
+If ever needed, **charge machines not humans** — MCP/API rate limits + team seats. The website stays free.
+
+---
+
+## Part 2 — Retention catalogue (tactics)
+
+Retention options for bounty.index, grouped by *mechanism* — the reason a user comes back — because that's the actual moat question, not the feature list. Complement to `ROADMAP.md` (which sequences the shortlist). Everything here must serve Part 1.
 
 Freshness signal + personal accumulation + workflow integration is what makes people return. Adding more platforms is **not** a moat — bbradar has 24 and hunters still don't check it daily.
 

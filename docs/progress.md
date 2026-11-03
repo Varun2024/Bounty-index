@@ -4,7 +4,7 @@ Session-by-session log of what shipped, why, and what's next.
 
 Complement to:
 - `ROADMAP.md` — what's queued
-- `moat.md` — retention strategy
+- `moat.md` — **standing moat strategy (Part 1, locked decisions)** + retention catalogue (Part 2)
 - `PLAN.md` — original MVP scope + kickoff-era log
 - `BRUTAL_REVIEW.md` — strategic assessment
 
@@ -28,6 +28,19 @@ Phase list:
 - **Next:** `/v1` API + CLI (planned, `PLAN_CLI_API.md`) · then security audit
 
 ---
+
+## 2026-11-03 — Moat strategy recorded as the standing doctrine (decision)
+
+No code. Wrote the moat strategy into `moat.md` as **Part 1 — Standing strategy (locked)**:
+core truth (upstream mirror is not defensible; the derived layer + distribution is the only
+moat; stay a sharp neutral utility, not a platform), 9 compounding defensibility/distribution/
+honesty rules, the anti-bloat stop list, and deferred "charge machines not humans"
+monetization. Every future session follows it; a feature that conflicts with Part 1 loses.
+Also scoped (not built) the highest-leverage moat feature — disclosed-reports ingestion for
+**real** payout/response data the upstream mirror lacks — in `docs/plans/PLAN_DISCLOSED_REPORTS.md`.
+
+**For blog:** writing down your moat as enforceable doctrine, so "don't bloat it" survives the
+builder's own future enthusiasm.
 
 ## 2026-11-01 — SEO / AEO / GEO pass (tiers 1–2)
 
