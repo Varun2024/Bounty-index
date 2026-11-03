@@ -16,6 +16,7 @@ import { ProgramNotes } from '@/app/_ui/program-notes';
 import { CommunityReports } from '@/app/_ui/community-reports';
 import { ScopeColumn, Tag } from './scope-columns';
 import { ProgramTimeline } from './timeline';
+import { ProgramSignalsStrip } from './program-signals';
 import { OpportunityBreakdown } from './opportunity-breakdown';
 import { ScopeMixBar } from './scope-mix-bar';
 import { RecentChanges } from './recent-changes';
@@ -313,6 +314,8 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             </div>
           </div>
         </section>
+
+        <ProgramSignalsStrip snapshots={snapshots} />
 
         <SectionNav />
 

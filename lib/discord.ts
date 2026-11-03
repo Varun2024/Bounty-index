@@ -102,6 +102,12 @@ function summaryLine(diff: SnapshotDiff, currency: string): string {
   if (diff.safeHarborChanged) {
     parts.push(`safe-harbor ${diff.safeHarborChanged.from ?? '·'} → ${diff.safeHarborChanged.to ?? '·'}`);
   }
+  if (diff.bountyTransition) {
+    parts.push(diff.bountyTransition.to ? 'now pays cash' : 'dropped cash bounty');
+  }
+  if (diff.statusChange) {
+    parts.push(`status ${diff.statusChange.from ?? '·'} → ${diff.statusChange.to ?? '·'}`);
+  }
   return parts.join(' · ') || 'changes';
 }
 
@@ -190,6 +196,8 @@ if (require.main === module) {
       removed: ['community.shopify.com'],
       rewardDelta: { from: 50000, to: 75000 },
       safeHarborChanged: null,
+      bountyTransition: null,
+      statusChange: null,
     },
     {
       programName: 'Shopify',

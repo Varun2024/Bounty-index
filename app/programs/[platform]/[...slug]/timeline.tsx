@@ -104,6 +104,23 @@ function TimelineEntry({ entry, currency }: TimelineEntryProps) {
             <span className="text-emerald-300">{diff.safeHarborChanged.to ?? 'unknown'}</span>
           </p>
         )}
+        {diff.bountyTransition && (
+          <p className="mono text-xs">
+            {diff.bountyTransition.to ? (
+              <span className="text-emerald-300">VDP → now pays cash</span>
+            ) : (
+              <span className="text-red-400">dropped cash bounty → VDP</span>
+            )}
+          </p>
+        )}
+        {diff.statusChange && (
+          <p className="mono text-xs">
+            <span className="text-neutral-500">status: </span>
+            <span className="text-neutral-500 line-through">{diff.statusChange.from ?? 'unknown'}</span>
+            <span className="text-neutral-700"> → </span>
+            <span className="text-neutral-200">{diff.statusChange.to ?? 'unknown'}</span>
+          </p>
+        )}
         {diff.added.length > 0 && (
           <p className="mono text-xs">
             <span className="text-emerald-400">+ added </span>

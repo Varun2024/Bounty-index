@@ -23,12 +23,16 @@ export async function GET(req: Request): Promise<Response> {
       }
       if (c.diff.rewardDelta) parts.push(`Max reward: ${c.diff.rewardDelta.from ?? '·'} → ${c.diff.rewardDelta.to ?? '·'}`);
       if (c.diff.safeHarborChanged) parts.push(`Safe harbor: ${c.diff.safeHarborChanged.from ?? '·'} → ${c.diff.safeHarborChanged.to ?? '·'}`);
+      if (c.diff.bountyTransition) parts.push(c.diff.bountyTransition.to ? 'Now pays cash (was VDP)' : 'Dropped cash bounty');
+      if (c.diff.statusChange) parts.push(`Status: ${c.diff.statusChange.from ?? '·'} → ${c.diff.statusChange.to ?? '·'}`);
 
       const titleBits: string[] = [];
       if (c.diff.added.length) titleBits.push(`+${c.diff.added.length}`);
       if (c.diff.removed.length) titleBits.push(`−${c.diff.removed.length}`);
       if (c.diff.rewardDelta) titleBits.push('reward change');
       if (c.diff.safeHarborChanged) titleBits.push('safe-harbor change');
+      if (c.diff.bountyTransition) titleBits.push(c.diff.bountyTransition.to ? 'now paid' : 'bounty dropped');
+      if (c.diff.statusChange) titleBits.push('status change');
       const title = `${c.program.name} · ${titleBits.join(' · ')}`;
 
       return `<item>

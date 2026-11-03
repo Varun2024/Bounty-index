@@ -13,7 +13,15 @@ const CURRENCY_SYMBOL: Record<string, string> = { USD: '$', EUR: '€', GBP: '£
 
 // Walks the snapshot array back-to-front and emits diff entries. `snapshots` is oldest→newest.
 export function RecentChanges({ snapshots, currency, limit = 5 }: RecentChangesProps) {
-  const events: { at: Date; added: string[]; removed: string[]; rewardDelta: { from: number | null; to: number | null } | null; safeHarborChanged: { from: string | null; to: string | null } | null }[] = [];
+  const events: {
+    at: Date;
+    added: string[];
+    removed: string[];
+    rewardDelta: { from: number | null; to: number | null } | null;
+    safeHarborChanged: { from: string | null; to: string | null } | null;
+    bountyTransition: { from: boolean; to: boolean } | null;
+    statusChange: { from: string | null; to: string | null } | null;
+  }[] = [];
   for (let i = snapshots.length - 1; i > 0 && events.length < limit; i--) {
     const d = diffSnapshots(snapshots[i - 1].payload, snapshots[i].payload);
     if (!d || isEmptyDiff(d)) continue;
@@ -23,6 +31,8 @@ export function RecentChanges({ snapshots, currency, limit = 5 }: RecentChangesP
       removed: d.removed,
       rewardDelta: d.rewardDelta,
       safeHarborChanged: d.safeHarborChanged,
+      bountyTransition: d.bountyTransition,
+      statusChange: d.statusChange,
     });
   }
 
@@ -60,6 +70,16 @@ export function RecentChanges({ snapshots, currency, limit = 5 }: RecentChangesP
                   {e.safeHarborChanged && (
                     <span className="text-neutral-300">
                       safe-harbor {e.safeHarborChanged.from ?? '·'} → {e.safeHarborChanged.to ?? '·'}
+                    </span>
+                  )}
+                  {e.bountyTransition && (
+                    <span className={e.bountyTransition.to ? 'text-emerald-300' : 'text-red-400'}>
+                      {e.bountyTransition.to ? 'now pays cash' : 'dropped cash bounty'}
+                    </span>
+                  )}
+                  {e.statusChange && (
+                    <span className="text-neutral-300">
+                      status {e.statusChange.from ?? '·'} → {e.statusChange.to ?? '·'}
                     </span>
                   )}
                 </div>

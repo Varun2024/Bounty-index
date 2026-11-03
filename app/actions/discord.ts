@@ -143,6 +143,8 @@ export async function testWebhookUrl(
       removed: [],
       rewardDelta: { from: 5000, to: 10000 },
       safeHarborChanged: null,
+      bountyTransition: null,
+      statusChange: null,
     },
     {
       programName: 'bounty.index · test alert',
@@ -275,6 +277,8 @@ export async function testWebhook(id: number): Promise<{ ok: true } | { ok: fals
     removed: [`legacy.${row.programSlug}.example`],
     rewardDelta: { from: 5000, to: 7500 },
     safeHarborChanged: null,
+    bountyTransition: null,
+    statusChange: null,
   };
 
   const embed = formatDiffEmbed(sampleDiff, {

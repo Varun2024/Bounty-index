@@ -259,7 +259,7 @@ export function registerCoreTools(server: McpServer): void {
     {
       title: 'Recent scope / reward / safe-harbor changes',
       description:
-        'Returns non-empty snapshot diffs (scope added, scope removed, reward changed, safe-harbor changed) across all programs in a rolling window.',
+        'Returns non-empty snapshot diffs (scope added, scope removed, reward changed, safe-harbor changed, VDP↔paid transition, status changed) across all programs in a rolling window.',
       inputSchema: z.object({
         hoursBack: z.number().int().positive().max(720).optional().describe('Window size in hours. Default 168 (7 days), max 720 (30 days).'),
         limit: z.number().int().positive().max(500).optional().describe('Max events. Default 100, hard max 500.'),
@@ -277,6 +277,8 @@ export function registerCoreTools(server: McpServer): void {
           removed: c.diff.removed,
           rewardDelta: c.diff.rewardDelta,
           safeHarborChanged: c.diff.safeHarborChanged,
+          bountyTransition: c.diff.bountyTransition,
+          statusChange: c.diff.statusChange,
         })),
       });
     },

@@ -37,12 +37,16 @@ export async function GET(req: Request, ctx: RouteContext): Promise<Response> {
     if (diff.removed.length) parts.push(`−${diff.removed.length} removed: ${diff.removed.slice(0, 10).join(', ')}${diff.removed.length > 10 ? `, +${diff.removed.length - 10} more` : ''}`);
     if (diff.rewardDelta) parts.push(`Max reward: ${diff.rewardDelta.from ?? '·'} → ${diff.rewardDelta.to ?? '·'}`);
     if (diff.safeHarborChanged) parts.push(`Safe harbor: ${diff.safeHarborChanged.from ?? '·'} → ${diff.safeHarborChanged.to ?? '·'}`);
+    if (diff.bountyTransition) parts.push(diff.bountyTransition.to ? 'Now pays cash (was VDP)' : 'Dropped cash bounty');
+    if (diff.statusChange) parts.push(`Status: ${diff.statusChange.from ?? '·'} → ${diff.statusChange.to ?? '·'}`);
 
     const titleBits: string[] = [];
     if (diff.added.length) titleBits.push(`+${diff.added.length}`);
     if (diff.removed.length) titleBits.push(`−${diff.removed.length}`);
     if (diff.rewardDelta) titleBits.push('reward change');
     if (diff.safeHarborChanged) titleBits.push('safe-harbor change');
+    if (diff.bountyTransition) titleBits.push(diff.bountyTransition.to ? 'now paid' : 'bounty dropped');
+    if (diff.statusChange) titleBits.push('status change');
     const title = `${result.program.name} · ${titleBits.join(' · ')}`;
 
     const capturedAt = new Date(cur.capturedAt);
