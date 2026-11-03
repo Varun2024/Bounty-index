@@ -74,10 +74,10 @@ export function LifecycleChart({ snapshots }: LifecycleChartProps) {
   return (
     <div className="mb-4 border border-neutral-900 rounded-lg bg-neutral-950/40 p-3">
       <div className="flex items-baseline justify-between mb-1.5 px-1">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600">
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">
           in-scope over <span className="text-neutral-300 tabular-nums">{durationDays}d</span>
         </span>
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-600 tabular-nums">
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
           peak <span className="text-neutral-300">{maxCount}</span>
         </span>
       </div>
@@ -159,7 +159,7 @@ export function LifecycleChart({ snapshots }: LifecycleChartProps) {
           {endLabel}
         </text>
       </svg>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 px-1 mono text-[10px] text-neutral-600">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 px-1 mono text-[10px] text-neutral-400">
         <LegendDot color={KIND_FILL.first} label="first indexed" />
         <LegendDot color={KIND_FILL.add} label="scope added" />
         <LegendDot color={KIND_FILL.remove} label="scope removed" />
