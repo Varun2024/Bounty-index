@@ -95,6 +95,43 @@ export const programSnapshots = pgTable(
   }),
 );
 
+// Disclosed bug-bounty reports scraped from public sources (H1 Hacktivity first).
+// The one public record of what programs ACTUALLY pay + how fast they respond —
+// data the upstream mirror can't have. See docs/plans/PLAN_DISCLOSED_REPORTS.md.
+// Immutable + append-only (moat rule 1): no update/delete job, ever. A report is
+// fixed once disclosed, so ingest is insert-if-new on (platform, external_id)
+// (onConflictDoNothing) — NOT the hash-vs-latest compare maybeSnapshot uses for
+// mutable program state. content_hash only makes a corrected re-crawl detectable;
+// it never overwrites history. program_id is nullable: unmapped reports are stored
+// with the raw handle and resolved on a later run, never blocking ingest.
+// bounty_amount is nullable = "not disclosed" (never 0 — honor hide-amount choices).
+export const disclosedReports = pgTable(
+  'disclosed_reports',
+  {
+    id: serial('id').primaryKey(),
+    platform: text('platform').notNull(), // hackerone | bugcrowd | ...
+    externalId: text('external_id').notNull(), // report id / canonical URL
+    programId: integer('program_id').references(() => programs.id, { onDelete: 'set null' }), // nullable
+    programHandle: text('program_handle'), // raw handle, for later mapping
+    title: text('title'),
+    severity: text('severity'), // normalized to our vocab where possible
+    bountyAmount: integer('bounty_amount'), // null = not disclosed, never 0
+    currency: text('currency'), // no default — the report states its own
+    submittedAt: timestamp('submitted_at', { withTimezone: true }),
+    firstResponseAt: timestamp('first_response_at', { withTimezone: true }),
+    resolvedAt: timestamp('resolved_at', { withTimezone: true }),
+    disclosedAt: timestamp('disclosed_at', { withTimezone: true }).notNull(),
+    researcher: text('researcher'), // nullable, only if public
+    contentHash: text('content_hash').notNull(), // detects a corrected re-crawl
+    payload: jsonb('payload').notNull(), // raw record for reprocessing without re-crawl
+    capturedAt: timestamp('captured_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    platformExternalUq: uniqueIndex('disclosed_reports_platform_external_uq').on(t.platform, t.externalId),
+    programDisclosedIdx: index('disclosed_reports_program_disclosed_idx').on(t.programId, t.disclosedAt),
+  }),
+);
+
 // --- Auth.js v5 tables (Drizzle adapter shape) ---
 // User rows are created on first OAuth sign-in via @auth/drizzle-adapter.
 // See https://authjs.dev/getting-started/adapters/drizzle for the required shape.
@@ -323,4 +360,6 @@ export type Scope = typeof scopes.$inferSelect;
 export type NewScope = typeof scopes.$inferInsert;
 export type ProgramSnapshot = typeof programSnapshots.$inferSelect;
 export type NewProgramSnapshot = typeof programSnapshots.$inferInsert;
+export type DisclosedReport = typeof disclosedReports.$inferSelect;
+export type NewDisclosedReport = typeof disclosedReports.$inferInsert;
 export type User = typeof users.$inferSelect;
