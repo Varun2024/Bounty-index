@@ -459,5 +459,15 @@ export async function ingestAll() {
   } catch (e) {
     results.push({ platform: 'hackenproof', error: e instanceof Error ? e.message : String(e) });
   }
+  // Disclosed reports (H1 Hacktivity) — append-only real-payout/response data the upstream mirror
+  // can't have. Isolated: a GraphQL shape drift here never aborts program ingest. See
+  // docs/plans/PLAN_DISCLOSED_REPORTS.md (Phase 1, data-only gate).
+  try {
+    const { ingestHackeroneDisclosed } = await import('./disclosed/hackerone');
+    const r = await ingestHackeroneDisclosed();
+    results.push({ ...r });
+  } catch (e) {
+    results.push({ platform: 'hackerone-disclosed', error: e instanceof Error ? e.message : String(e) });
+  }
   return results;
 }
