@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { revalidateTag } from 'next/cache';
+import { timingSafeEqual } from 'node:crypto';
 import { ingestAll } from '@/lib/ingest/bounty-targets';
 import { deliverDiscordAlerts } from '@/lib/ingest/deliver-discord';
 import { PROGRAMS_CACHE_TAG } from '@/lib/db/queries';
@@ -7,8 +8,15 @@ import { PROGRAMS_CACHE_TAG } from '@/lib/db/queries';
 export const maxDuration = 300;
 
 export async function GET(req: Request) {
-  const auth = req.headers.get('authorization');
-  if (process.env.CRON_SECRET && auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  // Fail CLOSED: an unset CRON_SECRET must lock the route, not open it. Vercel Cron sends this
+  // Bearer header automatically when CRON_SECRET is configured, so this must stay set in Production.
+  // Timing-safe compare; the length guard keeps timingSafeEqual from throwing on unequal lengths.
+  const secret = process.env.CRON_SECRET;
+  const got = req.headers.get('authorization') ?? '';
+  const want = secret ? `Bearer ${secret}` : '';
+  const authorized =
+    !!secret && got.length === want.length && timingSafeEqual(Buffer.from(got), Buffer.from(want));
+  if (!authorized) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
   const startedAt = new Date();
