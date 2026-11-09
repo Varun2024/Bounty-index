@@ -26,6 +26,12 @@ function reviveDates<T>(x: T): T {
     return x;
   }
   for (const k of Object.keys(x as object)) {
+    // Never descend into the jsonb blobs. `raw` (upstream record) and `payload` (snapshot) hold
+    // arbitrary upstream strings — some can look exactly like ISO datetimes (a scope instruction,
+    // a description). Reviving those to Date corrupts them; a later `.toLowerCase()`/`.includes()`
+    // on what the caller still believes is a string then throws at render. Real timestamp COLUMNS
+    // are always top-level keys, so skipping these two loses no genuine Date.
+    if (k === 'raw' || k === 'payload') continue;
     const v = (x as Record<string, unknown>)[k];
     if (typeof v === 'string' && ISO_RE.test(v)) (x as Record<string, unknown>)[k] = new Date(v);
     else if (v && typeof v === 'object') reviveDates(v);
@@ -87,6 +93,20 @@ export function isDbDegraded(): boolean {
   return breakerOpenedAt > 0 && Date.now() - breakerOpenedAt < BREAKER_COOLDOWN_MS;
 }
 
+// Only infra-class failures (Neon down / quota / network) should open the breaker. A code or SQL
+// bug (a bad column, a syntax error) must NOT — opening the breaker on it would serve stale
+// fallback for 5min and hide the bug. Non-infra errors still fall back for the request (no 500),
+// but every request keeps retrying + logging so the bug stays visible and clears the instant it's fixed.
+function isInfraError(err: unknown): boolean {
+  const m = (err instanceof Error ? err.message : String(err)).toLowerCase();
+  return (
+    m.includes('fetch failed') || m.includes('econnrefused') || m.includes('etimedout') ||
+    m.includes('timeout') || m.includes('network') || m.includes('quota') ||
+    m.includes('rate limit') || m.includes('too many connections') || m.includes('connection') ||
+    m.includes('429') || m.includes('502') || m.includes('503') || m.includes('504')
+  );
+}
+
 async function withFallback<T>(primary: () => Promise<T>, fallback: () => Promise<T>, label: string): Promise<T> {
   if (isDbDegraded()) return fallback();
   try {
@@ -95,8 +115,12 @@ async function withFallback<T>(primary: () => Promise<T>, fallback: () => Promis
     breakerOpenedAt = 0;
     return result;
   } catch (err) {
-    breakerFailures++;
-    if (breakerFailures >= BREAKER_THRESHOLD) breakerOpenedAt = Date.now();
+    if (isInfraError(err)) {
+      breakerFailures++;
+      if (breakerFailures >= BREAKER_THRESHOLD) breakerOpenedAt = Date.now();
+    } else {
+      console.error(`[db-fallback] ${label} → NON-INFRA error (breaker NOT tripped):`, err instanceof Error ? (err.stack ?? err.message) : err);
+    }
     console.error(`[db-fallback] ${label} → upstream:`, err instanceof Error ? err.message : err);
     return fallback();
   }
@@ -583,37 +607,37 @@ async function getRecentChangesUncached(hoursBack = 168, limit = 200): Promise<R
 // --- Public read exports: DB first, upstream fallback on any failure. ---
 // Each wrapped in unstable_cache so repeated page views don't re-hit the DB.
 // Ingest cron busts via revalidateTag(PROGRAMS_CACHE_TAG) after writes.
-export const listPrograms = cachedWithDates(
-  (f: ProgramFilters = {}) => withFallback(() => listProgramsDb(f), () => listProgramsFallback(f), 'listPrograms'),
+// Degraded reads bypass the cache. unstable_cache persists whatever withFallback returns, so a
+// fallback result produced during an outage would be cached as if it were real DB data and served
+// for up to CACHE_REVALIDATE after the DB recovered. Once the breaker is open we skip the cache and
+// serve fresh fallback directly (which has its own in-memory store + Next fetch cache, so it's
+// cheap) — nothing stale is ever written. Healthy path is unchanged: the cached DB read.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function degradable<Args extends any[], R>(
+  dbFn: (...a: Args) => Promise<R>,
+  fbFn: (...a: Args) => Promise<R>,
+  keys: string[],
+  label: string,
+): (...a: Args) => Promise<R> {
+  const cached = cachedWithDates(
+    (...a: Args) => withFallback(() => dbFn(...a), () => fbFn(...a), label),
+    keys,
+    { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+  );
+  return (...a: Args) => (isDbDegraded() ? fbFn(...a) : cached(...a));
+}
+
+export const listPrograms = degradable(
+  (f: ProgramFilters = {}) => listProgramsDb(f),
+  (f: ProgramFilters = {}) => listProgramsFallback(f),
   ['listPrograms'],
-  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+  'listPrograms',
 );
-export const getProgramsByIds = cachedWithDates(
-  (ids: number[]) => withFallback(() => getProgramsByIdsDb(ids), () => getProgramsByIdsFallback(ids), 'getProgramsByIds'),
-  ['getProgramsByIds'],
-  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
-);
-export const getProgramBySlug = cachedWithDates(
-  (platform: string, slug: string) =>
-    withFallback(() => getProgramBySlugDb(platform, slug), () => getProgramBySlugFallback(platform, slug), 'getProgramBySlug'),
-  ['getProgramBySlug'],
-  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
-);
-export const findByDomain = cachedWithDates(
-  (domain: string) => withFallback(() => findByDomainDb(domain), () => findByDomainFallback(domain), 'findByDomain'),
-  ['findByDomain'],
-  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
-);
-export const topPayouts = cachedWithDates(
-  (limit = 5) => withFallback(() => topPayoutsDb(limit), () => topPayoutsFallback(limit), 'topPayouts'),
-  ['topPayouts'],
-  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
-);
-export const stats = cachedWithDates(
-  () => withFallback(() => statsDb(), () => statsFallback(), 'stats'),
-  ['stats'],
-  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
-);
+export const getProgramsByIds = degradable(getProgramsByIdsDb, getProgramsByIdsFallback, ['getProgramsByIds'], 'getProgramsByIds');
+export const getProgramBySlug = degradable(getProgramBySlugDb, getProgramBySlugFallback, ['getProgramBySlug'], 'getProgramBySlug');
+export const findByDomain = degradable(findByDomainDb, findByDomainFallback, ['findByDomain'], 'findByDomain');
+export const topPayouts = degradable((limit = 5) => topPayoutsDb(limit), (limit = 5) => topPayoutsFallback(limit), ['topPayouts'], 'topPayouts');
+export const stats = degradable(statsDb, statsFallback, ['stats'], 'stats');
 
 // Total MCP requests served (all-time count of logged calls). Real usage signal for the
 // homepage heartbeat. Best-effort: returns 0 on any error (incl. the table not existing

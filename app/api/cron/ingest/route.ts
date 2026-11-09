@@ -28,5 +28,10 @@ export async function GET(req: Request) {
   }));
   // Bust all cached public reads so visitors see fresh data within one page load.
   revalidateTag(PROGRAMS_CACHE_TAG, 'default');
-  return NextResponse.json({ ok: true, results, discord });
+  // Report real health so Vercel's cron dashboard flags a dead run. Each source returns either
+  // its counters or an { error }. If EVERY source failed (network down, etc.) return 500 so the
+  // run shows failed instead of a green ok:true hiding a total outage.
+  const failures = results.filter((r) => typeof r.error === 'string').length;
+  const allFailed = results.length > 0 && failures === results.length;
+  return NextResponse.json({ ok: !allFailed, failures, results, discord }, { status: allFailed ? 500 : 200 });
 }
