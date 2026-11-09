@@ -1,18 +1,22 @@
+import { CHART, CHART_SERIES } from '@/app/_ui/chart';
+
 interface ScopeMixBarProps {
   mix: { type: string; count: number }[];
 }
 
-// ponytail: color-per-asset-type is a map, not a function. Adding a type? one line.
+// Asset-type → a FIXED slot in the validated categorical ramp (entity-stable: "url" is the same
+// blue on every program, never repainted by rank). Unknown types fall to the AA-safe neutral.
+// ponytail: a map, not a function — adding a type is one line.
 const COLORS: Record<string, string> = {
-  wildcard: '#34d399',       // emerald-400
-  url: '#60a5fa',            // blue-400
-  api: '#22d3ee',            // cyan-400
-  android: '#fb923c',        // orange-400
-  ios: '#f472b6',            // pink-400
-  source_code: '#a78bfa',    // violet-400
-  hardware: '#f87171',       // red-400
-  smart_contract: '#facc15', // yellow-400
-  other: '#737373',          // neutral-500
+  url: CHART_SERIES[0], // blue
+  api: CHART_SERIES[1], // orange
+  wildcard: CHART_SERIES[2], // aqua
+  android: CHART_SERIES[3], // yellow
+  ios: CHART_SERIES[4], // magenta
+  smart_contract: CHART_SERIES[5], // green
+  source_code: CHART_SERIES[6], // violet
+  hardware: CHART_SERIES[7], // red
+  other: CHART.axis, // neutral-400 (was neutral-500 — failed AA)
 };
 
 const LABELS: Record<string, string> = {
@@ -39,8 +43,10 @@ export function ScopeMixBar({ mix }: ScopeMixBarProps) {
           {total} in-scope
         </p>
       </div>
+      {/* 2px gap between segments reveals the surface beneath — the secondary encoding that lets
+          adjacent hues stay legible under colour-vision deficiency, paired with the labelled list below. */}
       <div
-        className="flex h-2.5 rounded-full overflow-hidden border border-neutral-900 bg-neutral-950"
+        className="flex h-2.5 rounded-full overflow-hidden border border-neutral-900 bg-neutral-950 gap-[2px]"
         role="img"
         aria-label={`Scope mix: ${mix.map((b) => `${b.count} ${LABELS[b.type] ?? b.type}`).join(', ')}`}
       >

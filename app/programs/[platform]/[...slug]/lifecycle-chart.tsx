@@ -1,5 +1,6 @@
 import type { ProgramSnapshot } from '@/lib/db/queries';
 import { diffSnapshots } from '@/lib/snapshots';
+import { CHART, CHART_STATUS } from '@/app/_ui/chart';
 
 interface LifecycleChartProps {
   snapshots: ProgramSnapshot[]; // chronological, oldest → newest
@@ -16,16 +17,16 @@ const PLOT_H = VIEWBOX_H - PAD_TOP - PAD_BOTTOM;
 
 type EventKind = 'first' | 'add' | 'remove' | 'both' | 'reward' | 'quiet';
 
-// Point fill for each event kind. Neutral for the baseline snapshot, emerald/amber for
-// scope movement, cyan when the payout amount shifted, muted for a snapshot that carried
-// no meaningful diff (rare — snapshots dedup by content hash).
+// Point fill per event kind, from the shared chart vocabulary: accent for scope added, warn for
+// removed, info when the payout amount shifted, muted axis-grey for the baseline snapshot, zero-grey
+// for a snapshot that carried no meaningful diff (rare — snapshots dedup by content hash).
 const KIND_FILL: Record<EventKind, string> = {
-  first: '#525252', // neutral-600
-  add: '#34d399', // emerald-400
-  remove: '#fbbf24', // amber-400
-  both: '#34d399',
-  reward: '#22d3ee', // cyan-400
-  quiet: '#404040', // neutral-700
+  first: CHART.axis,
+  add: CHART.accent,
+  remove: CHART_STATUS.warn,
+  both: CHART.accent,
+  reward: CHART_STATUS.info,
+  quiet: CHART.zero,
 };
 
 function classifyEvent(i: number, snapshots: ProgramSnapshot[]): EventKind {
@@ -94,7 +95,7 @@ export function LifecycleChart({ snapshots }: LifecycleChartProps) {
           y1={PAD_TOP + PLOT_H}
           x2={VIEWBOX_W - PAD_RIGHT}
           y2={PAD_TOP + PLOT_H}
-          stroke="#171717"
+          stroke={CHART.baseline}
           strokeWidth="1"
         />
         {/* y-max tick */}
@@ -103,7 +104,7 @@ export function LifecycleChart({ snapshots }: LifecycleChartProps) {
           y={PAD_TOP + 4}
           fontSize="8"
           textAnchor="end"
-          fill="#525252"
+          fill={CHART.axis}
           fontFamily="ui-monospace, monospace"
         >
           {yTop}
@@ -113,15 +114,15 @@ export function LifecycleChart({ snapshots }: LifecycleChartProps) {
           y={PAD_TOP + PLOT_H + 3}
           fontSize="8"
           textAnchor="end"
-          fill="#525252"
+          fill={CHART.axis}
           fontFamily="ui-monospace, monospace"
         >
           0
         </text>
         {/* area fill */}
-        <path d={areaPath} fill="#34d399" fillOpacity="0.06" />
+        <path d={areaPath} fill={CHART.accent} fillOpacity="0.06" />
         {/* line */}
-        <path d={linePath} fill="none" stroke="#34d399" strokeOpacity="0.6" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+        <path d={linePath} fill="none" stroke={CHART.accent} strokeOpacity="0.6" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
         {/* points */}
         {points.map((p, i) => (
           <circle
@@ -130,7 +131,7 @@ export function LifecycleChart({ snapshots }: LifecycleChartProps) {
             cy={p.y}
             r={p.kind === 'first' || p.kind === 'quiet' ? 2.2 : 3}
             fill={KIND_FILL[p.kind]}
-            stroke="#0a0a0a"
+            stroke={CHART.ring}
             strokeWidth="1"
           >
             <title>
@@ -143,7 +144,7 @@ export function LifecycleChart({ snapshots }: LifecycleChartProps) {
           x={PAD_LEFT}
           y={VIEWBOX_H - 6}
           fontSize="9"
-          fill="#525252"
+          fill={CHART.axis}
           fontFamily="ui-monospace, monospace"
         >
           {startLabel}
@@ -153,7 +154,7 @@ export function LifecycleChart({ snapshots }: LifecycleChartProps) {
           y={VIEWBOX_H - 6}
           fontSize="9"
           textAnchor="end"
-          fill="#525252"
+          fill={CHART.axis}
           fontFamily="ui-monospace, monospace"
         >
           {endLabel}
