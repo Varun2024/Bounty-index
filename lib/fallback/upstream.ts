@@ -173,6 +173,10 @@ export async function listProgramsFallback(f: ProgramFilters = {}) {
   if (f.hasBounty) rows = rows.filter((p) => p.offersBounty);
   if (f.minReward) rows = rows.filter((p) => (p.maxBounty ?? 0) >= f.minReward!);
   if (f.safeHarbor) rows = rows.filter((p) => p.safeHarbor && p.safeHarbor !== 'none');
+  // Disclosed-payout data lives only in the DB, not the upstream mirror. In degraded mode we can't
+  // honor this filter, so return empty (an honest "nothing") rather than silently dropping it and
+  // showing the full list with no real-payout lines.
+  if (f.hasDisclosed) rows = [];
   if (f.assetType?.length) {
     const set = new Set(f.assetType);
     rows = rows.filter((p) => (store.scopesByProgram.get(p.id) ?? []).some((s) => s.inScope && set.has(s.assetType)));
@@ -190,7 +194,13 @@ export async function listProgramsFallback(f: ProgramFilters = {}) {
 
   const total = rows.length;
   const offset = (page - 1) * pageSize;
-  return { rows: rows.slice(offset, offset + pageSize), total, page, pageSize };
+  // Shape-match the DB path: it returns each program plus its disclosed-payout aggregates. The
+  // upstream mirror has no disclosed data, so they're null/0 here (hasDisclosed/sort=disclosed are
+  // no-ops in this degraded mode — correct, since we can't know real payouts without the DB).
+  const withDisclosed = rows
+    .slice(offset, offset + pageSize)
+    .map((p) => ({ ...p, disclosedMedian: null as number | null, disclosedN: 0 }));
+  return { rows: withDisclosed, total, page, pageSize };
 }
 
 // On-demand Immunefi scope hydration: the Stage-1 fallback list has no scopes because

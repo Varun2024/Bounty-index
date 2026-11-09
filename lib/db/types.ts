@@ -10,7 +10,11 @@ export interface ProgramFilters {
   minReward?: number;
   hasBounty?: boolean;
   safeHarbor?: boolean; // true = only programs with confirmed safe harbor (full or partial)
-  sort?: 'newest' | 'reward' | 'name' | 'opportunity';
+  hasDisclosed?: boolean; // true = only programs with >= AGGREGATE_MIN_N disclosed payout amounts (a real median)
+  // Internal (not a URL param): the /programs page sets this so each row carries its disclosed median
+  // for display. Other callers leave it off to skip the per-row subquery cost.
+  withDisclosed?: boolean;
+  sort?: 'newest' | 'reward' | 'name' | 'opportunity' | 'disclosed';
   page?: number;
   pageSize?: number;
 }

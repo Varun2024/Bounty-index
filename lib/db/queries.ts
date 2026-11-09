@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { db, schema } from './client';
-import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne } from 'drizzle-orm';
+import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne, getTableColumns } from 'drizzle-orm';
+import { AGGREGATE_MIN_N } from '../disclosed';
 import type { ProgramReportStats } from '../reports';
 
 // ponytail: single tag busts every public read cache from the ingest cron.
@@ -150,7 +151,37 @@ async function listProgramsDb(f: ProgramFilters = {}) {
     if (!programIdsByAsset.length) return { rows: [], total: 0, page, pageSize };
   }
 
-  const finalWhere = programIdsByAsset ? and(where, inArray(schema.programs.id, programIdsByAsset)) : where;
+  // Per-program disclosed-payout aggregates, computed as correlated subqueries so the list can
+  // filter and sort on "real" (actually-paid) data without denormalizing. USD-only (null currency =
+  // USD, case-insensitive, amount > 0 — matching lib/disclosed.ts): >99% of disclosed amounts are
+  // already USD, and doing FX in SQL isn't worth it for a list ranking — a `ponytail:` corner.
+  //
+  // The inner table is aliased `dr` and the outer correlation is the literal "programs"."id": inside
+  // a sql`` template drizzle renders a column ref unqualified ("id"), which Postgres binds to
+  // disclosed_reports.id (the inner scope) — silently returning 0. Aliasing + an explicit outer
+  // qualifier is the only correct correlation. ("programs" is the un-aliased table name below.)
+  //
+  // ponytail: each aggregate is a correlated subquery, so a page costs ~2 index lookups per returned
+  // row (and the hasDisclosed/sort filters scan all ~1.2k programs once). Fine at this scale + 300s
+  // cache; upgrade to a LATERAL join or grouped CTE if the catalog grows past a few thousand.
+  const drWhere = sql`dr.program_id = "programs"."id" AND dr.bounty_amount IS NOT NULL AND dr.bounty_amount > 0 AND (dr.currency IS NULL OR upper(dr.currency) = 'USD')`;
+  const medianSub = sql<number | null>`(SELECT ROUND(percentile_cont(0.5) WITHIN GROUP (ORDER BY dr.bounty_amount))::int FROM ${schema.disclosedReports} dr WHERE ${drWhere})`;
+  const countSub = sql<number>`(SELECT count(dr.bounty_amount)::int FROM ${schema.disclosedReports} dr WHERE ${drWhere})`;
+
+  // Only pay for the subqueries when a caller needs them: the /programs page (withDisclosed) shows a
+  // real-payout line on every row, and the disclosed filter/sort need them. Other callers (export up
+  // to 5000 rows, MCP, search) get NULL/0 constants and no subquery cost or extra output columns.
+  const needDisclosed = Boolean(f.withDisclosed || f.hasDisclosed || f.sort === 'disclosed');
+  const disclosedMedian = needDisclosed ? medianSub : sql<number | null>`NULL`;
+  const disclosedN = needDisclosed ? countSub : sql<number>`0`;
+
+  // Median is an aggregate statistic — gate the filter on AGGREGATE_MIN_N (not the individual-amount
+  // tier), matching lib/disclosed.ts: a median over fewer than 8 points is noise. The row display is
+  // gated on the same constant in app/programs/page.tsx.
+  const disclosedWhere = f.hasDisclosed ? and(where, sql`${countSub} >= ${AGGREGATE_MIN_N}`) : where;
+  const finalWhere = programIdsByAsset
+    ? and(disclosedWhere, inArray(schema.programs.id, programIdsByAsset))
+    : disclosedWhere;
 
   // When a search term is present, always sort by relevance first, then fall back to the user's chosen sort.
   const secondarySort =
@@ -160,13 +191,23 @@ async function listProgramsDb(f: ProgramFilters = {}) {
         ? schema.programs.name
         : f.sort === 'opportunity'
           ? sql`${opportunityScoreSql()} DESC`
-          : sql`${schema.programs.firstSeenAt} DESC NULLS LAST`;
+          : f.sort === 'disclosed'
+            ? // id tiebreaker: most medians are NULL and ties are common, so without a stable key
+              // OFFSET pagination could skip/duplicate rows across pages.
+              sql`${medianSub} DESC NULLS LAST, ${schema.programs.id}`
+            : sql`${schema.programs.firstSeenAt} DESC NULLS LAST`;
   const orderBy = q
     ? sql`similarity(${schema.programs.searchText}, ${q}) DESC, ${secondarySort}`
     : secondarySort;
 
   const [rows, totalRow] = await Promise.all([
-    db.select().from(schema.programs).where(finalWhere).orderBy(orderBy).limit(pageSize).offset(offset),
+    db
+      .select({ ...getTableColumns(schema.programs), disclosedMedian, disclosedN })
+      .from(schema.programs)
+      .where(finalWhere)
+      .orderBy(orderBy)
+      .limit(pageSize)
+      .offset(offset),
     db.select({ c: sql<number>`count(*)::int` }).from(schema.programs).where(finalWhere),
   ]);
 

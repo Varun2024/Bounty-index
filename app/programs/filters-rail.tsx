@@ -50,7 +50,8 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
     (filters.assetType?.length ?? 0) +
     (filters.programType && filters.programType !== 'all' ? 1 : 0) +
     (filters.minReward ? 1 : 0) +
-    (filters.safeHarbor ? 1 : 0);
+    (filters.safeHarbor ? 1 : 0) +
+    (filters.hasDisclosed ? 1 : 0);
 
   return (
     <aside className="md:sticky md:top-20 self-start space-y-5 text-sm">
@@ -123,7 +124,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         ))}
       </FilterGroup>
 
-      <FilterGroup label="Safety">
+      <FilterGroup label="Only show" hint="programs that carry this signal">
         <Chip
           active={filters.safeHarbor ?? false}
           onClick={() => update({ safeHarbor: filters.safeHarbor ? null : '1' })}
@@ -131,29 +132,53 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         >
           safe harbor
         </Chip>
+        <Chip
+          active={filters.hasDisclosed ?? false}
+          onClick={() => update({ hasDisclosed: filters.hasDisclosed ? null : '1' })}
+          title="Programs with enough disclosed payouts (8+) to show a real typical figure — the actual-paid data the upstream list can't have."
+        >
+          disclosed payouts
+        </Chip>
       </FilterGroup>
 
-      <FilterGroup label="Sort">
-        {([['opportunity', 'hunt score'], ['newest', 'newest'], ['reward', 'reward'], ['name', 'name']] as const).map(([s, label]) => (
-          <Chip key={s} active={(filters.sort ?? 'newest') === s} onClick={() => update({ sort: s })}>
-            {label}
-          </Chip>
-        ))}
-      </FilterGroup>
+      {/* Ordering is a distinct concern from filtering — give it its own divided zone so the rail
+          reads as two parts, not one long identical stack. */}
+      <div className="pt-5 border-t border-neutral-900">
+        <FilterGroup
+          label="Sort by"
+          hint={filters.sort === 'disclosed' ? 'what programs actually paid, not the ceiling' : undefined}
+        >
+          {(
+            [
+              ['opportunity', 'hunt score'],
+              ['disclosed', 'real payout'],
+              ['reward', 'stated reward'],
+              ['newest', 'newest'],
+              ['name', 'name'],
+            ] as const
+          ).map(([s, label]) => (
+            <Chip key={s} active={(filters.sort ?? 'newest') === s} onClick={() => update({ sort: s })}>
+              {label}
+            </Chip>
+          ))}
+        </FilterGroup>
+      </div>
     </aside>
   );
 }
 
 interface FilterGroupProps {
   label: string;
+  hint?: string;
   children: React.ReactNode;
 }
 
-function FilterGroup({ label, children }: FilterGroupProps) {
+function FilterGroup({ label, hint, children }: FilterGroupProps) {
   return (
     <div>
       <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">{label}</p>
       <div className="flex flex-wrap gap-1.5">{children}</div>
+      {hint && <p className="mono text-[10px] text-neutral-400 mt-1.5">{hint}</p>}
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { FilterDrawer } from './filter-drawer';
 import { KeyboardHintBanner } from './keyboard-hint-banner';
 import { formatBounty, platformLabel, PLATFORM_META } from '@/lib/format';
 import { opportunityScore } from '@/lib/opportunity';
+import { AGGREGATE_MIN_N } from '@/lib/disclosed';
 import { EmptyState } from '@/app/_ui/empty-state';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,7 @@ function countActive(f: ProgramFilters): number {
   if (f.minReward) n++;
   if (f.hasBounty) n++;
   if (f.safeHarbor) n++;
+  if (f.hasDisclosed) n++;
   return n;
 }
 
@@ -45,10 +47,12 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
     programType: typeof sp.programType === 'string' ? sp.programType : 'all',
     hasBounty: sp.hasBounty === '1',
     safeHarbor: sp.safeHarbor === '1',
+    hasDisclosed: sp.hasDisclosed === '1',
     minReward: sp.minReward ? Number(sp.minReward) : undefined,
     sort: (sp.sort as ProgramFilters['sort']) ?? 'reward',
     page: sp.page ? Number(sp.page) : 1,
     pageSize: 30,
+    withDisclosed: true, // the list shows a real-payout line per row; other callers skip the cost
   };
 
   // Build export query string from the current filters (drop `page` — export returns everything).
@@ -210,6 +214,14 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
                           ? `${formatBounty(p.minBounty, p.currency ?? 'USD')}–${formatBounty(p.maxBounty, p.currency ?? 'USD')}`
                           : formatBounty(p.maxBounty, p.currency ?? 'USD')}
                       </span>
+                      {p.disclosedN >= AGGREGATE_MIN_N && p.disclosedMedian != null && (
+                        <span
+                          className="block text-[11px] text-emerald-300/80 mt-0.5"
+                          title={`Median of ${p.disclosedN} disclosed payouts (USD) — what this program actually paid, not the stated ceiling`}
+                        >
+                          real ~{formatBounty(p.disclosedMedian)}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}
