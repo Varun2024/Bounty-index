@@ -32,11 +32,27 @@ export default async function AdminPage() {
     mcp_requests_7d: number; mcp_clients_7d: number;
   };
   type McpUa = { ua: string | null; clients: number; requests: number };
+  type DayCount = { day: string; n: number };
   // MCP counts are a SEPARATE settled query on purpose: mcp_hits is a newer table and a
   // deploy can land before its migration runs. Folding it into the main counts query would
   // make one missing table blank every tile (it did — see 003_mcp_hits). Isolated, a missing
   // mcp_hits only blanks the MCP tiles.
-  const [countsRows, recentUsers, topWatchedRows, mcpCountsRows, mcpUaRows] = await Promise.all([
+  // Zero-filled daily series (last 30 days). generate_series supplies every day so a gap renders
+  // as an empty slot — which is the point: a missing snapshots bar means the ingest cron didn't run.
+  const dailySeries = (table: 'mcp_hits' | 'program_snapshots', tsCol: 'ts' | 'captured_at') =>
+    settle(db.execute<DayCount>(sql`
+      SELECT to_char(d, 'YYYY-MM-DD') AS day, coalesce(c.n, 0)::int AS n
+      FROM generate_series((now() - interval '29 days')::date, now()::date, interval '1 day') d
+      LEFT JOIN (
+        SELECT ${sql.raw(tsCol)}::date AS day, count(*)::int AS n
+        FROM ${sql.raw(table)}
+        WHERE ${sql.raw(tsCol)} > now() - interval '30 days'
+        GROUP BY 1
+      ) c ON c.day = d::date
+      ORDER BY day
+    `));
+
+  const [countsRows, recentUsers, topWatchedRows, mcpCountsRows, mcpUaRows, mcpDailyRows, snapDailyRows] = await Promise.all([
     settle(db.execute<Counts>(sql`
       SELECT
         (SELECT count(*) FROM "user")::int               AS total_users,
@@ -84,7 +100,12 @@ export default async function AdminPage() {
       ORDER BY requests DESC
       LIMIT 10
     `)),
+    dailySeries('mcp_hits', 'ts'),
+    dailySeries('program_snapshots', 'captured_at'),
   ]);
+
+  const mcpDaily = (mcpDailyRows as unknown as { rows?: DayCount[] } | null)?.rows ?? [];
+  const snapDaily = (snapDailyRows as unknown as { rows?: DayCount[] } | null)?.rows ?? [];
 
   const c = (countsRows as unknown as { rows?: Counts[] } | null)?.rows?.[0] ?? null;
   const totalUsers         = c?.total_users         ?? null;
@@ -186,6 +207,26 @@ export default async function AdminPage() {
       </section>
 
       <section>
+        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">
+          Activity <span className="text-neutral-700">· per day · last 30 days</span>
+        </h2>
+        <div className="grid md:grid-cols-2 gap-3">
+          <DailyBars
+            title="MCP requests"
+            data={mcpDaily}
+            unit="req"
+            note="// adoption of the agent surface"
+          />
+          <DailyBars
+            title="Snapshots written"
+            data={snapDaily}
+            unit="snap"
+            note="// ingest health — an empty bar is a missed cron run"
+          />
+        </div>
+      </section>
+
+      <section>
         <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">Recent sign-ups <span className="text-neutral-700">· latest 20</span></h2>
         {!recentUsers ? (
           <p className="mono text-xs text-neutral-400">unavailable (DB degraded)</p>
@@ -272,6 +313,78 @@ export default async function AdminPage() {
         )}
       </section>
     </div>
+  );
+}
+
+interface DailyBarsProps {
+  title: string;
+  data: Array<{ day: string; n: number }>;
+  unit: string;
+  note: string;
+}
+
+// Server-rendered inline-SVG daily bar chart. Single series → no legend (the title names it),
+// one emerald accent, bars anchored to the baseline with a 2px surface gap, native <title> hover.
+// No charting lib: 30 <rect>s is less code than a dependency and renders without client JS.
+function DailyBars({ title, data, unit, note }: DailyBarsProps) {
+  const unavailable = data.length === 0;
+  const peak = Math.max(1, ...data.map((d) => d.n));
+  const total = data.reduce((s, d) => s + d.n, 0);
+  // viewBox units: each day gets a 10-wide slot (8 bar + 2 gap); plot is 72 tall under a 4px headroom.
+  const SLOT = 10, BAR = 8, PLOT = 72, TOP = 4;
+  const fmt = (iso: string) =>
+    new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+  return (
+    <figure className="border border-neutral-900 rounded-lg p-4 bg-neutral-950/40 m-0">
+      <figcaption className="flex items-baseline justify-between mb-3">
+        <span className="text-sm text-neutral-100">{title}</span>
+        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
+          {unavailable ? '·' : `${total.toLocaleString()} ${unit} · peak ${peak.toLocaleString()}`}
+        </span>
+      </figcaption>
+      {unavailable ? (
+        <p className="mono text-xs text-neutral-400 py-6 text-center">unavailable (DB degraded)</p>
+      ) : (
+        <svg
+          viewBox={`0 0 ${data.length * SLOT} ${PLOT + TOP}`}
+          preserveAspectRatio="none"
+          className="w-full h-20"
+          role="img"
+          aria-label={`${title} per day over the last ${data.length} days. Total ${total} ${unit}, peak ${peak} in a day.`}
+        >
+          <line
+            x1={0}
+            y1={TOP + PLOT}
+            x2={data.length * SLOT}
+            y2={TOP + PLOT}
+            className="stroke-neutral-800"
+            strokeWidth={0.5}
+            vectorEffect="non-scaling-stroke"
+          />
+          {data.map((d, i) => {
+            const h = (d.n / peak) * PLOT;
+            return (
+              <rect
+                key={d.day}
+                x={i * SLOT}
+                y={TOP + (PLOT - h)}
+                width={BAR}
+                height={h}
+                rx={1.5}
+                className={d.n > 0 ? 'fill-emerald-400/80' : 'fill-neutral-800'}
+              >
+                <title>{`${fmt(d.day)}: ${d.n.toLocaleString()} ${unit}`}</title>
+                {/* zero days get a 0-height rect; the empty slot itself is the signal */}
+              </rect>
+            );
+          })}
+        </svg>
+      )}
+      <p className="mt-2 mono text-[10px] text-neutral-400">
+        {note} · {data.length ? `${fmt(data[0].day)}–${fmt(data[data.length - 1].day)}` : '30d'}
+      </p>
+    </figure>
   );
 }
 
