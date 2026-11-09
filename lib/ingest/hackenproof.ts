@@ -183,14 +183,14 @@ export function parseHackenproofScopes(html: string): NormalizedScope[] {
 
 async function fetchListPage(page: number): Promise<HackenproofProgram[]> {
   const url = page === 1 ? HACKENPROOF_LIST_URL : `${HACKENPROOF_LIST_URL}?page=${page}`;
-  const res = await fetch(url, { cache: 'no-store', headers: { 'user-agent': UA } });
+  const res = await fetch(url, { cache: 'no-store', headers: { 'user-agent': UA }, signal: AbortSignal.timeout(20_000) });
   if (!res.ok) throw new Error(`list page ${page}: HTTP ${res.status}`);
   return parseHackenproofList(await res.text());
 }
 
 async function fetchDetailScopes(slug: string): Promise<NormalizedScope[]> {
   const url = `${HACKENPROOF_LIST_URL}/${encodeURIComponent(slug)}`;
-  const res = await fetch(url, { cache: 'no-store', headers: { 'user-agent': UA } });
+  const res = await fetch(url, { cache: 'no-store', headers: { 'user-agent': UA }, signal: AbortSignal.timeout(20_000) });
   if (!res.ok) return [];
   return parseHackenproofScopes(await res.text());
 }

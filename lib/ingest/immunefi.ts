@@ -153,7 +153,7 @@ function normalizeAsset(a: ImmunefiAsset): NormalizedScope | null {
 
 async function fetchDetailScopes(slug: string): Promise<NormalizedScope[]> {
   const url = `https://immunefi.com/bug-bounty/${encodeURIComponent(slug)}/information/`;
-  const res = await fetch(url, { cache: 'no-store', headers: { 'user-agent': UA } });
+  const res = await fetch(url, { cache: 'no-store', headers: { 'user-agent': UA }, signal: AbortSignal.timeout(20_000) });
   if (!res.ok) return [];
   const html = await res.text();
   const assets = extractAssetsFromDetail(html);
@@ -234,7 +234,7 @@ export async function ingestImmunefi(): Promise<Result> {
 
   try {
     // Stage 1: landing page → program list
-    const res = await fetch(LIST_URL, { cache: 'no-store', headers: { 'user-agent': UA } });
+    const res = await fetch(LIST_URL, { cache: 'no-store', headers: { 'user-agent': UA }, signal: AbortSignal.timeout(20_000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const html = await res.text();
     const programs = parseImmunefiHtml(html);

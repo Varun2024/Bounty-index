@@ -115,6 +115,8 @@ async function fetchPage(after: string | null): Promise<{ nodes: H1Node[]; endCu
     cache: 'no-store',
     headers: HEADERS,
     body: JSON.stringify({ query: pageQuery(after) }),
+    // Bound every page: a stalled H1 connection must not eat the cron's remaining budget.
+    signal: AbortSignal.timeout(20_000),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const json = (await res.json().catch(() => null)) as

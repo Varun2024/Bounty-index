@@ -1,9 +1,14 @@
 import { db, schema } from '@/lib/db/client';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
 import { upsertScopes } from './upsert-scopes';
 
 const BASE = 'https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/main/data';
+
+// No upstream fetch may hang unbounded: without this, one stalled connection eats the whole
+// 300s cron budget and later sources (incl. disclosed reports) never run, leaving ingest_runs
+// stuck 'running'. 20s is generous for these raw JSON blobs (largest ~hackerone is a few MB).
+const FETCH_TIMEOUT_MS = 20_000;
 
 // arkadiyt/bounty-targets-data dropped both hackenproof and federacy. hackenproof returns via a
 // first-party scrape (lib/ingest/hackenproof.ts); federacy is gone (no live source) so it's out.
@@ -269,11 +274,29 @@ export const NORMALIZERS: Record<Platform, (r: unknown) => NormalizedProgram | n
 
 
 async function fetchSource(platform: Platform): Promise<unknown[]> {
-  const res = await fetch(SOURCES[platform], { cache: 'no-store' });
+  const res = await fetch(SOURCES[platform], { cache: 'no-store', signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
   if (!res.ok) throw new Error(`${platform}: HTTP ${res.status}`);
   const text = await res.text();
   const parsed = JSON.parse(text);
-  return Array.isArray(parsed) ? parsed : (parsed?.programs ?? []);
+  const records: unknown[] = Array.isArray(parsed) ? parsed : (parsed?.programs ?? []);
+
+  // History-poisoning guard. A truncated or shape-drifted upstream response (HTTP 200, but an
+  // error blob or a half-written file) yields far fewer records than we already hold. Ingesting
+  // it would upsert programs with empty `targets`, wipe their scopes, and append a permanent
+  // "all scopes removed" snapshot + fire false Discord alerts — unrecoverable in append-only
+  // history. Reject the whole platform before any write; the run is marked 'error' and a human
+  // sees lastError. ponytail: 50% floor is a heuristic; real day-to-day churn is <1%, so a legit
+  // shrink past half is itself worth a human look before it lands.
+  const [{ n }] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(schema.programs)
+    .where(eq(schema.programs.platform, platform));
+  if (n > 0 && records.length < n * 0.5) {
+    throw new Error(
+      `${platform}: suspicious upstream response — ${records.length} records, have ${n} (floor ${Math.ceil(n * 0.5)}); refusing to ingest`,
+    );
+  }
+  return records;
 }
 
 async function upsertSource(platform: Platform): Promise<number> {
