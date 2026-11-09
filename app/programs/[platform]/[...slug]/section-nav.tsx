@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-const SECTIONS = [
+const BASE_SECTIONS = [
   { id: 'scope', label: 'Scope' },
   { id: 'changes', label: 'Changes' },
   { id: 'community', label: 'Community' },
@@ -10,12 +10,17 @@ const SECTIONS = [
 ] as const;
 
 // Sticky sub-nav that highlights the section currently in view. Sticks just under the global
-// header (h-14) so it's always reachable on this long page.
-export function SectionNav() {
-  const [active, setActive] = useState<string>(SECTIONS[0].id);
+// header (h-14) so it's always reachable on this long page. The Payouts anchor only appears when
+// the program actually has a Real-payouts card (N>=3), so the nav never links to a missing section.
+export function SectionNav({ hasPayouts = false }: { hasPayouts?: boolean }) {
+  const sections = useMemo(
+    () => (hasPayouts ? [{ id: 'payouts', label: 'Payouts' }, ...BASE_SECTIONS] : [...BASE_SECTIONS]),
+    [hasPayouts],
+  );
+  const [active, setActive] = useState<string>(sections[0].id);
 
   useEffect(() => {
-    const els = SECTIONS.map((s) => document.getElementById(s.id)).filter(
+    const els = sections.map((s) => document.getElementById(s.id)).filter(
       (el): el is HTMLElement => el !== null,
     );
     if (els.length === 0) return;
@@ -34,7 +39,7 @@ export function SectionNav() {
     );
     els.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [sections]);
 
   return (
     <nav
@@ -43,7 +48,7 @@ export function SectionNav() {
     >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-6 py-3 text-sm">
         <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">On this page</span>
-        {SECTIONS.map((s) => {
+        {sections.map((s) => {
           const isActive = active === s.id;
           return (
             <a

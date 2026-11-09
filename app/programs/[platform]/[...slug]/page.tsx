@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProgramBySlug, getProgramSnapshots, getSimilarPrograms, getProgramReportStats, type ProgramSnapshot, type SimilarProgram } from '@/lib/db/queries';
+import { getProgramBySlug, getProgramSnapshots, getSimilarPrograms, getProgramReportStats, getDisclosedReports, type ProgramSnapshot, type SimilarProgram, type DisclosedReportRow } from '@/lib/db/queries';
 import { formatPayoutRange, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 import { summarizeActivity } from '@/lib/snapshots';
 import { faqLd, jsonLdScript, type FaqItem } from '@/lib/structured-data';
@@ -18,6 +18,8 @@ import { ScopeColumn, Tag } from './scope-columns';
 import { ProgramTimeline } from './timeline';
 import { ProgramSignalsStrip } from './program-signals';
 import { OpportunityBreakdown } from './opportunity-breakdown';
+import { RealPayouts } from './real-payouts';
+import { INDIVIDUAL_MIN_N, countDisclosedAmounts } from '@/lib/disclosed';
 import { ScopeMixBar } from './scope-mix-bar';
 import { SimilarPrograms } from './similar-programs';
 import { CopyScope } from './copy-scope';
@@ -117,10 +119,11 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   // ponytail: only cacheable (program-global) data runs server-side under ISR. Per-user bits
   // (note, user's own report) are hydrated client-side inside ProgramNotes / CommunityReports
   // so we never bake one viewer's state into another viewer's cached HTML.
-  const [snapshots, initialReportStats, similar] = await Promise.all([
+  const [snapshots, initialReportStats, similar, disclosedReports] = await Promise.all([
     getProgramSnapshots(program.id).catch(() => [] as ProgramSnapshot[]),
     getProgramReportStats(program.id).catch(() => ({ count: 0, waitingCount: 0, medianFirstResponseDays: null })),
     getSimilarPrograms(program.id, 5).catch(() => [] as SimilarProgram[]),
+    getDisclosedReports(program.id).catch(() => [] as DisclosedReportRow[]),
   ]);
   const initialNote = { content: '', updatedAt: null };
   const initialUserReport = null;
@@ -324,7 +327,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
 
         <ProgramSignalsStrip snapshots={snapshots} />
 
-        <SectionNav />
+        <SectionNav hasPayouts={countDisclosedAmounts(disclosedReports) >= INDIVIDUAL_MIN_N} />
 
         <OpportunityBreakdown
           program={{
@@ -333,6 +336,14 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             lastUpdatedAt: program.lastUpdatedAt,
             firstSeenAt: program.firstSeenAt,
           }}
+        />
+
+        <RealPayouts
+          reports={disclosedReports}
+          snapshots={snapshots}
+          platform={program.platform}
+          statedMax={program.maxBounty}
+          statedCurrency={program.currency}
         />
 
         <ScopeMixBar mix={assetTypeMix} />

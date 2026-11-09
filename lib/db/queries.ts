@@ -385,6 +385,39 @@ async function getProgramSnapshotsUncached(programId: number): Promise<ProgramSn
   return rows.map((r) => ({ capturedAt: r.capturedAt, payload: r.payload as SnapshotPayloadShape }));
 }
 
+// Columns the "Real payouts" card needs — deliberately omits the heavy jsonb payload (the report
+// URL is rebuilt from external_id). Newest first; the card re-sorts amount-bearing rows by value.
+export interface DisclosedReportRow {
+  externalId: string;
+  bountyAmount: number | null;
+  currency: string | null;
+  disclosedAt: Date;
+  severity: string | null;
+  title: string | null;
+}
+
+export const getDisclosedReports = cachedWithDates(
+  getDisclosedReportsUncached,
+  ['getDisclosedReports'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+
+async function getDisclosedReportsUncached(programId: number): Promise<DisclosedReportRow[]> {
+  return db
+    .select({
+      externalId: schema.disclosedReports.externalId,
+      bountyAmount: schema.disclosedReports.bountyAmount,
+      currency: schema.disclosedReports.currency,
+      disclosedAt: schema.disclosedReports.disclosedAt,
+      severity: schema.disclosedReports.severity,
+      title: schema.disclosedReports.title,
+    })
+    .from(schema.disclosedReports)
+    .where(eq(schema.disclosedReports.programId, programId))
+    .orderBy(desc(schema.disclosedReports.disclosedAt))
+    .limit(2000); // bound the cached row set; newest-first, and no program is remotely near this.
+}
+
 export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
   if (!ids.length) return [];
   const programs = await db.select().from(schema.programs).where(inArray(schema.programs.id, ids));
