@@ -1,5 +1,5 @@
 import { db, schema } from '@/lib/db/client';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { createHash } from 'node:crypto';
 
 // HackerOne Hacktivity disclosed-reports ingest (PLAN_DISCLOSED_REPORTS Phase 1).
@@ -157,7 +157,26 @@ export interface DisclosedIngestResult {
   disclosedSeen: number; // nodes that are actually disclosed reports (built into rows)
   withAmount: number; // of disclosedSeen, how many carry a bounty amount
   mappedToProgram: number; // of disclosedSeen, how many resolved to one of our programs
+  relinked: number; // prior-run reports whose program has since appeared and were linked this run
   pagesWalked: number;
+}
+
+// Backlink reports that were ingested before their program existed in `programs`. A report is
+// stored even when its handle isn't in our index yet (programId stays null); once the program
+// lands in a later program-ingest, this links it so real-payout aggregation stops missing it.
+// One bulk UPDATE per run — cheap, and only touches the still-unmapped rows.
+async function relinkUnmapped(): Promise<number> {
+  const res = await db.execute(sql`
+    UPDATE disclosed_reports dr
+    SET program_id = p.id
+    FROM programs p
+    WHERE dr.program_id IS NULL
+      AND dr.platform = ${PLATFORM}
+      AND p.platform = ${PLATFORM}
+      AND p.handle = dr.program_handle
+    RETURNING dr.id
+  `);
+  return (res as unknown as { rows?: unknown[] }).rows?.length ?? 0;
 }
 
 export async function ingestHackeroneDisclosed(): Promise<DisclosedIngestResult> {
@@ -169,6 +188,7 @@ export async function ingestHackeroneDisclosed(): Promise<DisclosedIngestResult>
   let disclosedSeen = 0;
   let withAmount = 0;
   let mappedToProgram = 0;
+  let relinked = 0;
   let pagesWalked = 0;
 
   try {
@@ -215,6 +235,9 @@ export async function ingestHackeroneDisclosed(): Promise<DisclosedIngestResult>
       if (insertedThisPage === 0) break; // caught up to a prior run (everything on this page already stored).
     }
 
+    // After the walk, backlink any still-unmapped reports whose program now exists.
+    relinked = await relinkUnmapped();
+
     await db
       .update(schema.ingestRuns)
       // reportsInserted reused into programsUpserted — this source has no "programs"; it's the one
@@ -226,7 +249,7 @@ export async function ingestHackeroneDisclosed(): Promise<DisclosedIngestResult>
       .set({ lastRunAt: new Date(), lastStatus: 'ok', lastError: null })
       .where(eq(schema.sources.id, sourceId));
 
-    return { platform: SOURCE_NAME, reportsInserted, nodesSeen, disclosedSeen, withAmount, mappedToProgram, pagesWalked };
+    return { platform: SOURCE_NAME, reportsInserted, nodesSeen, disclosedSeen, withAmount, mappedToProgram, relinked, pagesWalked };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     await db
