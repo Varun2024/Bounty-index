@@ -21,6 +21,18 @@ function parseArray(v: string | string[] | undefined): string[] {
   return Array.isArray(v) ? v : v.split(',').filter(Boolean);
 }
 
+// Sanitize numeric query params at the trust boundary. `?minReward=abc` / `?page=1e999` would
+// otherwise become NaN/Infinity, reach the SQL (OFFSET / `maxBounty >= $`), and throw — noise in
+// the logs and, before the breaker was hardened, a push toward DB-degraded mode.
+function finitePos(v: string | string[] | undefined): number | undefined {
+  const n = Number(Array.isArray(v) ? v[0] : v);
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+function finitePage(v: string | string[] | undefined): number {
+  const n = Number(Array.isArray(v) ? v[0] : v);
+  return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
 function countActive(f: ProgramFilters): number {
   let n = 0;
   if (f.q) n++;
@@ -48,9 +60,9 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
     hasBounty: sp.hasBounty === '1',
     safeHarbor: sp.safeHarbor === '1',
     hasDisclosed: sp.hasDisclosed === '1',
-    minReward: sp.minReward ? Number(sp.minReward) : undefined,
+    minReward: finitePos(sp.minReward),
     sort: (sp.sort as ProgramFilters['sort']) ?? 'reward',
-    page: sp.page ? Number(sp.page) : 1,
+    page: finitePage(sp.page),
     pageSize: 30,
     withDisclosed: true, // the list shows a real-payout line per row; other callers skip the cost
   };

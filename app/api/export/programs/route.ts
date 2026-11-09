@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listPrograms, type ProgramFilters } from '@/lib/db/queries';
+import { rateLimit, clientIp, tooManyRequests } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
 const EXPORT_LIMIT = 5000;
+// Heavy endpoint (up to 5000 rows). 10/min/IP is plenty for a human pulling a dataset and caps abuse.
+const EXPORT_RL_PER_MIN = 10;
+
+function finiteMin(v: string | null): number | undefined {
+  if (!v) return undefined;
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
 
 function parseArray(v: string | null): string[] {
   if (!v) return [];
@@ -18,7 +27,7 @@ function buildFilters(sp: URLSearchParams): ProgramFilters {
     programType: sp.get('programType') || 'all',
     hasBounty: sp.get('hasBounty') === '1',
     safeHarbor: sp.get('safeHarbor') === '1',
-    minReward: sp.get('minReward') ? Number(sp.get('minReward')) : undefined,
+    minReward: finiteMin(sp.get('minReward')),
     sort: (sp.get('sort') as ProgramFilters['sort']) ?? 'reward',
     page: 1,
     pageSize: EXPORT_LIMIT,
@@ -74,6 +83,9 @@ function toJson(rows: Row[]): string {
 }
 
 export async function GET(req: NextRequest) {
+  const rl = rateLimit(`export:${clientIp(req)}`, EXPORT_RL_PER_MIN);
+  if (!rl.ok) return tooManyRequests(rl.retryAfter);
+
   const sp = req.nextUrl.searchParams;
   const format = (sp.get('format') ?? 'csv').toLowerCase();
   if (format !== 'csv' && format !== 'json') {
