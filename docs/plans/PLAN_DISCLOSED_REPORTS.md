@@ -110,3 +110,44 @@ Disclosed reports are immutable post-disclosure, so ingest is **insert-if-new** 
 - **Phase 4 — more sources.** Bugcrowd CrowdStream (sparse amounts), YesWeHack response-time aggregates, Immunefi paid-bounty extension. Then MCP/feed exposure.
 
 Stop after any phase that doesn't earn its keep. Phase 1's data-quality gate decides whether this is worth the ongoing scraper-maintenance debt (same calculus we accepted for Immunefi).
+
+---
+
+## 8. Gate result + Phase 2 REVISED (2026-11-09)
+
+**Gate: PASS.** Ran the daily-cron corpus (263 rows, ~2 months) then a one-time **deep backfill** (`scripts/backfill-disclosed.ts` — pages the full cursor, no stop-on-zero, additive `onConflictDoNothing`, mirrors prod `toRow`). **H1's search index hard-caps at 10,000 results** (HTTP 500 past the deep cursor), so we now hold the *entire reachable* H1 disclosure history: **2017-05 → 2026-11, 10,000 rows**. Final coverage:
+
+| Metric | Daily-only (~2mo) | Full 10k corpus |
+|---|---|---|
+| Total rows | 263 | 10,000 (H1 ceiling) |
+| With amount | 6.5% | **17.7%** (1,769) |
+| Mapped to our programs | 99.6% | 74.2% (7,422 — handle drift on old reports) |
+| Programs ≥3 amounts | 2 | **55** (all-time) / 16 (last 3y) |
+| Programs ≥8 amounts | 0 | **29** (all-time) / 6 (last 3y) |
+| Programs ≥20 amounts | 0 | 16 (all-time) / 1 (last 3y) |
+
+So the two-tier card (§5) is now viable for a real set of programs.
+
+**Staleness decision:** count `N` all-time (tiers fill: 55/29) but **always render each disclosed amount with its date and show the span** — staleness is made visible, not hidden or recency-weighted away. The date is the honesty.
+
+**Forward-compounding moat is now concrete:** because H1 caps at 10k, as new reports disclose the oldest fall off H1's window — and we've captured them. From here our corpus is the *only* record of anything that ages past the 10k cap. Keep the daily cron running; never prune (rule 1).
+
+**Fork-resistance correction (the point that reshaped this).** The payout *display* is NOT a moat: H1's GraphQL is public, a forker can run the same backfill today and recompute the same medians. Raw receipts and aggregate histograms both fail the fork test — they mirror a public source (rule 2 trap). Disclosed data is only defensible via:
+
+1. **Append-only capture that compounds forward (rule 1).** Not the historical backfill (re-pullable today) but what accrues *after* capture: reports H1 later redacts/ages out become our-only records. Keep ingesting; never prune.
+2. **Fusion with our snapshot timeline (rule 3).** `programSignals()` already yields `wentPaidAt`, `firstRewardRaiseAt`, `rewardRaises` — timestamps of *when we observed* a program change. A fresh fork has neither our snapshot history nor the dedup'd change-log. **Pinning disclosed payouts to that timeline is the unreconstructable derivative.** This is what Phase 2 leads with; the card is its human face.
+
+**Phase 2 build (revised):**
+
+- **`lib/disclosed.ts`** (compute-on-read, mirrors `lib/opportunity.ts`; never stored as source of truth, never bulk — rule 2):
+  - `realPayout(reports)` → `{ n, amountsUsd[], median, p25, p75 }`, two-tier gated (individual at `N≥3`, median/percentiles at `N≥8`). USD-normalized via a static FX table (`ponytail:` corner, fine for ranking).
+  - `disclosedSignals(reports, snapshots)` → the **fusion layer**: `confirmedPaidAt` (earliest disclosed *paid* report) cross-referenced with snapshot `wentPaidAt`; `realVsStated` (median disclosed USD vs current stated max → pays below / near / above ceiling); response-time trend where time fields are populated. Takes both inputs; this is the defensible signal, kept in its own module (disclosed facts are a different data class from `diffSnapshots`, so not shoehorned into the change-path — but same one-module, every-surface-inherits discipline).
+- **Detail-page "Real payouts" card** near the stated-max key-facts:
+  - `N=0`: quiet "no disclosed reports yet".
+  - `N≥3`: individual disclosed amounts (list: $, severity, date, source link).
+  - `N≥8`: + median/p25/p75 ("typical disclosed payout").
+  - **Lead line (the fusion):** stated ceiling vs real median, and "confirmed paying since {confirmedPaidAt}" — and where `wentPaidAt` exists too, "we flagged it paid {wentPaidAt}; first real payout {confirmedPaidAt}".
+  - Always show `N` + label "based on N disclosed reports — not all payouts".
+- **Honesty labels (rule 9):** every figure carries `N`; USD-normalized flagged; note **selection bias** — disclosed amounts are only what researchers chose to reveal, skewed toward notable payouts. Never imply representativeness.
+
+**No prod-ingester change needed.** Daily cron (MAX_PAGES=20) handles the forward trickle (stops page 1–2 after the day's ~5 new). `scripts/backfill-disclosed.ts` is the one-time/occasional deep pull, kept as a utility. List sort + MCP/feed exposure stay deferred to Phase 3 until the card validates the data in the wild.
