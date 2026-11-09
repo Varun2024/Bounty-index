@@ -134,17 +134,17 @@ function PayoutRow({ item, platform }: { item: PayoutItem; platform: string }) {
     <li className="flex items-center gap-3 py-1.5">
       <span className="mono text-sm text-emerald-300 tabular-nums w-16 shrink-0">{formatBounty(item.usd)}</span>
       <span className="mono text-[11px] text-neutral-400 w-20 shrink-0">{monthYear(item.disclosedAt)}</span>
-      {sev && <span className="mono text-[10px] uppercase tracking-wide text-neutral-500 w-16 shrink-0">{sev}</span>}
+      {sev && <span className="mono text-[10px] uppercase tracking-wide text-neutral-400 w-16 shrink-0">{sev}</span>}
       <span className="text-sm text-neutral-300 truncate min-w-0 flex-1" title={item.title ?? undefined}>
         {item.title ?? 'disclosed report'}
-        {native && <span className="mono text-[10px] text-neutral-500">{native}</span>}
+        {native && <span className="mono text-[10px] text-neutral-400">{native}</span>}
       </span>
       {href && (
         <a
           href={href}
           target="_blank"
           rel="noreferrer"
-          className="focus-ring text-neutral-500 hover:text-emerald-300 transition shrink-0"
+          className="focus-ring text-neutral-400 hover:text-emerald-300 transition shrink-0"
           aria-label={`Open disclosed report${item.title ? `: ${item.title}` : ''} on the source platform`}
         >
           <ExternalIcon size={12} />
