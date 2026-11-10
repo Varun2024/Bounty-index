@@ -67,7 +67,8 @@ export function Hero({ s, top, mcpRequests }: HeroProps) {
           </p>
 
           <h1 className="lg:mt-6 lowercase text-[2.75rem] sm:text-5xl lg:text-6xl xl:text-[4rem] font-medium tracking-[-0.035em] leading-[0.95] text-neutral-50">
-            every <span className="text-neutral-400">public bounty program,</span> one index.
+            every <span className="text-neutral-400">public bounty program,</span> one{' '}
+            <span className="bg-gradient-to-br from-emerald-200 to-emerald-500 bg-clip-text text-transparent">index.</span>
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-neutral-300 leading-snug">

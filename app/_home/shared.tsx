@@ -6,6 +6,25 @@ export function SectionOrnament() {
   return null;
 }
 
+// A faint emerald radial glow for section atmosphere (same recipe as the hero glow). Absolutely
+// positioned; put it as the first child of a `relative` section so content paints above it. Kept
+// low-opacity so it reads as depth, not decoration (design.md sanctions the glow on hero + CTA).
+export function SectionGlow({
+  position = '50% 0%',
+  className = '',
+}: {
+  position?: string;
+  className?: string;
+}) {
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none absolute inset-0 ${className}`}
+      style={{ background: `radial-gradient(640px 420px at ${position}, rgba(52,211,153,0.08), transparent 70%)` }}
+    />
+  );
+}
+
 interface SectionEyebrowProps {
   n: string;
   label: string;
