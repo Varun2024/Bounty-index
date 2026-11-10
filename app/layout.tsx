@@ -14,6 +14,7 @@ import { NavProgress } from './_ui/nav-progress';
 import { SupportNudge } from './_ui/support-nudge';
 import { FeedbackTab } from './_ui/feedback-dialog';
 import { FeedbackNudge } from './_ui/feedback-nudge';
+import { FuzzWhisper } from './_ui/fuzz-whisper';
 import { Suspense } from 'react';
 import { SessionProvider } from './_ui/session-provider';
 import { AuthSync } from './_ui/auth-sync';
@@ -164,6 +165,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <SupportNudge />
         <FeedbackTab />
         <FeedbackNudge />
+        <FuzzWhisper />
         <CompareTray />
         <AuthSync />
         <Analytics />
