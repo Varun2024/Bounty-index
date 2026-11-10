@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { stats } from '@/lib/db/queries';
-import { SectionEyebrow } from './shared';
+import { SectionEyebrow, SectionGlow } from './shared';
 
 interface FinalCTAProps {
   s: Awaited<ReturnType<typeof stats>> | null;
@@ -10,7 +10,8 @@ interface FinalCTAProps {
 export function FinalCTA({ s }: FinalCTAProps) {
   return (
     <section className="border-t border-neutral-900 relative overflow-hidden">
-      <div className="relative max-w-[1200px] mx-auto px-6 py-16 md:py-20">
+      <SectionGlow position="62% 50%" />
+      <div className="relative max-w-[1200px] mx-auto px-6 py-20 md:py-28">
         <div className="grid items-center gap-10 lg:gap-16 lg:grid-cols-[1.25fr_1fr]">
           {/* Copy column */}
           <div className="text-center lg:text-left order-last lg:order-first">
@@ -18,7 +19,7 @@ export function FinalCTA({ s }: FinalCTAProps) {
             <h2 className="mt-5 text-4xl md:text-6xl font-semibold tracking-tight text-neutral-50 leading-[1]">
               {s ? (
                 <>
-                  <span className="mono text-emerald-300 tabular-nums">{s.bountyPrograms.toLocaleString()}</span> programs<br />
+                  <span className="mono tabular-nums bg-gradient-to-br from-emerald-200 to-emerald-500 bg-clip-text text-transparent">{s.bountyPrograms.toLocaleString()}</span> programs<br />
                   are <span className="text-neutral-400">paying bounties</span><br />
                   right now.
                 </>

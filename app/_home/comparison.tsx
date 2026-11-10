@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { SectionEyebrow } from './shared';
+import { SectionEyebrow, SectionGlow } from './shared';
 
 interface CompareRow {
   name: string;
@@ -28,8 +28,9 @@ export function Comparison() {
     { name: 'bounty-targets-data', coverage: '5 of 7 · raw JSON', lookup: 'grep + jq', history: 'git log', community: '✗', mcp: '✗' },
   ];
   return (
-    <section className="border-t border-neutral-900 bg-neutral-950/40 relative">
-      <div className="relative max-w-[1200px] mx-auto px-6 py-16 md:py-20">
+    <section className="border-t border-neutral-900 bg-neutral-950/40 relative overflow-hidden">
+      <SectionGlow position="82% 28%" />
+      <div className="relative max-w-[1200px] mx-auto px-6 py-20 md:py-28">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 lg:items-center">
           <div className="reveal">
             <SectionEyebrow n="02" label="Why this exists" />
@@ -53,7 +54,7 @@ export function Comparison() {
 
           {/* Fuzz holds one unified index while the scattered sources drift apart. Framed as a
               rectangular panel (cropped from the square art) so it reads as a tidy card, not a slab. */}
-          <div className="reveal relative aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-900">
+          <div className="reveal reveal-delay-1 relative aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-900">
             <Image
               src="/fuzz-index.webp"
               alt="Fuzz keeping one unified index while scattered, disconnected sources drift apart"
