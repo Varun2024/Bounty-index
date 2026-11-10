@@ -47,7 +47,7 @@ export function HeroScopeCheck({ programCount }: { programCount: string | null }
   }
 
   return (
-    <div className="mt-12 max-w-xl">
+    <div className="mt-4 max-w-2xl">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -57,7 +57,7 @@ export function HeroScopeCheck({ programCount }: { programCount: string | null }
         aria-label="Check whether a domain is in scope"
       >
         <label htmlFor={inputId} className="sr-only">Domain, subdomain, or wildcard</label>
-        <div className="group flex items-center h-14 pl-5 pr-1.5 rounded-xl bg-neutral-950/70 border border-neutral-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] focus-within:border-emerald-400/60 focus-within:shadow-[0_0_0_4px_rgba(52,211,153,0.08),inset_0_1px_0_rgba(255,255,255,0.02)] transition duration-200">
+        <div className="group flex items-center h-16 pl-5 pr-2 rounded-xl bg-neutral-950/70 border border-neutral-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] focus-within:border-emerald-400/60 focus-within:shadow-[0_0_0_4px_rgba(52,211,153,0.08),inset_0_1px_0_rgba(255,255,255,0.02)] transition duration-200">
           <span className="shrink-0 mono text-base text-emerald-400/70 group-focus-within:text-emerald-300 transition select-none" aria-hidden>$</span>
           <input
             id={inputId}
@@ -70,7 +70,7 @@ export function HeroScopeCheck({ programCount }: { programCount: string | null }
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="is a domain in scope? e.g. shopify.com"
-            className="flex-1 min-w-0 bg-transparent h-full px-3.5 text-base md:text-[17px] text-neutral-50 placeholder:text-neutral-400 outline-none"
+            className="flex-1 min-w-0 bg-transparent h-full px-3.5 text-base md:text-lg text-neutral-50 placeholder:text-neutral-400 outline-none"
           />
           <kbd className="hidden md:inline-flex items-center justify-center mono text-[10px] text-neutral-400 h-6 px-1.5 mr-2 rounded border border-neutral-800 bg-neutral-900/80 pointer-events-none">
             /
@@ -78,7 +78,7 @@ export function HeroScopeCheck({ programCount }: { programCount: string | null }
           <button
             type="submit"
             disabled={pending}
-            className="mono text-sm h-11 px-4 sm:px-5 rounded-lg bg-emerald-400 text-neutral-950 font-medium hover:bg-emerald-300 active:bg-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed transition focus-ring shrink-0"
+            className="mono text-sm h-12 px-5 sm:px-6 rounded-lg bg-emerald-400 text-neutral-950 font-medium hover:bg-emerald-300 active:bg-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed transition focus-ring shrink-0"
           >
             {pending ? '…' : <><span className="sm:hidden">check</span><span className="hidden sm:inline">check scope</span></>}
           </button>
