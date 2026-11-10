@@ -46,7 +46,7 @@ export function Features({ s }: FeaturesProps) {
         <div className="mt-12 grid grid-cols-6 gap-4 [perspective:1200px]">
           <Tilt className="col-span-6 md:col-span-4 rounded-2xl">
           <Link href="/programs" className="block h-full focus-ring rounded-2xl">
-          <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition relative overflow-hidden group h-full">
+          <div className="border border-neutral-900 rounded-2xl p-6 bg-neutral-950/40 hover:border-neutral-800 transition relative overflow-hidden group h-full">
             <div className="flex items-start justify-between">
               <div className="max-w-md">
                 <p className="text-sm text-emerald-300">Index</p>
@@ -86,7 +86,7 @@ export function Features({ s }: FeaturesProps) {
 
           <Tilt className="col-span-6 md:col-span-2 rounded-2xl">
           <Link href="/scope-lookup" className="block h-full focus-ring rounded-2xl">
-          <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
+          <div className="border border-neutral-900 rounded-2xl p-6 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
             <p className="text-sm text-emerald-300">Lookup</p>
             <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Scope lookup</h3>
             <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
@@ -105,7 +105,7 @@ export function Features({ s }: FeaturesProps) {
 
           <Tilt className="col-span-6 md:col-span-2 rounded-2xl">
           <Link href="/how-scored" className="block h-full focus-ring rounded-2xl">
-          <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
+          <div className="border border-neutral-900 rounded-2xl p-6 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
             <p className="text-sm text-emerald-300">Score</p>
             <h3 className="text-2xl font-semibold text-neutral-100 mt-3">Hunt score</h3>
             <p className="text-neutral-400 mt-3 leading-relaxed text-sm">
@@ -128,7 +128,7 @@ export function Features({ s }: FeaturesProps) {
 
           <Tilt className="col-span-6 md:col-span-4 rounded-2xl">
           <Link href="/feed" className="block h-full focus-ring rounded-2xl">
-          <div className="border border-neutral-900 rounded-2xl p-8 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
+          <div className="border border-neutral-900 rounded-2xl p-6 bg-neutral-950/40 hover:border-neutral-800 transition group h-full">
             <div className="flex items-start justify-between">
               <div className="max-w-md">
                 <p className="text-sm text-emerald-300">Feed</p>

@@ -72,7 +72,7 @@ export function Comparison() {
         </div>
 
         {/* Desktop: table */}
-        <div className="mt-14 border border-neutral-900 rounded-xl overflow-hidden bg-neutral-950/60 hidden md:block">
+        <div className="mt-10 border border-neutral-900 rounded-xl overflow-hidden bg-neutral-950/60 hidden md:block">
           <div className="grid grid-cols-[1.4fr_1.1fr_1.1fr_1fr_1.2fr_1.1fr] text-xs text-neutral-400 border-b border-neutral-900 bg-neutral-950">
             <div className="px-5 py-3.5">Source</div>
             {COLUMNS.map((col) => (
@@ -87,7 +87,7 @@ export function Comparison() {
               }`}
             >
               {r.active && <span className="absolute left-0 top-0 bottom-0 w-0.5 bg-emerald-400" />}
-              <div className={`px-5 py-4 ${r.active ? 'text-emerald-300 font-medium' : 'text-neutral-100'}`}>
+              <div className={`px-5 py-3 ${r.active ? 'text-emerald-300 font-medium' : 'text-neutral-100'}`}>
                 {r.active ? (
                   <span className="inline-flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -124,5 +124,5 @@ function CompareCell({ value, active }: { value: string; active?: boolean }) {
     : isNo
       ? 'text-neutral-700'
       : 'text-neutral-400';
-  return <div className={`px-4 py-4 mono text-xs ${cls}`}>{value}</div>;
+  return <div className={`px-4 py-3 mono text-xs ${cls}`}>{value}</div>;
 }

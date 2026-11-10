@@ -5,38 +5,12 @@ import { BucketBars } from '@/app/_ui/bucket-bars';
 import { CHART } from '@/app/_ui/chart';
 import { formatBounty, platformLabel } from '@/lib/format';
 
-interface DataIllustrationProps {
-  dist: PayoutDistribution | null;
-  platforms: { platform: string; programs: number }[];
-}
+// The home's two corpus-data panels — real-data illustrations only our own corpus can draw: what
+// programs ACTUALLY pay (disclosed-report distribution the upstream mirror can't have) and how wide
+// the index reaches. The standalone section wrapper was merged into app/_home/signals.tsx so these
+// sit under one header with the live feeds instead of forming a second 2-panel section.
 
-// The home's "proof in data" band: two real-data illustrations that only our own corpus can draw.
-// Left — what programs ACTUALLY pay (disclosed-report distribution, the thing the upstream mirror
-// can't have). Right — how wide the index reaches. Both use the shared chart vocabulary so they
-// read as one system with the program pages. Renders nothing if neither has usable data.
-export function DataIllustration({ dist, platforms }: DataIllustrationProps) {
-  const hasPayouts = dist != null && dist.n >= 8; // same aggregate floor the program card uses
-  const hasPlatforms = platforms.length > 0;
-  if (!hasPayouts && !hasPlatforms) return null;
-
-  return (
-    <section className="border-t border-neutral-900">
-      <div className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
-        <div className="mb-10 reveal">
-          <p className="text-sm text-neutral-400 mb-2">In the data</p>
-          <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What the numbers say.</h2>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-stretch">
-          {hasPayouts && <PayoutPanel dist={dist!} />}
-          {hasPlatforms && <CoveragePanel platforms={platforms} />}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PayoutPanel({ dist }: { dist: PayoutDistribution }) {
+export function PayoutPanel({ dist }: { dist: PayoutDistribution }) {
   const medianBand = dist.median != null ? bandIndex(dist.median) : -1;
   const bars = PAYOUT_BANDS.map((b, i) => ({ label: b.label, value: dist.counts[i], highlight: i === medianBand }));
   return (
@@ -72,7 +46,7 @@ function PayoutPanel({ dist }: { dist: PayoutDistribution }) {
   );
 }
 
-function CoveragePanel({ platforms }: { platforms: { platform: string; programs: number }[] }) {
+export function CoveragePanel({ platforms }: { platforms: { platform: string; programs: number }[] }) {
   const sorted = [...platforms].sort((a, b) => b.programs - a.programs);
   const max = Math.max(1, ...sorted.map((p) => p.programs));
   const total = sorted.reduce((s, p) => s + p.programs, 0);

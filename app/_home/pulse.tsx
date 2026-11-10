@@ -2,50 +2,9 @@ import Link from 'next/link';
 import type { getRecentChanges, trendingNewPayouts } from '@/lib/db/queries';
 import { formatBounty, platformLabel, PLATFORM_META, relativeTime } from '@/lib/format';
 
-interface PulseProps {
-  changes: Awaited<ReturnType<typeof getRecentChanges>>;
-  trending: Awaited<ReturnType<typeof trendingNewPayouts>>;
-}
-
-// "What's moving now": the scope-churn feed leads (the product's whole point is that
-// scope moves), with top new payouts as the money panel. Both panels are capped to a
-// handful of 2-line rows so the columns stay roughly even and the section doesn't turn
-// into a long scroll; each panel links out to its full list.
-export function Pulse({ changes, trending }: PulseProps) {
-  if (changes.length === 0 && trending.length === 0) return null;
-  return (
-    <section className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
-      <div className="mb-10 reveal">
-        <p className="text-sm text-neutral-400 mb-2">Pulse</p>
-        <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What&apos;s moving now.</h2>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-start">
-        <PulsePanel
-          eyebrow="Scope moved"
-          hint="last 7 days"
-          empty="No scope or reward changes in the last 7 days."
-          footer={changes.length > 0 ? { href: '/whats-new', label: 'all changes' } : undefined}
-        >
-          {changes.map((c) => (
-            <ChangeRow key={`${c.program.id}-${c.capturedAt.getTime()}`} c={c} />
-          ))}
-        </PulsePanel>
-
-        <PulsePanel
-          eyebrow="Top new payouts"
-          hint="last 30 days"
-          empty="No paying programs added recently."
-          footer={trending.length > 0 ? { href: '/programs?sort=reward', label: 'full leaderboard' } : undefined}
-        >
-          {trending.map((p) => (
-            <TrendingRow key={p.id} p={p} />
-          ))}
-        </PulsePanel>
-      </div>
-    </section>
-  );
-}
+// Pulse's live-feed panels. The section wrapper that used to live here was merged into the unified
+// "Signals" section (app/_home/signals.tsx) so the live feeds and the corpus charts share one
+// header instead of stacking as two separate 2-panel sections. These leaves are composed there.
 
 interface PulsePanelProps {
   eyebrow: string;
@@ -55,7 +14,7 @@ interface PulsePanelProps {
   children: React.ReactNode;
 }
 
-function PulsePanel({ eyebrow, hint, empty, footer, children }: PulsePanelProps) {
+export function PulsePanel({ eyebrow, hint, empty, footer, children }: PulsePanelProps) {
   const items = Array.isArray(children) ? children.filter(Boolean) : children ? [children] : [];
   const isEmpty = items.length === 0;
   return (
@@ -83,7 +42,7 @@ function PulsePanel({ eyebrow, hint, empty, footer, children }: PulsePanelProps)
 
 // Two-line row (name + time, then a single meta line) so a change row is the same height
 // as a payout row and the two columns line up.
-function ChangeRow({ c }: { c: Awaited<ReturnType<typeof getRecentChanges>>[number] }) {
+export function ChangeRow({ c }: { c: Awaited<ReturnType<typeof getRecentChanges>>[number] }) {
   const dot = PLATFORM_META[c.program.platform]?.dot ?? 'bg-neutral-500';
   return (
     <li className="border-b border-neutral-900 last:border-b-0">
@@ -135,7 +94,7 @@ function fmtReward(v: number | null): string {
   return formatBounty(v, 'USD');
 }
 
-function TrendingRow({ p }: { p: Awaited<ReturnType<typeof trendingNewPayouts>>[number] }) {
+export function TrendingRow({ p }: { p: Awaited<ReturnType<typeof trendingNewPayouts>>[number] }) {
   const dot = PLATFORM_META[p.platform]?.dot ?? 'bg-neutral-500';
   return (
     <li className="border-b border-neutral-900 last:border-b-0">
