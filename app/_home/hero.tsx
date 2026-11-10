@@ -12,7 +12,6 @@ interface HeroProps {
 }
 
 export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
-  const topBounty = s && top[0]?.maxBounty ? `$${top[0].maxBounty.toLocaleString()}` : null;
   const lastIngest = s?.lastIngestAt ? relativeTime(s.lastIngestAt) : null;
   const programCount = s?.programs.toLocaleString() ?? null;
   const payingCount = s?.bountyPrograms.toLocaleString() ?? null;
@@ -33,14 +32,15 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
               every <span className="text-neutral-400">public bounty program,</span> one index.
             </h1>
 
+            {/* One tight pitch: the two load-bearing numbers emphasized, then what you do with them.
+                The biggest-stated-max used to be crammed on here too — it already leads the leaderboard
+                aside, so repeating it just diluted the line. */}
             <p className="mt-8 text-lg md:text-xl text-neutral-300 leading-snug max-w-xl">
               {programCount ? (
                 <>
-                  <span className="mono text-neutral-100 tabular-nums">{programCount}</span> programs across {platformCount} platforms.
-                  Filter by scope, asset, payout.
-                  {topBounty && (
-                    <> Biggest stated max today: <span className="mono text-neutral-100 tabular-nums" title="Highest maximum bounty a program states. A ceiling, not a typical payout.">{topBounty}</span>.</>
-                  )}
+                  <span className="mono text-neutral-100 tabular-nums">{programCount}</span> programs across{' '}
+                  <span className="mono text-neutral-100 tabular-nums">{platformCount}</span> platforms, in one index.
+                  {' '}Filter by scope, asset, or payout.
                 </>
               ) : (
                 'Public programs from HackerOne, Bugcrowd, Intigriti, YesWeHack, Federacy, Immunefi, and HackenProof.'

@@ -21,6 +21,12 @@ interface Slot {
   delay: number;    // float delay s
 }
 
+// Overall opacity multiplier for the ghosted identifiers. The per-slot opacities below set the
+// depth relationship (near vs far); this knob tunes how present the whole field reads without
+// disturbing those ratios. Kept well under 0.1 so it stays atmosphere behind the H1, never text
+// that competes. ponytail: one gain knob, not 11 hand-edits.
+const BACKDROP_GAIN = 1.6;
+
 // Depth tiers (near = larger/clearer, far = smaller/fainter/blurred), spread across the top
 // strip, left gutter, and lower band. Motion fields are deliberately out of phase.
 const SLOTS: Slot[] = [
@@ -51,7 +57,7 @@ export function HeroDataBackdrop({ identifiers }: { identifiers: string[] }) {
             top: `${s.top}%`,
             left: `${s.left}%`,
             fontSize: `${s.size}px`,
-            opacity: s.opacity,
+            opacity: s.opacity * BACKDROP_GAIN,
             filter: s.blur ? `blur(${s.blur}px)` : undefined,
             animationDuration: `${s.dur}s`,
             animationDelay: `${s.delay}s`,
