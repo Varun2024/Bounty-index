@@ -18,8 +18,8 @@ export function Receipts({ s }: ReceiptsProps) {
             Why trust this.
           </h2>
           <p className="text-neutral-300 mt-4 max-w-xl leading-relaxed">
-            No funnel, no VC, no dark pattern. Everything load-bearing is public and verifiable,
-            so you never have to take my word for it.
+            No funnel, no VC, no dark patterns. Everything load-bearing is public, so you never take
+            my word for it.
           </p>
         </div>
 
@@ -27,26 +27,26 @@ export function Receipts({ s }: ReceiptsProps) {
           <Row
             label="data"
             value="arkadiyt/bounty-targets-data + Immunefi scrape"
-            desc="Public upstream mirror of five platforms, plus a direct Immunefi scrape. One canonical source, no scraping of individual platforms."
+            desc="Public upstream mirror of five platforms, plus a direct Immunefi scrape. One canonical source."
             href="https://github.com/arkadiyt/bounty-targets-data"
             external
           />
           <Row
             label="scoring"
             value="/how-scored"
-            desc="The 0–100 hunt score formula is published in full. Payout (55) + bounty (20) + freshness (25). A sort signal, not a payout estimate. No opaque tiers."
+            desc="The 0–100 hunt score is published in full: payout 55, bounty 20, freshness 25. A sort signal, not a payout estimate."
             href="/how-scored"
           />
           <Row
             label="freshness"
             value={`ingested ${lastIngest}`}
-            desc="Daily snapshot cadence. Scope and reward changes diffed into history. See /whats-new and /reward-changes for the live log."
+            desc="Daily snapshots, every scope and reward change diffed into a live log."
             href="/whats-new"
           />
           <Row
             label="privacy"
             value="no email, no tracking cookies, no ads"
-            desc="Sign-in is optional (GitHub, used only to sync watchlist across devices). Vercel Analytics is anonymous pageview counts, that's it."
+            desc="Optional GitHub sign-in, only to sync your watchlist. Analytics are anonymous pageviews."
             href="/how-it-works"
           />
         </div>
@@ -56,7 +56,7 @@ export function Receipts({ s }: ReceiptsProps) {
             <div className="max-w-xl">
               <p className="text-sm text-emerald-300 mb-2">Who runs this</p>
               <p className="text-neutral-200 leading-relaxed">
-                I build and maintain this on my own, I&rsquo;m{' '}
+                I build and maintain this solo, I&rsquo;m{' '}
                 <a
                   href="https://github.com/Varun2024"
                   target="_blank"
@@ -65,16 +65,16 @@ export function Receipts({ s }: ReceiptsProps) {
                 >
                   Varun
                 </a>
-                . No team, no funding. If something&rsquo;s broken, missing, or wrong,{' '}
+                . No team, no funding. Something broken or missing?{' '}
                 <a
                   href="https://github.com/Varun2024/Bounty-index/issues"
                   target="_blank"
                   rel="noreferrer"
                   className="text-emerald-300 hover:text-emerald-200 transition underline underline-offset-4 decoration-emerald-400/30 hover:decoration-emerald-300"
                 >
-                  open an issue
-                </a>{' '}
-                , I read every one. Thanks for being here.
+                  Open an issue
+                </a>
+                , I read every one.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 shrink-0">
