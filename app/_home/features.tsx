@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { stats } from '@/lib/db/queries';
 import { PLATFORM_META } from '@/lib/format';
 import { Tilt } from '@/app/_ui/tilt';
@@ -36,29 +35,12 @@ export function Features({ s }: FeaturesProps) {
   return (
     <section className="border-t border-neutral-900">
       <div className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 lg:items-center reveal">
-          <div>
-            <SectionEyebrow n="03" label="What it does" />
-            <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50">
-              Start with the index.<br />
-              <span className="text-neutral-400">Then track, compare, and catch every scope change.</span>
-            </h2>
-            <p className="mt-5 text-lg text-neutral-300 leading-snug">
-              Point Fuzz at the index and he fetches what fits: the right programs, their scope, what
-              changed overnight, and the payouts worth your time.
-            </p>
-          </div>
-
-          {/* Fuzz fetches a result from the index. */}
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-900">
-            <Image
-              src="/fuzz-fetch.webp"
-              alt="Fuzz fetching a single program result from the index"
-              fill
-              sizes="(max-width: 1024px) 100vw, 45vw"
-              className="object-cover object-[center_40%]"
-            />
-          </div>
+        <div className="reveal">
+          <SectionEyebrow n="03" label="What it does" />
+          <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50 max-w-2xl">
+            Start with the index.<br />
+            <span className="text-neutral-400">Then track, compare, and catch every scope change.</span>
+          </h2>
         </div>
 
         <div className="mt-12 grid grid-cols-6 gap-4 [perspective:1200px]">

@@ -22,8 +22,10 @@ export function Signals({ changes, trending, dist, platforms }: SignalsProps) {
 
   return (
     <section className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
+      {/* Mirror of the Comparison intro: illustration sits on the LEFT here so neighbouring
+          sections don't share one layout. */}
       <div className="mb-12 grid gap-10 lg:grid-cols-2 lg:gap-16 lg:items-center reveal">
-        <div>
+        <div className="lg:order-last">
           <p className="text-sm text-neutral-400 mb-3">Live, and in the data</p>
           <h2 className="text-4xl md:text-5xl font-semibold text-neutral-50 tracking-tight">
             What&apos;s moving,<br />
@@ -36,7 +38,7 @@ export function Signals({ changes, trending, dist, platforms }: SignalsProps) {
         </div>
 
         {/* Fuzz on watch: monitoring the index as rows move. */}
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-900">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-900 lg:order-first">
           <Image
             src="/fuzz-signals.webp"
             alt="Fuzz watching the index for scope and reward changes"
