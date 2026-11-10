@@ -51,33 +51,46 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
                 not just a keyword search that navigates away. See hero-scope-check.tsx. */}
             <HeroScopeCheck programCount={programCount} />
 
-            <p className="mt-12 text-sm text-neutral-400 max-w-xl">
-              2,000+ hunters use this every week. Free, no signup, and it stays that way.
-              {lastIngest && <> Index refreshed {lastIngest}.</>}
-            </p>
+            {/* Proof cluster: the scattered trust sentence + MCP chip, regrouped under one hairline
+                into a scannable signal row so the lower hero reads as proof, not filler prose. The
+                load-bearing values (weekly hunters, refresh age) are lifted out of the muted label
+                text; the MCP chip stays the standout — the live surface we're pushing. */}
+            <div className="mt-12 pt-6 border-t border-neutral-900 max-w-xl">
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-neutral-400">
+                <span>
+                  <span className="mono tabular-nums text-neutral-100">2,000+</span> hunters / week
+                </span>
+                <span aria-hidden className="text-neutral-700">·</span>
+                <span>free, no signup</span>
+                {lastIngest && (
+                  <>
+                    <span aria-hidden className="text-neutral-700">·</span>
+                    <span>
+                      refreshed <span className="text-neutral-200">{lastIngest}</span>
+                    </span>
+                  </>
+                )}
+              </div>
 
-            {/* MCP endpoint lifted out of the credibility line into its own chip: it's the
-                surface we're actively pushing and the served-count is a real, growing trust
-                signal. Number uses the emerald accent (same as the one highlighted stat); the
-                single dot marks a genuinely live endpoint — static, no glow, no pulse. */}
-            <Link
-              href="/mcp"
-              className="group mt-5 inline-flex items-center gap-2.5 rounded-lg border border-neutral-800 bg-neutral-900/40 py-2 pl-3 pr-3.5 text-sm transition hover:border-emerald-800/70 hover:bg-neutral-900/70 focus-ring"
-            >
-              <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
-              <span className="text-neutral-300 transition group-hover:text-neutral-100">
-                MCP endpoint for agents
-              </span>
-              {mcpRequests > 0 && (
-                <>
-                  <span aria-hidden className="text-neutral-700">·</span>
-                  <span className="mono tabular-nums text-emerald-300">{mcpRequests.toLocaleString()}</span>
-                  <span className="text-neutral-400">
-                    request{mcpRequests === 1 ? '' : 's'} served
-                  </span>
-                </>
-              )}
-            </Link>
+              <Link
+                href="/mcp"
+                className="group mt-4 inline-flex items-center gap-2.5 rounded-lg border border-neutral-800 bg-neutral-900/40 py-2 pl-3 pr-3.5 text-sm transition hover:border-emerald-800/70 hover:bg-neutral-900/70 focus-ring"
+              >
+                <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                <span className="text-neutral-300 transition group-hover:text-neutral-100">
+                  MCP endpoint for agents
+                </span>
+                {mcpRequests > 0 && (
+                  <>
+                    <span aria-hidden className="text-neutral-700">·</span>
+                    <span className="mono tabular-nums text-emerald-300">{mcpRequests.toLocaleString()}</span>
+                    <span className="text-neutral-400">
+                      request{mcpRequests === 1 ? '' : 's'} served
+                    </span>
+                  </>
+                )}
+              </Link>
+            </div>
           </section>
 
           {top.length > 0 && (
