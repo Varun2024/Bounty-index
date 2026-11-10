@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { headers } from 'next/headers';
-import { requireUserId } from './require-user';
+import { auth } from '@/auth';
 import { FEEDBACK_TOPICS, FEEDBACK_TOPIC_META, type FeedbackTopic } from '@/lib/feedback';
 import {
   validateDiscordWebhookUrl,
@@ -24,23 +24,16 @@ const TOPIC_COLOR: Record<FeedbackTopic, number> = {
   'discord-setup': 0xa78bfa, // violet
 };
 
-// Email is required: it's the only reply path. Validated here too, never trust the client.
+// Sign-in is required and the GitHub identity is the reply path, so there's no email field.
 const schema = z.object({
   topic: z.enum(FEEDBACK_TOPICS),
   message: z.string().trim().min(4, 'add a bit more').max(2000),
-  email: z
-    .string()
-    .trim()
-    .min(1, 'add your email so I can reply')
-    .max(200)
-    .refine((v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'that email looks off'),
   path: z.string().trim().max(300).optional().default(''),
 });
 
 export interface FeedbackInput {
   topic: FeedbackTopic;
   message: string;
-  email?: string;
   path?: string;
   website?: string; // honeypot — real users never fill this
 }
@@ -72,15 +65,23 @@ export async function submitFeedback(
   // Honeypot: a filled hidden field means a bot. Pretend it worked, drop it.
   if (input.website && input.website.trim()) return { ok: true };
 
+  // Feedback requires a signed-in GitHub identity: it's the reply path, and it keeps the channel
+  // spam-free. Resolve the session before anything else so a signed-out submit stops here.
+  const session = await auth();
+  const user = session?.user;
+  if (!user?.id) {
+    return { ok: false, error: 'sign in to send feedback' };
+  }
+
   const parsed = schema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? 'check the form' };
   }
-  const { topic, message, email, path } = parsed.data;
+  const { topic, message, path } = parsed.data;
 
   const ip = await clientIp();
   if (rateLimited(ip)) {
-    return { ok: false, error: 'easy — a few at a time. try again in a bit.' };
+    return { ok: false, error: 'easy, a few at a time. try again in a bit.' };
   }
 
   const webhookUrl = process.env.FEEDBACK_WEBHOOK_URL;
@@ -91,11 +92,11 @@ export async function submitFeedback(
     return { ok: false, error: 'feedback is not wired up yet. ping me on GitHub instead.' };
   }
 
-  const userId = await requireUserId();
-  const fields: DiscordEmbedField[] = [];
-  if (email) fields.push({ name: 'reply to', value: email, inline: true });
+  // Reply path comes from the GitHub session: prefer email, fall back to name, then user id.
+  const replyTo = user.email ?? user.name ?? user.id;
+  const fields: DiscordEmbedField[] = [{ name: 'from', value: replyTo, inline: true }];
   if (path) fields.push({ name: 'page', value: path, inline: true });
-  if (userId) fields.push({ name: 'signed-in user', value: userId, inline: false });
+  fields.push({ name: 'user id', value: user.id, inline: false });
 
   const embed: DiscordEmbed = {
     title: `Feedback · ${FEEDBACK_TOPIC_META[topic].title}`,
