@@ -19,11 +19,11 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
   const platformCount = s?.platforms ?? 6;
 
   return (
-    <div className="relative overflow-hidden lg:min-h-[calc(100vh-3.5rem)]">
+    <div className="relative overflow-hidden lg:min-h-[85vh]">
       <HeroDataBackdrop identifiers={bgIdentifiers} />
 
       <div className="relative max-w-[1280px] mx-auto px-6 flex flex-col min-h-full">
-        <div className="flex-1 grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-16 items-start pt-24 pb-20 lg:pt-28 lg:pb-24">
+        <div className="flex-1 grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-16 items-start pt-16 pb-14 lg:pt-20 lg:pb-16">
           <section className="animate-[fadeUp_.7s_ease-out_both]">
             {/* Bright/dim split: "every" (completeness) and "one index" (unification) carry the
                 pitch, so they stay neutral-50; the descriptive middle drops to neutral-500 so the

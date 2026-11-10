@@ -21,8 +21,8 @@ export function DataIllustration({ dist, platforms }: DataIllustrationProps) {
 
   return (
     <section className="border-t border-neutral-900">
-      <div className="max-w-[1200px] mx-auto px-6 py-24">
-        <div className="mb-12 reveal">
+      <div className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
+        <div className="mb-10 reveal">
           <p className="text-sm text-neutral-400 mb-2">In the data</p>
           <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What the numbers say.</h2>
         </div>

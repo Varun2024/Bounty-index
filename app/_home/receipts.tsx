@@ -11,7 +11,7 @@ export function Receipts({ s }: ReceiptsProps) {
 
   return (
     <section className="border-t border-neutral-900">
-      <div className="max-w-[1200px] mx-auto px-6 py-24">
+      <div className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
         <div className="reveal">
           <p className="text-sm text-neutral-400 mb-3">Receipts</p>
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50 max-w-2xl">
@@ -23,7 +23,7 @@ export function Receipts({ s }: ReceiptsProps) {
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4 reveal reveal-delay-1">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-4 reveal reveal-delay-1">
           <Row
             label="data"
             value="arkadiyt/bounty-targets-data + Immunefi scrape"
@@ -51,7 +51,7 @@ export function Receipts({ s }: ReceiptsProps) {
           />
         </div>
 
-        <div className="mt-16 border border-neutral-900 rounded-2xl bg-neutral-950/40 p-6 md:p-8 reveal reveal-delay-2">
+        <div className="mt-12 border border-neutral-900 rounded-2xl bg-neutral-950/40 p-6 md:p-8 reveal reveal-delay-2">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div className="max-w-xl">
               <p className="text-sm text-emerald-300 mb-2">Who runs this</p>

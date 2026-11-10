@@ -28,7 +28,7 @@ export function Comparison() {
   ];
   return (
     <section className="border-t border-neutral-900 bg-neutral-950/40 relative">
-      <div className="relative max-w-[1200px] mx-auto px-6 py-28">
+      <div className="relative max-w-[1200px] mx-auto px-6 py-16 md:py-20">
         <div className="reveal">
           <SectionEyebrow n="02" label="Why this exists" />
           <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50 max-w-3xl">

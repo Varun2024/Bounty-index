@@ -14,8 +14,8 @@ interface PulseProps {
 export function Pulse({ changes, trending }: PulseProps) {
   if (changes.length === 0 && trending.length === 0) return null;
   return (
-    <section className="max-w-[1200px] mx-auto px-6 py-24">
-      <div className="mb-12 reveal">
+    <section className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
+      <div className="mb-10 reveal">
         <p className="text-sm text-neutral-400 mb-2">Pulse</p>
         <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">What&apos;s moving now.</h2>
       </div>

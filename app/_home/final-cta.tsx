@@ -9,7 +9,7 @@ interface FinalCTAProps {
 export function FinalCTA({ s }: FinalCTAProps) {
   return (
     <section className="border-t border-neutral-900 relative overflow-hidden">
-      <div className="relative max-w-[1200px] mx-auto px-6 py-28 text-center">
+      <div className="relative max-w-[1200px] mx-auto px-6 py-16 md:py-20 text-center">
         <SectionEyebrow n="04" label="Start hunting" centered />
         <h2 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight text-neutral-50 max-w-3xl mx-auto leading-[1]">
           {s ? (
