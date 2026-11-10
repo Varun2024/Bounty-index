@@ -51,14 +51,15 @@ export function Comparison() {
             </p>
           </div>
 
-          {/* Fuzz holds one unified index while the scattered sources drift apart. */}
-          <div className="reveal relative overflow-hidden rounded-2xl">
+          {/* Fuzz holds one unified index while the scattered sources drift apart. Framed as a
+              rectangular panel (cropped from the square art) so it reads as a tidy card, not a slab. */}
+          <div className="reveal relative aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-900">
             <Image
               src="/fuzz-index.webp"
               alt="Fuzz keeping one unified index while scattered, disconnected sources drift apart"
-              width={1400}
-              height={1400}
-              className="w-full h-auto"
+              fill
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              className="object-cover object-[center_60%]"
             />
           </div>
         </div>
