@@ -226,61 +226,92 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </div>
         </section>
 
-        {/* Follow strip: single-line CTA for updates. Kept above the footer grid so it doesn't compete with the nav columns. */}
-        <section className="border-t border-neutral-900 bg-neutral-950/40">
-          <div className="max-w-[1400px] mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-3 text-center">
-            <span className="text-sm text-neutral-400">
-              Ship notes · new platforms · outages
-            </span>
-            <a
-              href="https://x.com/TheV_Stack"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-2 text-sm text-neutral-200 hover:text-emerald-300 transition focus-ring rounded-md px-3 py-1.5 border border-neutral-800 hover:border-emerald-400/40 bg-neutral-950/60"
-            >
-              <svg aria-hidden viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-              <span>Follow <strong className="font-semibold">@TheV_Stack</strong> for bounty.index updates</span>
-            </a>
-          </div>
-        </section>
-
         <footer className="border-t border-neutral-900 relative overflow-hidden">
-          <div className="relative max-w-[1400px] mx-auto px-6 pt-16 pb-10">
-            <div className="grid grid-cols-2 md:grid-cols-[1.4fr_repeat(4,1fr)] gap-x-8 gap-y-10">
-              <div className="col-span-2 md:col-span-1">
-                <Link href="/" className="mono text-sm tracking-tight flex items-center gap-2.5 group focus-ring rounded-md py-1 -my-1 w-fit">
-                  <Logo size={22} className="text-neutral-400 group-hover:text-neutral-300 transition" />
-                  <span className="text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
+          {/* Atmospheric field of scent-trails and glowing bugs. The art fades to black along its
+              top (baked in) so it melts into the page; the gradient scrim keeps the lede readable up
+              top and lets the glows breathe toward the bottom. */}
+          <div className="pointer-events-none absolute inset-0" aria-hidden>
+            <Image src="/footer-bg.webp" alt="" fill sizes="100vw" className="object-cover object-bottom" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0b] via-[#0a0a0b]/70 to-[#0a0a0b]/10" />
+          </div>
+
+          <div className="relative max-w-[1400px] mx-auto px-6 pt-20 pb-10">
+            {/* Lede: the name returns at size, with the real update channels (no fake newsletter). */}
+            <div className="grid gap-12 lg:grid-cols-[1.25fr_1fr] lg:gap-16 pb-14">
+              <div>
+                <Link href="/" className="mono tracking-tight inline-flex items-center gap-3 group focus-ring rounded-md">
+                  <Logo size={30} className="text-neutral-300 group-hover:text-neutral-100 transition" />
+                  <span className="text-2xl text-neutral-100 group-hover:text-emerald-400 transition">bounty.index</span>
                 </Link>
-                <p className="mt-4 text-sm text-neutral-400 leading-relaxed max-w-xs">
-                  Every public bug bounty program across seven platforms, indexed live and in one view. Thanks for using it.
+                <p className="mt-5 text-xl md:text-2xl text-neutral-200 leading-snug max-w-md">
+                  Every public bounty program, one index. Fuzz stays on the scent so you don&rsquo;t have to.
                 </p>
-                <div className="mt-4 flex items-center gap-2.5">
-                  <Image src="/fuzz.png" alt="" width={32} height={32} className="w-8 h-8 opacity-90" />
-                  <span className="mono text-[11px] text-neutral-500">Fuzz, our scope hound, stays on the scent.</span>
+                <div className="mt-5 flex items-center gap-2.5">
+                  <Image src="/fuzz.png" alt="" width={36} height={36} className="w-9 h-9 opacity-90" />
+                  <span className="mono text-[11px] text-neutral-500">Fuzz, your scope hound.</span>
                 </div>
-                <a
-                  href="mailto:varunshukla747@gmail.com"
-                  className="mt-5 inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-emerald-400 transition focus-ring rounded w-fit"
-                >
-                  <svg aria-hidden viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="5" width="18" height="14" rx="2" />
-                    <path d="m3 7 9 6 9-6" />
-                  </svg>
-                  varunshukla747@gmail.com
-                </a>
-                <a
-                  href="https://buymeacoffee.com/varun_builds"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="mt-4 inline-flex items-center gap-2 mono text-xs px-3 py-2 border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300 rounded-md hover:border-emerald-400/60 hover:bg-emerald-400/[0.12] transition focus-ring w-fit"
-                >
-                  buy me a coffee · goes straight to Neon
-                </a>
               </div>
 
+              <div className="lg:justify-self-end lg:text-right">
+                <p className="text-sm text-neutral-400">Ship notes, new platforms, outages. Pick a channel:</p>
+                <div className="mt-4 flex flex-wrap gap-2.5 lg:justify-end">
+                  <a
+                    href="https://x.com/TheV_Stack"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-2 text-sm text-neutral-200 px-3 py-2 rounded-md border border-neutral-800 bg-neutral-950/60 hover:text-emerald-300 hover:border-emerald-400/40 transition focus-ring"
+                  >
+                    <svg aria-hidden viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                    Follow on X
+                  </a>
+                  <a
+                    href="/settings/discord"
+                    className="inline-flex items-center gap-2 text-sm text-neutral-200 px-3 py-2 rounded-md border border-neutral-800 bg-neutral-950/60 hover:text-emerald-300 hover:border-emerald-400/40 transition focus-ring"
+                  >
+                    <svg aria-hidden viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                      <path d="M20.317 4.369a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.1 13.1 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.009c.12.099.246.198.373.292a.077.077 0 01-.006.127 12.3 12.3 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.84 19.84 0 006.002-3.03.077.077 0 00.032-.057c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+                    </svg>
+                    Discord alerts
+                  </a>
+                  <a
+                    href="/whats-new.xml"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-2 text-sm text-neutral-200 px-3 py-2 rounded-md border border-neutral-800 bg-neutral-950/60 hover:text-emerald-300 hover:border-emerald-400/40 transition focus-ring"
+                  >
+                    <svg aria-hidden viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16" />
+                      <circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none" />
+                    </svg>
+                    Changelog RSS
+                  </a>
+                </div>
+                <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm lg:justify-end">
+                  <a
+                    href="mailto:varunshukla747@gmail.com"
+                    className="inline-flex items-center gap-2 text-neutral-400 hover:text-emerald-400 transition focus-ring rounded"
+                  >
+                    <svg aria-hidden viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <path d="m3 7 9 6 9-6" />
+                    </svg>
+                    varunshukla747@gmail.com
+                  </a>
+                  <a
+                    href="https://buymeacoffee.com/varun_builds"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-2 mono text-xs px-3 py-2 border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300 rounded-md hover:border-emerald-400/60 hover:bg-emerald-400/[0.12] transition focus-ring"
+                  >
+                    buy me a coffee
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10 border-t border-neutral-900/70 pt-12">
               <FooterCol title="Browse">
                 <FooterLink href="/programs">Programs</FooterLink>
                 <FooterLink href="/compare">Compare</FooterLink>
