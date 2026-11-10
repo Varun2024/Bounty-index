@@ -6,6 +6,7 @@ import { isAdmin } from '@/lib/admin';
 import { db } from '@/lib/db/client';
 import { users, userWatchlist, programs } from '@/lib/db/schema';
 import { listPendingSignups } from '@/lib/signup-queue';
+import { McpUaList } from './mcp-ua-list';
 
 export const dynamic = 'force-dynamic';
 
@@ -98,7 +99,7 @@ export default async function AdminPage() {
       FROM mcp_hits
       GROUP BY ua
       ORDER BY requests DESC
-      LIMIT 10
+      LIMIT 100
     `)),
     dailySeries('mcp_hits', 'ts'),
     dailySeries('program_snapshots', 'captured_at'),
@@ -186,21 +187,7 @@ export default async function AdminPage() {
           <Tile label="Requests (all time)" value={mcpRequests} />
           <Tile label="Requests · 7d" value={mcpRequests7d} />
         </div>
-        {mcpUa.length > 0 && (
-          <ul className="mt-3 border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 divide-y divide-neutral-900">
-            {mcpUa.map((u, i) => (
-              <li key={i} className="px-4 py-2.5 flex items-center gap-3">
-                <span className="mono text-sm text-emerald-300 tabular-nums w-8 text-right">{u.clients}</span>
-                <span className="text-sm text-neutral-200 truncate" title={u.ua ?? ''}>
-                  {u.ua ?? '(no user-agent)'}
-                </span>
-                <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 ml-auto whitespace-nowrap">
-                  {u.requests.toLocaleString()} req
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <McpUaList items={mcpUa} />
         <p className="mt-3 mono text-[10px] text-neutral-400">
           {'// '}one row per POST, handshake calls included. IP from x-forwarded-for; a shared NAT undercounts clients.
         </p>
