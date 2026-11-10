@@ -25,7 +25,7 @@ export function Signals({ changes, trending, dist, platforms }: SignalsProps) {
       <div className="mb-12 grid gap-10 lg:grid-cols-2 lg:gap-16 lg:items-center reveal">
         <div>
           <p className="text-sm text-neutral-400 mb-3">Live, and in the data</p>
-          <h2 className="text-4xl md:text-5xl font-semibold text-neutral-50 tracking-tight leading-[1.02]">
+          <h2 className="text-4xl md:text-5xl font-semibold text-neutral-50 tracking-tight">
             What&apos;s moving,<br />
             <span className="text-neutral-400">and what it adds up to.</span>
           </h2>
