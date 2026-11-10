@@ -1,7 +1,8 @@
-import { stats, topPayouts, getRecentChanges, trendingNewPayouts, mcpTotalRequests, sampleScopeIdentifiers } from '@/lib/db/queries';
+import { stats, topPayouts, getRecentChanges, trendingNewPayouts, mcpTotalRequests, sampleScopeIdentifiers, disclosedPayoutDistribution, listPlatformsWithCounts } from '@/lib/db/queries';
 import { Ticker } from '@/app/_ui/ticker';
 import { Hero } from './_home/hero';
 import { Pulse } from './_home/pulse';
+import { DataIllustration } from './_home/data-illustration';
 import { Comparison } from './_home/comparison';
 import { Features } from './_home/features';
 import { Receipts } from './_home/receipts';
@@ -16,13 +17,15 @@ export const revalidate = 3600;
 
 // Order is value-first: pitch → prove with live data → feature detail → why-not-them → trust → how → convert.
 export default async function Home() {
-  const [s, top, changes, trending, mcpRequests, bgIdentifiers] = await Promise.all([
+  const [s, top, changes, trending, mcpRequests, bgIdentifiers, payoutDist, platformCounts] = await Promise.all([
     stats().catch(() => null),
     topPayouts(5).catch(() => []),
     getRecentChanges(168, 6).catch(() => []),
     trendingNewPayouts(6, 30).catch(() => []),
     mcpTotalRequests().catch(() => 0),
     sampleScopeIdentifiers(16).catch(() => []),
+    disclosedPayoutDistribution().catch(() => null),
+    listPlatformsWithCounts().catch(() => [] as { platform: string; programs: number }[]),
   ]);
 
   return (
@@ -36,6 +39,7 @@ export default async function Home() {
       <Hero s={s} top={top} mcpRequests={mcpRequests} bgIdentifiers={bgIdentifiers} />
       <Ticker />
       <Pulse changes={changes} trending={trending} />
+      <DataIllustration dist={payoutDist} platforms={platformCounts} />
       <SectionOrnament />
       <Features s={s} />
       <SectionOrnament />

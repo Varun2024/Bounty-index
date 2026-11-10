@@ -55,6 +55,7 @@ function cachedWithDates<Args extends any[], R>(
 }
 import { diffSnapshots, isEmptyDiff } from '../snapshots';
 import { opportunityScoreSql } from '../opportunity';
+import { bucketize } from '../payout-buckets';
 import {
   listProgramsFallback,
   getProgramBySlugFallback,
@@ -482,6 +483,37 @@ async function getDisclosedReportsUncached(programId: number): Promise<Disclosed
     .orderBy(desc(schema.disclosedReports.disclosedAt))
     .limit(2000); // bound the cached row set; newest-first, and no program is remotely near this.
 }
+
+export interface PayoutDistribution {
+  counts: number[]; // one per PAYOUT_BANDS, aligned
+  n: number; // disclosed USD amounts in the corpus
+  median: number | null;
+  programs: number; // distinct mapped programs contributing an amount
+}
+
+// Corpus-wide payout distribution for the home "what they actually pay" chart. USD-only, amount>0,
+// to match the per-program histogram. Cached + revived like the other reads; throws on DB failure
+// (the home page catches → the section just doesn't render, no fake numbers).
+export const disclosedPayoutDistribution = cachedWithDates(
+  async (): Promise<PayoutDistribution> => {
+    const rows = await db
+      .select({ amt: schema.disclosedReports.bountyAmount, pid: schema.disclosedReports.programId })
+      .from(schema.disclosedReports)
+      .where(
+        sql`${schema.disclosedReports.bountyAmount} IS NOT NULL AND ${schema.disclosedReports.bountyAmount} > 0 AND (${schema.disclosedReports.currency} IS NULL OR upper(${schema.disclosedReports.currency}) = 'USD')`,
+      );
+    const amts = rows
+      .map((r) => r.amt)
+      .filter((n): n is number => typeof n === 'number')
+      .sort((a, b) => a - b);
+    const n = amts.length;
+    const median = n === 0 ? null : n % 2 ? amts[(n - 1) / 2] : Math.round((amts[n / 2 - 1] + amts[n / 2]) / 2);
+    const programs = new Set(rows.map((r) => r.pid).filter((p): p is number => p != null)).size;
+    return { counts: bucketize(amts), n, median, programs };
+  },
+  ['disclosedPayoutDistribution'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
 
 export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
   if (!ids.length) return [];

@@ -4,7 +4,8 @@ import { programSignals } from '@/lib/snapshots';
 import { summarizeRealPayouts, INDIVIDUAL_MIN_N, type PayoutItem } from '@/lib/disclosed';
 import { formatBounty } from '@/lib/format';
 import { ExternalIcon } from '@/app/_ui/icons';
-import { CHART } from '@/app/_ui/chart';
+import { BucketBars } from '@/app/_ui/bucket-bars';
+import { PAYOUT_BANDS, bandIndex, bucketize } from '@/lib/payout-buckets';
 
 interface RealPayoutsProps {
   reports: DisclosedReportRow[];
@@ -130,63 +131,18 @@ function PayoutContext({ view }: { view: ReturnType<typeof summarizeRealPayouts>
   );
 }
 
-// Bounty buckets, low→high. Each covers [min, max); the last is open-ended. One series (counts),
-// so it's a single-accent magnitude chart — no legend, the title names it. The bucket holding the
-// median is at full accent; the rest recede, so the eye reads "where payouts cluster" at a glance.
-const PAYOUT_BUCKETS: Array<{ label: string; min: number; max: number }> = [
-  { label: '<$500', min: 0, max: 500 },
-  { label: '$500–1k', min: 500, max: 1000 },
-  { label: '$1–5k', min: 1000, max: 5000 },
-  { label: '$5–10k', min: 5000, max: 10000 },
-  { label: '$10–25k', min: 10000, max: 25000 },
-  { label: '$25k+', min: 25000, max: Infinity },
-];
-
+// Distribution of this program's disclosed payouts across the shared bounty bands — the shape a
+// lone median hides. The band holding the median is highlighted; see app/_ui/bucket-bars.tsx.
 function PayoutHistogram({ items, median }: { items: PayoutItem[]; median: number }) {
-  const counts = PAYOUT_BUCKETS.map((b) => items.filter((it) => it.usd >= b.min && it.usd < b.max).length);
-  const peak = Math.max(1, ...counts);
-  const medianBucket = PAYOUT_BUCKETS.findIndex((b) => median >= b.min && median < b.max);
-
-  const SLOT = 10, BAR = 8, PLOT = 48, TOP = 3;
+  const counts = bucketize(items.map((it) => it.usd));
+  const medianBand = bandIndex(median);
+  const bars = PAYOUT_BANDS.map((b, i) => ({ label: b.label, value: counts[i], highlight: i === medianBand }));
   return (
-    <figure className="m-0">
-      <svg
-        viewBox={`0 0 ${PAYOUT_BUCKETS.length * SLOT} ${PLOT + TOP}`}
-        preserveAspectRatio="none"
-        className="w-full h-14"
-        role="img"
-        aria-label={`Distribution of ${items.length} disclosed payouts across amount bands; ${PAYOUT_BUCKETS.map((b, i) => `${counts[i]} in ${b.label}`).join(', ')}.`}
-      >
-        <line x1={0} y1={TOP + PLOT} x2={PAYOUT_BUCKETS.length * SLOT} y2={TOP + PLOT} stroke={CHART.baseline} strokeWidth={0.5} vectorEffect="non-scaling-stroke" />
-        {counts.map((n, i) => {
-          const h = (n / peak) * PLOT;
-          return (
-            <rect
-              key={i}
-              x={i * SLOT}
-              y={TOP + (PLOT - h)}
-              width={BAR}
-              height={h}
-              rx={1.5}
-              fill={n === 0 ? CHART.zero : i === medianBucket ? CHART.accent : CHART.accentMuted}
-            >
-              <title>{`${PAYOUT_BUCKETS[i].label}: ${n} payout${n === 1 ? '' : 's'}${i === medianBucket ? ' · median here' : ''}`}</title>
-            </rect>
-          );
-        })}
-      </svg>
-      <div className="flex mt-1">
-        {PAYOUT_BUCKETS.map((b, i) => (
-          <span
-            key={b.label}
-            className={`mono text-[8px] tabular-nums text-center ${i === medianBucket ? 'text-emerald-300' : 'text-neutral-400'}`}
-            style={{ width: `${100 / PAYOUT_BUCKETS.length}%` }}
-          >
-            {b.label}
-          </span>
-        ))}
-      </div>
-    </figure>
+    <BucketBars
+      bars={bars}
+      unit="payouts"
+      ariaLabel={`Distribution of ${items.length} disclosed payouts across amount bands; ${bars.map((b) => `${b.value} in ${b.label}`).join(', ')}.`}
+    />
   );
 }
 
