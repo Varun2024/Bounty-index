@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { getProgramBySlug } from '@/lib/db/queries';
 import { formatPayoutRange, platformLabel } from '@/lib/format';
+import { HOUND_MARK } from '@/lib/og-card';
 
 // Per-program OG card as a route handler. The metadata-file convention (opengraph-image.tsx)
 // isn't allowed after a catch-all segment, so the detail page's generateMetadata points its
@@ -66,8 +67,9 @@ export async function GET(_req: Request, { params }: RouteContext): Promise<Resp
           }}
         />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 20, color: '#34d399', letterSpacing: 4, zIndex: 1 }}>
-          <span>§</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 20, color: '#34d399', letterSpacing: 4, zIndex: 1 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={HOUND_MARK} width={34} height={34} alt="" style={{ marginTop: -2 }} />
           <span>BOUNTY.INDEX</span>
         </div>
 

@@ -255,6 +255,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <p className="mt-4 text-sm text-neutral-400 leading-relaxed max-w-xs">
                   Every public bug bounty program across seven platforms, indexed live and in one view. Thanks for using it.
                 </p>
+                <div className="mt-4 flex items-center gap-2.5">
+                  <Image src="/fuzz.png" alt="" width={32} height={32} className="w-8 h-8 opacity-90" />
+                  <span className="mono text-[11px] text-neutral-500">Fuzz, our scope hound, stays on the scent.</span>
+                </div>
                 <a
                   href="mailto:varunshukla747@gmail.com"
                   className="mt-5 inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-emerald-400 transition focus-ring rounded w-fit"

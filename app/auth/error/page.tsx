@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Sign-in unavailable · Bounty Index',
@@ -28,6 +29,16 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
 
   return (
     <div className="max-w-[620px] mx-auto px-6 py-20 text-center">
+      {looksLikeOutage && (
+        <Image
+          src="/fuzz-sleep.png"
+          alt="Fuzz the hound, napping while sign-in is paused"
+          width={176}
+          height={176}
+          priority
+          className="mx-auto mb-6 w-40 h-40"
+        />
+      )}
       <p className="mono text-[10px] uppercase tracking-widest text-amber-400 mb-3">
         {looksLikeOutage ? '// sign-in paused' : '// sign-in failed'}
       </p>
