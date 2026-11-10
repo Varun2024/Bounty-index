@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { SectionEyebrow } from './shared';
 
 interface CompareRow {
@@ -29,24 +30,37 @@ export function Comparison() {
   return (
     <section className="border-t border-neutral-900 bg-neutral-950/40 relative">
       <div className="relative max-w-[1200px] mx-auto px-6 py-16 md:py-20">
-        <div className="reveal max-w-3xl">
-          <SectionEyebrow n="02" label="Why this exists" />
-          <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50">
-            Every alternative is <span className="text-neutral-400">fragmented.</span>
-          </h2>
-          {/* Rhetorical turn with real weight: the critique recedes (muted), the payoff lands bright
-              + accented, so the section reads as a verdict, not a paragraph. */}
-          <p className="mt-5 text-lg text-neutral-300 leading-snug">
-            Platforms list only their own. Directories show policies, not live scope. Raw JSON means
-            living in <code className="mono text-neutral-200">jq</code>.{' '}
-            <span className="text-neutral-400">
-              Not one tells you what moved overnight, whether a domain is in scope, or answers your agent over{' '}
-              <code className="mono text-neutral-400">MCP</code>.
-            </span>
-          </p>
-          <p className="mt-4 text-lg md:text-xl text-neutral-100 font-medium leading-snug">
-            This does all of it. <span className="text-emerald-300">Every platform, free, no account.</span>
-          </p>
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 lg:items-center">
+          <div className="reveal">
+            <SectionEyebrow n="02" label="Why this exists" />
+            <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50">
+              Every alternative is <span className="text-neutral-400">fragmented.</span>
+            </h2>
+            {/* Rhetorical turn with real weight: the critique recedes (muted), the payoff lands bright
+                + accented, so the section reads as a verdict, not a paragraph. */}
+            <p className="mt-5 text-lg text-neutral-300 leading-snug">
+              Platforms list only their own. Directories show policies, not live scope. Raw JSON means
+              living in <code className="mono text-neutral-200">jq</code>.{' '}
+              <span className="text-neutral-400">
+                Not one tells you what moved overnight, whether a domain is in scope, or answers your agent over{' '}
+                <code className="mono text-neutral-400">MCP</code>.
+              </span>
+            </p>
+            <p className="mt-4 text-lg md:text-xl text-neutral-100 font-medium leading-snug">
+              This does all of it. <span className="text-emerald-300">Every platform, free, no account.</span>
+            </p>
+          </div>
+
+          {/* Fuzz holds one unified index while the scattered sources drift apart. */}
+          <div className="reveal relative overflow-hidden rounded-2xl">
+            <Image
+              src="/fuzz-index.webp"
+              alt="Fuzz keeping one unified index while scattered, disconnected sources drift apart"
+              width={1400}
+              height={1400}
+              className="w-full h-auto"
+            />
+          </div>
         </div>
 
         {/* Mobile: card stack */}
