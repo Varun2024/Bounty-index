@@ -34,7 +34,7 @@ const MORE: { href: string; label: string; desc: string; beta?: boolean }[] = [
 export function Features({ s }: FeaturesProps) {
   return (
     <section className="border-t border-neutral-900">
-      <div className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
+      <div className="max-w-[1200px] mx-auto px-6 py-20 md:py-28">
         <div className="reveal">
           <SectionEyebrow n="03" label="What it does" />
           <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50 max-w-2xl">
