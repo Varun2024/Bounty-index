@@ -1,7 +1,6 @@
 import { stats, topPayouts, getRecentChanges, trendingNewPayouts, mcpTotalRequests, sampleScopeIdentifiers, disclosedPayoutDistribution, listPlatformsWithCounts } from '@/lib/db/queries';
 import { Ticker } from '@/app/_ui/ticker';
 import { Hero } from './_home/hero';
-import { StatBand } from './_home/stat-band';
 import { Signals } from './_home/signals';
 import { Comparison } from './_home/comparison';
 import { Features } from './_home/features';
@@ -38,7 +37,6 @@ export default async function Home() {
       )}
       <Hero s={s} top={top} mcpRequests={mcpRequests} bgIdentifiers={bgIdentifiers} />
       <Ticker />
-      <StatBand s={s} top={top} mcpRequests={mcpRequests} />
       <Signals changes={changes} trending={trending} dist={payoutDist} platforms={platformCounts} />
       <SectionOrnament />
       <Features s={s} />
