@@ -21,10 +21,11 @@ export function Signals({ changes, trending, dist, platforms }: SignalsProps) {
 
   return (
     <section className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
-      <div className="mb-10 reveal">
-        <p className="text-sm text-neutral-400 mb-2">Live, and in the data</p>
-        <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">
-          What&apos;s moving, and what it adds up to.
+      <div className="mb-12 reveal max-w-3xl">
+        <p className="text-sm text-neutral-400 mb-3">Live, and in the data</p>
+        <h2 className="text-4xl md:text-5xl font-semibold text-neutral-50 tracking-tight leading-[1.02]">
+          What&apos;s moving,<br />
+          <span className="text-neutral-400">and what it adds up to.</span>
         </h2>
       </div>
 
