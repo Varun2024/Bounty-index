@@ -8,6 +8,18 @@ import { formatBounty } from '@/lib/format';
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_ALT = 'bounty.index: every public bounty, one index';
 
+// The Scope Hound head mark, emerald, as a data URI so Satori can render it in the lockup.
+export const HOUND_MARK = `data:image/svg+xml;base64,${Buffer.from(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">' +
+    '<path d="M11.8 10.2 C6.8 10.5 5.2 16.6 6.8 22.4 C7.5 25 10.9 25 12.2 21.4" stroke="#34d399" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>' +
+    '<path d="M20.2 10.2 C25.2 10.5 26.8 16.6 25.2 22.4 C24.5 25 21.1 25 19.8 21.4" stroke="#34d399" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>' +
+    '<path d="M12 10.4 C12.4 6.8 19.6 6.8 20 10.4 C20.4 13.2 20 15.4 18.8 16.9 C18.4 19.8 18.7 22.6 16 23.3 C13.3 22.6 13.6 19.8 13.2 16.9 C12 15.4 11.6 13.2 12 10.4 Z" stroke="#34d399" stroke-width="1.7" stroke-linejoin="round"/>' +
+    '<circle cx="13.9" cy="12.9" r="1.1" fill="#34d399"/>' +
+    '<circle cx="18.1" cy="12.9" r="1.1" fill="#34d399"/>' +
+    '<circle cx="16" cy="21.4" r="1.7" fill="#34d399"/>' +
+    '</svg>',
+).toString('base64')}`;
+
 const FALLBACK = { programs: 1800, platforms: 7 };
 
 const PLATFORM_DOTS: Record<string, string> = {
@@ -74,8 +86,9 @@ export async function siteOgCard(): Promise<ImageResponse> {
 
         {/* left column */}
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 20, color: '#34d399', letterSpacing: 4 }}>
-            <span>§</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 20, color: '#34d399', letterSpacing: 4 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={HOUND_MARK} width={34} height={34} alt="" style={{ marginTop: -2 }} />
             <span>BOUNTY.INDEX</span>
           </div>
 

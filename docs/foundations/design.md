@@ -7,6 +7,27 @@ Not a SaaS dashboard, not a shadcn demo, not another cyberpunk hacker aesthetic.
 
 Every section earns its space. Nothing is decorative-only.
 
+## Brand identity
+
+**Fuzz, the scope hound.** A tracker hound that sniffs out bounties and follows scope as it moves
+(named for fuzzing). It replaced the old crosshair/reticle mark, which read as generic security
+tooling (crosshair and radar are everywhere in this space). Fuzz is the one deliberate departure
+from "no illustrations".
+
+- **Logo / favicon** (`app/_ui/logo.tsx`, `app/icon.svg`): a line-art hound head with long droopy
+  ears and an emerald nose. `currentColor` for the head so the nav can tint it; emerald (`#34d399`)
+  only on the nose, carrying the accent from the old target mark. Must read at 16px. Also used in the
+  OG lockup (`lib/og-card.tsx` `HOUND_MARK`). Regenerate the PNG set (`public/icon-*.png`) and
+  `app/favicon.ico` from `icon.svg` if the mark changes.
+- **Mascot poses** (filled illustration, off-white + grey on transparent, single emerald accent, no 3D).
+  One character, one action per state, used in a single sensible home each (never crammed):
+  - `public/fuzz.png` — sitting, scent-trail. Home: **404** (`app/not-found.tsx`).
+  - `public/fuzz-hunt.png` — nose down, on the scent. Home: **scope-lookup loading** (`app/scope/[domain]/loading.tsx`).
+  - `public/fuzz-found.png` — alert at an emerald beacon. Home: **scope-lookup IN SCOPE** verdict (`app/scope-lookup/results.tsx`).
+  - `public/fuzz-empty.png` — head tilt, faded trail. Home: **scope-lookup NO MATCH** verdict.
+  - `public/fuzz-sleep.png` — curled asleep, zZZ. Home: **auth outage page** ("sign-in is napping", `app/auth/error/page.tsx`).
+  - Source art generated via Higgsfield (nano_banana_2), backgrounds cut to transparent. Reuse on Discord/OG/stickers as needed.
+
 ## Tokens
 
 | Token | Value | Use |
@@ -234,7 +255,7 @@ Left rail 248px chip filters, main table right. Above table:
 - Gradients other than the emerald radial glow and hero H1 `.bg-gradient-to-br` on gradient words
 - Rounded-full pills for anything other than status dots and the LIVE badge
 - Card grids with uniform shadows or uniform sizes
-- Illustrations, hero SVGs, decorative blobs, mascots
+- Illustrations, hero SVGs, decorative blobs, and generic stock mascots. **Exception (owner override, 2026-11-10):** the Scope Hound is the brand mascot. See "Brand identity" above. No other illustrations or mascots.
 - Emoji (except optional in `PLAN.md` phase markers)
 - Any font other than Geist
 - Light mode (Phase 2 minimum)

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { formatBounty, platformLabel, PLATFORM_META } from '@/lib/format';
 import type { findByDomain } from '@/lib/db/queries';
 
@@ -124,6 +125,26 @@ function Verdict({ domain, verdict, inScopePrograms, outOfScopePrograms, inScope
             </>
           )}
         </p>
+
+        {/* Fuzz reacts to the verdict: found the scent when in-scope, came up empty on no match. */}
+        {verdict === 'in' && (
+          <Image
+            src="/fuzz-found.png"
+            alt="Fuzz the hound, found the scent"
+            width={80}
+            height={80}
+            className="ml-auto shrink-0 w-16 h-16 hidden sm:block"
+          />
+        )}
+        {verdict === 'none' && (
+          <Image
+            src="/fuzz-empty.png"
+            alt="Fuzz the hound, came up empty"
+            width={80}
+            height={80}
+            className="ml-auto shrink-0 w-16 h-16 hidden sm:block"
+          />
+        )}
       </div>
     </div>
   );
