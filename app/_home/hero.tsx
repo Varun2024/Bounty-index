@@ -14,8 +14,6 @@ interface HeroProps {
 export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
   const lastIngest = s?.lastIngestAt ? relativeTime(s.lastIngestAt) : null;
   const programCount = s?.programs.toLocaleString() ?? null;
-  const payingCount = s?.bountyPrograms.toLocaleString() ?? null;
-  const assetCount = s?.inScopeAssets.toLocaleString() ?? null;
   const platformCount = s?.platforms ?? 6;
 
   return (
@@ -134,35 +132,7 @@ export function Hero({ s, top, mcpRequests, bgIdentifiers }: HeroProps) {
             </aside>
           )}
         </div>
-
-        {/* Stat strip mirrors the hero's two-column layout: on desktop it uses the same
-            [1.3fr_1fr] split and gap-16 gutter as the content row above, so the first pair sits
-            under the headline column and the second pair under the leaderboard, columns aligned.
-            `contents` collapses the groups on mobile so the four fall into a plain 2x2. */}
-        {s && (
-          <dl className="pb-16 grid grid-cols-2 gap-x-8 gap-y-8 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
-            <div className="contents lg:grid lg:grid-cols-2 lg:gap-x-8">
-              <StatInline label="programs" value={programCount!} />
-              <StatInline label="paying bounties" value={payingCount!} accent />
-            </div>
-            <div className="contents lg:grid lg:grid-cols-2 lg:gap-x-8">
-              <StatInline label="in-scope assets" value={assetCount!} />
-              <StatInline label="platforms" value={String(platformCount)} />
-            </div>
-          </dl>
-        )}
       </div>
-    </div>
-  );
-}
-
-function StatInline({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div>
-      <dd className={`mono tabular-nums text-2xl md:text-3xl font-medium ${accent ? 'text-emerald-300' : 'text-neutral-50'}`}>
-        {value}
-      </dd>
-      <dt className="mt-1 text-xs text-neutral-400">{label}</dt>
     </div>
   );
 }

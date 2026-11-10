@@ -52,7 +52,7 @@ export function FinalCTA({ s }: FinalCTAProps) {
           </div>
 
           {/* Fuzz column */}
-          <div className="order-first lg:order-last flex justify-center lg:justify-end">
+          <div className="order-first lg:order-last flex flex-col items-center lg:items-end gap-3">
             <Image
               src="/fuzz-found.png"
               alt="Fuzz, bounty.index's scope hound, picking up a fresh bounty"
@@ -60,6 +60,9 @@ export function FinalCTA({ s }: FinalCTAProps) {
               height={420}
               className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80"
             />
+            <p className="mono text-[11px] text-neutral-500 text-center lg:text-right">
+              Fuzz, your scope hound. He finds the scent so you can take the shot.
+            </p>
           </div>
         </div>
       </div>
