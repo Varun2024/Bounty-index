@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { getRecentChanges, trendingNewPayouts, PayoutDistribution } from '@/lib/db/queries';
 import { PulsePanel, ChangeRow, TrendingRow } from './pulse';
 import { PayoutPanel, CoveragePanel } from './data-illustration';
@@ -21,11 +22,29 @@ export function Signals({ changes, trending, dist, platforms }: SignalsProps) {
 
   return (
     <section className="max-w-[1200px] mx-auto px-6 py-16 md:py-20">
-      <div className="mb-10 reveal">
-        <p className="text-sm text-neutral-400 mb-2">Live, and in the data</p>
-        <h2 className="text-3xl md:text-4xl font-semibold text-neutral-50 tracking-tight">
-          What&apos;s moving, and what it adds up to.
-        </h2>
+      <div className="mb-12 grid gap-10 lg:grid-cols-2 lg:gap-16 lg:items-center reveal">
+        <div>
+          <p className="text-sm text-neutral-400 mb-3">Live, and in the data</p>
+          <h2 className="text-4xl md:text-5xl font-semibold text-neutral-50 tracking-tight leading-[1.02]">
+            What&apos;s moving,<br />
+            <span className="text-neutral-400">and what it adds up to.</span>
+          </h2>
+          <p className="mt-5 text-lg text-neutral-300 leading-snug">
+            Fuzz watches every program in the index. Scope and reward changes surface here the day they
+            happen, and the corpus charts show what it all adds up to.
+          </p>
+        </div>
+
+        {/* Fuzz on watch: monitoring the index as rows move. */}
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-neutral-900">
+          <Image
+            src="/fuzz-signals.webp"
+            alt="Fuzz watching the index for scope and reward changes"
+            fill
+            sizes="(max-width: 1024px) 100vw, 45vw"
+            className="object-cover object-[center_42%]"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-start">
