@@ -221,7 +221,7 @@ export default async function AdminPage() {
             title="Snapshots written"
             data={snapDaily}
             unit="snap"
-            note="// ingest health — an empty bar is a missed cron run"
+            note="// ingest health: an empty bar is a missed cron run"
           />
         </div>
       </section>

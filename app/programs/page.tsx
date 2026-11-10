@@ -229,7 +229,7 @@ export default async function ProgramsPage({ searchParams }: PageProps) {
                       {p.disclosedN >= AGGREGATE_MIN_N && p.disclosedMedian != null && (
                         <span
                           className="block text-[11px] text-emerald-300/80 mt-0.5"
-                          title={`Median of ${p.disclosedN} disclosed payouts (USD) — what this program actually paid, not the stated ceiling`}
+                          title={`Median of ${p.disclosedN} disclosed payouts (USD): what this program actually paid, not the stated ceiling`}
                         >
                           real ~{formatBounty(p.disclosedMedian)}
                         </span>

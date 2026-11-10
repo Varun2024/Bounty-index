@@ -135,7 +135,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         <Chip
           active={filters.hasDisclosed ?? false}
           onClick={() => update({ hasDisclosed: filters.hasDisclosed ? null : '1' })}
-          title="Programs with enough disclosed payouts (8+) to show a real typical figure — the actual-paid data the upstream list can't have."
+          title="Programs with enough disclosed payouts (8+) to show a real typical figure: the actual-paid data the upstream list can't have."
         >
           disclosed payouts
         </Chip>

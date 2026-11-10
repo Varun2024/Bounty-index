@@ -29,17 +29,23 @@ export function Comparison() {
   return (
     <section className="border-t border-neutral-900 bg-neutral-950/40 relative">
       <div className="relative max-w-[1200px] mx-auto px-6 py-16 md:py-20">
-        <div className="reveal">
+        <div className="reveal max-w-3xl">
           <SectionEyebrow n="02" label="Why this exists" />
-          <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50 max-w-3xl">
+          <h2 className="mt-6 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50">
             Every alternative is <span className="text-neutral-400">fragmented.</span>
           </h2>
-          <p className="mt-5 text-neutral-400 max-w-2xl leading-relaxed">
-            Platforms only list their own programs. Directories show policies, not live scope. Raw JSON
-            means living in <code className="mono text-neutral-300">jq</code>. None of them tell you what
-            changed overnight, whether a domain is in scope, or answer your agent over{' '}
-            <code className="mono text-neutral-300">MCP</code>. This does all of it, across every platform,
-            free and without an account.
+          {/* Rhetorical turn with real weight: the critique recedes (muted), the payoff lands bright
+              + accented, so the section reads as a verdict, not a paragraph. */}
+          <p className="mt-5 text-lg text-neutral-300 leading-snug">
+            Platforms list only their own. Directories show policies, not live scope. Raw JSON means
+            living in <code className="mono text-neutral-200">jq</code>.{' '}
+            <span className="text-neutral-400">
+              Not one tells you what moved overnight, whether a domain is in scope, or answers your agent over{' '}
+              <code className="mono text-neutral-400">MCP</code>.
+            </span>
+          </p>
+          <p className="mt-4 text-lg md:text-xl text-neutral-100 font-medium leading-snug">
+            This does all of it. <span className="text-emerald-300">Every platform, free, no account.</span>
           </p>
         </div>
 
@@ -103,6 +109,11 @@ export function Comparison() {
             </div>
           ))}
         </div>
+
+        {/* One-line verdict so the table lands a conclusion, not just data. */}
+        <p className="mt-5 text-sm text-neutral-400">
+          <span className="text-emerald-300 font-medium">bounty.index</span> is the only one that does all five, across every platform, in one place.
+        </p>
       </div>
     </section>
   );

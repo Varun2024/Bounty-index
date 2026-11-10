@@ -97,7 +97,7 @@ export function RealPayouts({ reports, snapshots, platform, statedMax, statedCur
         </div>
 
         <p className="mono text-[10px] text-neutral-400 leading-relaxed">
-          based on {v.n} disclosed report{v.n === 1 ? '' : 's'} where the researcher revealed the amount — only what
+          based on {v.n} disclosed report{v.n === 1 ? '' : 's'} where the researcher revealed the amount. only what
           was chosen to be public, not every payout. amounts normalized to USD for comparison.
         </p>
       </div>
