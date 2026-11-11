@@ -4,10 +4,13 @@ import { and, or, eq, ilike, gte, gt, isNotNull, desc, sql, inArray, ne, getTabl
 import { AGGREGATE_MIN_N } from '../disclosed';
 import type { ProgramReportStats } from '../reports';
 
-// ponytail: single tag busts every public read cache from the ingest cron.
-// 5min revalidate is the safety net if tag busting ever fails.
+// ponytail: single tag busts every public read cache from the ingest cron, which is the
+// real freshness mechanism — data only changes once a day at ingest. The time-based
+// revalidate is just the safety net for a missed tag bust, so it matches the data's daily
+// cadence. At 300s it was rewriting every cached query every 5min on access (~288x/day) for
+// data that changes once a day, which was a top ISR-write driver. 1 day self-heals a dead cron.
 const CACHE_TAG = 'programs-data';
-const CACHE_REVALIDATE = 300;
+const CACHE_REVALIDATE = 86400;
 export const PROGRAMS_CACHE_TAG = CACHE_TAG;
 
 // unstable_cache serializes Date → ISO string on cache hit. Walk the return and

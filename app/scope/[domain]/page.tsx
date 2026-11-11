@@ -5,15 +5,11 @@ import { CheckButton } from '@/app/scope-lookup/check-button';
 import { SearchIcon } from '@/app/_ui/icons';
 import { ScopeResults } from '@/app/scope-lookup/results';
 
-// Pure function of the :domain param over data that only changes at the daily ingest,
-// so render once and serve from cache. No cookies/headers/auth here to force dynamic.
-// Empty generateStaticParams + revalidate = prerender none, cache each domain on-demand
-// (ISR). Without it, a dynamic-param route stays server-rendered on every request.
-export const revalidate = 3600;
-
-export function generateStaticParams(): { domain: string }[] {
-  return [];
-}
+// The :domain param is unbounded user input (and crawler bait), so ISR-caching it minted
+// one cache entry per unique string ever requested. That was the top ISR-write driver.
+// Render on demand instead: no writes, and findByDomain is a single indexed query, so the
+// per-request cost is strictly less than regenerating + writing a cache entry we'd rarely reuse.
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ domain: string }>;
