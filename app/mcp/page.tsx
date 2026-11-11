@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { McpSupport } from './mcp-support';
 
 export const metadata: Metadata = {
@@ -81,8 +82,8 @@ function SectionLabel({ children, count }: { children: React.ReactNode; count?: 
 export default function McpPage(): React.JSX.Element {
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-14">
-      {/* Masthead — two-col: pitch left, specs right */}
-      <section className="grid md:grid-cols-[1fr_auto] gap-8 md:gap-12 items-end border-b border-neutral-900 pb-10">
+      {/* Masthead — pitch + specs left, Fuzz-on-the-wire illustration right */}
+      <section className="grid gap-10 lg:grid-cols-2 lg:gap-16 lg:items-center border-b border-neutral-900 pb-12">
         <div>
           <div className="mono text-[10px] uppercase tracking-widest text-emerald-400/80">
             public beta · v0.2
@@ -90,29 +91,41 @@ export default function McpPage(): React.JSX.Element {
           <h1 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50">
             bounty.index MCP
           </h1>
-          <p className="mt-4 text-neutral-400 max-w-[58ch] leading-relaxed">
+          <p className="mt-4 text-neutral-400 max-w-[52ch] leading-relaxed">
             Wire your agent (Claude Desktop, Cursor, Codex, any Model Context Protocol client) into
             the same index that powers this site. No API key, no signup.
           </p>
+          <dl className="mt-8 flex flex-wrap gap-x-8 gap-y-4 mono text-[11px]">
+            <div>
+              <dt className="text-neutral-400">tools</dt>
+              <dd className="text-neutral-100 tabular-nums text-base">14</dd>
+            </div>
+            <div>
+              <dt className="text-neutral-400">prompts</dt>
+              <dd className="text-neutral-100 tabular-nums text-base">3</dd>
+            </div>
+            <div>
+              <dt className="text-neutral-400">resources</dt>
+              <dd className="text-neutral-100 tabular-nums text-base">1</dd>
+            </div>
+            <div>
+              <dt className="text-neutral-400">rate limit</dt>
+              <dd className="text-neutral-100 tabular-nums text-base">60/min</dd>
+            </div>
+          </dl>
         </div>
-        <dl className="grid grid-cols-4 md:grid-cols-2 gap-x-6 gap-y-3 mono text-[11px] md:text-right">
-          <div>
-            <dt className="text-neutral-400">tools</dt>
-            <dd className="text-neutral-100 tabular-nums text-base">14</dd>
-          </div>
-          <div>
-            <dt className="text-neutral-400">prompts</dt>
-            <dd className="text-neutral-100 tabular-nums text-base">3</dd>
-          </div>
-          <div>
-            <dt className="text-neutral-400">resources</dt>
-            <dd className="text-neutral-100 tabular-nums text-base">1</dd>
-          </div>
-          <div>
-            <dt className="text-neutral-400">rate limit</dt>
-            <dd className="text-neutral-100 tabular-nums text-base">60/min</dd>
-          </div>
-        </dl>
+
+        {/* Fuzz patched into an agent over the wire. */}
+        <div className="relative aspect-[3/2] overflow-hidden rounded-2xl border border-neutral-900">
+          <Image
+            src="/fuzz-mcp.webp"
+            alt="Fuzz connected to an AI agent over the Model Context Protocol"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
+            className="object-cover object-center"
+          />
+        </div>
       </section>
 
       {/* Body in a two-column layout: content left, support card in a sticky right rail
