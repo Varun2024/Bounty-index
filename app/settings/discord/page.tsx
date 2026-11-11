@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { auth } from '@/auth';
 import { db } from '@/lib/db/client';
 import { programs, userWatchlist } from '@/lib/db/schema';
@@ -17,8 +16,6 @@ export const metadata: Metadata = {
   alternates: { canonical: '/settings/discord' },
 };
 
-const SIGNIN_HREF = '/api/auth/signin?callbackUrl=%2Fsettings%2Fdiscord';
-
 interface PageProps {
   searchParams: Promise<{ program?: string }>;
 }
@@ -31,10 +28,10 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
   const { program: programParam } = await searchParams;
   const prefillProgramId = programParam ? Number(programParam) : null;
 
-  // Only touch the DB when signed in — the whole page renders for signed-out
-  // visitors so they can see the value and do the Discord-side work first.
+  // Prefill is public program data, so fetch it even for signed-out visitors: someone who
+  // arrived from a program page should see it prefilled rather than re-search after sign-in.
   const prefillProgram =
-    signedIn && prefillProgramId && Number.isFinite(prefillProgramId) && prefillProgramId > 0
+    prefillProgramId && Number.isFinite(prefillProgramId) && prefillProgramId > 0
       ? (
           await db
             .select({ id: programs.id, name: programs.name, platform: programs.platform, slug: programs.slug })
@@ -135,30 +132,17 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
 
       <section className="mb-10">
         <h2 className="text-lg font-semibold text-neutral-100 mb-3">2 · Paste the URL &amp; pick a program</h2>
-        {signedIn ? (
-          <>
-            <p className="text-sm text-neutral-400 mb-4 leading-relaxed">
-              Paste the URL you copied above. Pick which program should fire it; you can add more later. Optional label helps you tell subscriptions apart when you have several (e.g. <span className="mono text-neutral-400">#alerts</span>).
-            </p>
-            <AddWebhookForm prefillProgram={prefillProgram} watchlistCount={watchlistCount} />
-            <p className="mt-3 mono text-[11px] text-neutral-400">
-              {'// '}after saving, hit <span className="text-emerald-400">test</span> on the row to fire a sample embed right now, no need to wait for the daily cron.
-            </p>
-          </>
-        ) : (
-          <div className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-6">
-            <p className="text-sm text-neutral-300 leading-relaxed">
-              Already copied your webhook URL? Sign in to connect it. GitHub OAuth, no email. Your subscriptions follow you
-              between machines, not into your inbox. (Sign-in is only needed to save a subscription, so bounty.index can&rsquo;t
-              be used to spam a channel anonymously.)
-            </p>
-            <Link
-              href={SIGNIN_HREF}
-              className="mt-5 inline-flex items-center gap-2 mono text-sm px-4 py-2 border border-emerald-400/40 bg-emerald-400/[0.06] text-emerald-300 rounded-md hover:bg-emerald-400/[0.12] transition"
-            >
-              sign in with GitHub →
-            </Link>
-          </div>
+        <p className="text-sm text-neutral-400 mb-4 leading-relaxed">
+          Paste the URL you copied above. Pick which program should fire it; you can add more later. Optional label helps you tell subscriptions apart when you have several (e.g. <span className="mono text-neutral-400">#alerts</span>).
+          {!signedIn && (
+            <> Fill it all in now, nothing is lost: GitHub sign-in is only the final save step (so bounty.index can&rsquo;t be used to spam a channel anonymously), and your details carry over.</>
+          )}
+        </p>
+        <AddWebhookForm prefillProgram={prefillProgram} watchlistCount={watchlistCount} signedIn={signedIn} />
+        {signedIn && (
+          <p className="mt-3 mono text-[11px] text-neutral-400">
+            {'// '}after saving, hit <span className="text-emerald-400">test</span> on the row to fire a sample embed right now, no need to wait for the daily cron.
+          </p>
         )}
       </section>
 
