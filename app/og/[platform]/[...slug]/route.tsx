@@ -6,7 +6,12 @@ import { HOUND_MARK } from '@/lib/og-card';
 // Per-program OG card as a route handler. The metadata-file convention (opengraph-image.tsx)
 // isn't allowed after a catch-all segment, so the detail page's generateMetadata points its
 // openGraph.images here instead. Served at /og/<platform>/<slug...>.
-export const revalidate = 86400;
+//
+// Rendering these is CPU- and origin-transfer-heavy (a 1200x630 PNG via satori/resvg), and a
+// card only changes when the program's name/payout/platform does, which is rare. Daily
+// regeneration was burning ISR writes, Active CPU, and origin transfer for no visible gain, so
+// cache for a week. A payout shown a few days stale on a social card is purely cosmetic.
+export const revalidate = 604800;
 
 const SIZE = { width: 1200, height: 630 };
 
