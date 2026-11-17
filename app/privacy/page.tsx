@@ -17,7 +17,7 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-[900px] mx-auto px-6 py-10">
       <div className="border-b border-neutral-900 pb-6 reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Privacy · effective {EFFECTIVE}</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Privacy · effective {EFFECTIVE}</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Privacy</h1>
         <p className="text-neutral-400 mt-3 max-w-2xl leading-relaxed">
           I&rsquo;m Varun, and I run bounty.index on my own. This page is the honest version of what the site collects and

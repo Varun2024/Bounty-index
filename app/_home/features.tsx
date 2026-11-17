@@ -169,7 +169,7 @@ export function Features({ s }: FeaturesProps) {
             draws the dividers, so they stay correct at one column (mobile) and two (desktop)
             without per-cell border math. */}
         <div className="mt-6 border border-neutral-900 rounded-2xl bg-neutral-950/40 overflow-hidden">
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 px-6 pt-5 pb-4">
+          <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 px-6 pt-5 pb-4">
             And once you are hunting
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-neutral-900 border-t border-neutral-900">
@@ -183,7 +183,7 @@ export function Features({ s }: FeaturesProps) {
                   <span className="flex items-center gap-2 text-sm text-neutral-100 group-hover:text-emerald-300 transition">
                     {m.label}
                     {m.beta && (
-                      <span className="mono text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300">
+                      <span className="mono text-[10px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300">
                         beta
                       </span>
                     )}

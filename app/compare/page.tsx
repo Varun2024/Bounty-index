@@ -36,7 +36,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
   return (
     <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-10">
       <header className="mb-8">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Side by side</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Side by side</p>
         <h1 className="text-3xl font-semibold text-neutral-100 tracking-tight">Compare programs</h1>
         <p className="mt-3 text-sm text-neutral-400 max-w-2xl">
           Pick up to 4 programs to compare rewards, scope, safe harbor, and platform side by side.
@@ -63,7 +63,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
           <table className="w-full min-w-[720px]">
             <thead>
               <tr className="border-b border-neutral-900 bg-neutral-950/60">
-                <th className="text-left px-5 py-4 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-40 align-top">
+                <th className="text-left px-5 py-4 mono text-[11px] uppercase tracking-widest text-neutral-400 font-normal w-40 align-top">
                   Field
                 </th>
                 {programs.map((p) => (
@@ -168,7 +168,7 @@ function Row({ label, values }: RowProps) {
 function TypeBadge({ type, offersBounty }: { type: string; offersBounty: boolean }) {
   return (
     <span
-      className={`mono text-[10px] uppercase tracking-widest px-2 py-1 rounded border ${
+      className={`mono text-[11px] uppercase tracking-widest px-2 py-1 rounded border ${
         offersBounty
           ? 'text-emerald-300 border-emerald-400/30 bg-emerald-400/[0.06]'
           : 'text-neutral-400 border-neutral-800 bg-neutral-900/50'
@@ -188,7 +188,7 @@ function SafeHarborCell({ value }: { value: string | null }) {
         ? 'text-amber-300 border-amber-400/30 bg-amber-400/[0.06]'
         : 'text-red-400 border-red-500/30 bg-red-500/[0.06]';
   return (
-    <span className={`mono text-[10px] uppercase tracking-widest px-2 py-1 rounded border ${color}`}>
+    <span className={`mono text-[11px] uppercase tracking-widest px-2 py-1 rounded border ${color}`}>
       {value}
     </span>
   );

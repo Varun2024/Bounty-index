@@ -56,7 +56,7 @@ export function AnnouncementStrip() {
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-2 text-xs md:text-sm flex items-center gap-2.5">
         <span
           aria-hidden
-          className="mono text-[10px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 text-emerald-300 shrink-0"
+          className="mono text-[11px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 text-emerald-300 shrink-0"
         >
           new
         </span>

@@ -53,9 +53,9 @@ export function WebhookRow({ row }: Props) {
           >
             {row.programName}
           </Link>
-          <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">{row.programPlatform}</span>
+          <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">{row.programPlatform}</span>
           {row.brokenAt && (
-            <span className="mono text-[10px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-red-400/40 text-red-300 bg-red-400/[0.06]">
+            <span className="mono text-[11px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-red-400/40 text-red-300 bg-red-400/[0.06]">
               broken, resave URL
             </span>
           )}

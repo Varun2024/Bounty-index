@@ -66,7 +66,7 @@ function Caret({ open }: { open: boolean }) {
 
 function BetaTag() {
   return (
-    <span className="mono text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300">
+    <span className="mono text-[10px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300">
       beta
     </span>
   );
@@ -207,7 +207,7 @@ export function SiteNav() {
           </Link>
           {GROUPS.map((g) => (
             <div key={g.id} className="mt-4 first:mt-2">
-              <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 px-3 mb-1">{g.label}</p>
+              <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 px-3 mb-1">{g.label}</p>
               {g.items.map((item) => (
                 <ItemLink key={item.href} item={item} onNavigate={() => setMobileOpen(false)} />
               ))}

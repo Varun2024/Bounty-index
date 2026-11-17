@@ -60,7 +60,7 @@ function Card({ item }: { item: Capability }) {
       <div className="flex items-center gap-2">
         <span className="mono text-sm text-emerald-300 break-all">{item.name}</span>
         {item.v2 && (
-          <span className="mono text-[10px] text-emerald-400/70 border border-emerald-400/30 rounded px-1.5 py-0.5 shrink-0">
+          <span className="mono text-[11px] text-emerald-400/70 border border-emerald-400/30 rounded px-1.5 py-0.5 shrink-0">
             v2
           </span>
         )}
@@ -73,8 +73,8 @@ function Card({ item }: { item: Capability }) {
 function SectionLabel({ children, count }: { children: React.ReactNode; count?: number }) {
   return (
     <div className="flex items-baseline gap-2 mb-3">
-      <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400">{children}</h2>
-      {count !== undefined && <span className="mono text-[10px] text-neutral-400">{count}</span>}
+      <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400">{children}</h2>
+      {count !== undefined && <span className="mono text-[11px] text-neutral-400">{count}</span>}
     </div>
   );
 }
@@ -85,7 +85,7 @@ export default function McpPage(): React.JSX.Element {
       {/* Masthead — pitch + specs left, Fuzz-on-the-wire illustration right */}
       <section className="grid gap-10 lg:grid-cols-2 lg:gap-16 lg:items-center border-b border-neutral-900 pb-12">
         <div>
-          <div className="mono text-[10px] uppercase tracking-widest text-emerald-400/80">
+          <div className="mono text-[11px] uppercase tracking-widest text-emerald-400/80">
             public beta · v0.2
           </div>
           <h1 className="mt-3 text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50">

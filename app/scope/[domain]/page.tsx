@@ -50,7 +50,7 @@ export default async function ScopeDomainPage({ params }: PageProps) {
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10">
       <div className="reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
           <Link href="/scope-lookup" className="hover:text-neutral-300 transition">scope</Link>
           <span className="text-neutral-700"> / </span>
           <span className="text-neutral-300">{domain}</span>

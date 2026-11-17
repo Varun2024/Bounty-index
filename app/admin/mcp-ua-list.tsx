@@ -25,12 +25,12 @@ export function McpUaList({ items }: { items: McpUa[] }) {
       <ul className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 divide-y divide-neutral-900">
         {slice.map((u, i) => (
           <li key={start + i} className="px-4 py-2.5 flex items-center gap-3">
-            <span className="mono text-[10px] text-neutral-600 tabular-nums w-5 text-right">{start + i + 1}</span>
+            <span className="mono text-[11px] text-neutral-400 tabular-nums w-5 text-right">{start + i + 1}</span>
             <span className="mono text-sm text-emerald-300 tabular-nums w-8 text-right">{u.clients}</span>
             <span className="text-sm text-neutral-200 truncate" title={u.ua ?? ''}>
               {u.ua ?? '(no user-agent)'}
             </span>
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 ml-auto whitespace-nowrap">
+            <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 ml-auto whitespace-nowrap">
               {u.requests.toLocaleString()} req
             </span>
           </li>
@@ -38,7 +38,7 @@ export function McpUaList({ items }: { items: McpUa[] }) {
       </ul>
 
       {pages > 1 && (
-        <div className="mt-2 flex items-center justify-between mono text-[10px] text-neutral-400">
+        <div className="mt-2 flex items-center justify-between mono text-[11px] text-neutral-400">
           <span className="tabular-nums">
             showing {start + 1}&ndash;{Math.min(start + PER_PAGE, items.length)} of {items.length}
           </span>

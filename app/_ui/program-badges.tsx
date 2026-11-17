@@ -56,7 +56,7 @@ export function ProgramBadges(props: ProgramBadgesProps) {
   const { offersBounty, size = 'sm' } = props;
   const { tier, flag } = resolveBadges(props);
 
-  const pad = size === 'md' ? 'px-2 py-1 text-[11px]' : 'px-1.5 py-0.5 text-[10px]';
+  const pad = size === 'md' ? 'px-2 py-1 text-[11px]' : 'px-1.5 py-0.5 text-[11px]';
   const base = `mono uppercase tracking-widest rounded border ${pad}`;
 
   return (
