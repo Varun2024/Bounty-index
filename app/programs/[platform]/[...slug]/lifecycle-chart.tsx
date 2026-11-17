@@ -1,25 +1,30 @@
 import type { ProgramSnapshot } from '@/lib/db/queries';
 import { diffSnapshots } from '@/lib/snapshots';
 import { CHART, CHART_STATUS } from '@/app/_ui/chart';
+import { scaleTime, scaleLinear } from '@visx/scale';
+import { LinePath, AreaClosed } from '@visx/shape';
+import { curveMonotoneX } from '@visx/curve';
+import { Group } from '@visx/group';
 
 interface LifecycleChartProps {
   snapshots: ProgramSnapshot[]; // chronological, oldest → newest
 }
 
-const VIEWBOX_W = 800;
-const VIEWBOX_H = 100;
-const PAD_LEFT = 28;
-const PAD_RIGHT = 8;
-const PAD_TOP = 10;
-const PAD_BOTTOM = 22;
-const PLOT_W = VIEWBOX_W - PAD_LEFT - PAD_RIGHT;
-const PLOT_H = VIEWBOX_H - PAD_TOP - PAD_BOTTOM;
+// Coordinate space. The SVG scales to its container width (preserveAspectRatio meet) so circles stay
+// round and the curve keeps its shape — no client-side measuring, still server-rendered.
+const W = 900;
+const H = 160;
+const M = { top: 16, right: 16, bottom: 30, left: 34 };
+const X_MAX = W - M.left - M.right;
+const Y_MAX = H - M.top - M.bottom;
+
+const DAY_MS = 24 * 3600 * 1000;
 
 type EventKind = 'first' | 'add' | 'remove' | 'both' | 'reward' | 'quiet';
 
 // Point fill per event kind, from the shared chart vocabulary: accent for scope added, warn for
 // removed, info when the payout amount shifted, muted axis-grey for the baseline snapshot, zero-grey
-// for a snapshot that carried no meaningful diff (rare — snapshots dedup by content hash).
+// for a snapshot that carried no meaningful diff.
 const KIND_FILL: Record<EventKind, string> = {
   first: CHART.axis,
   add: CHART.accent,
@@ -45,122 +50,97 @@ function classifyEvent(i: number, snapshots: ProgramSnapshot[]): EventKind {
 export function LifecycleChart({ snapshots }: LifecycleChartProps) {
   const firstMs = snapshots[0].capturedAt.getTime();
   const lastMs = snapshots[snapshots.length - 1].capturedAt.getTime();
-  const timeSpan = Math.max(1, lastMs - firstMs); // avoid /0 if all snapshots share a timestamp
-
-  const counts = snapshots.map((s) => s.payload.inScopeCount);
-  const maxCount = Math.max(...counts, 1);
+  const maxCount = Math.max(...snapshots.map((s) => s.payload.inScopeCount), 1);
   const yTop = Math.ceil(maxCount * 1.15);
 
-  const xAt = (ms: number) => PAD_LEFT + ((ms - firstMs) / timeSpan) * PLOT_W;
-  const yAt = (count: number) => PAD_TOP + (1 - count / yTop) * PLOT_H;
+  const xScale = scaleTime({
+    domain: [new Date(firstMs), new Date(lastMs > firstMs ? lastMs : firstMs + 1)],
+    range: [0, X_MAX],
+  });
+  const yScale = scaleLinear({ domain: [0, yTop], range: [Y_MAX, 0] });
 
   const points = snapshots.map((s, i) => ({
-    x: xAt(s.capturedAt.getTime()),
-    y: yAt(s.payload.inScopeCount),
-    count: s.payload.inScopeCount,
     date: s.capturedAt,
+    count: s.payload.inScopeCount,
     kind: classifyEvent(i, snapshots),
   }));
 
-  // Build the connecting path. Single-point case is filtered upstream; assume >=2 here.
-  const linePath = points
-    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
-    .join(' ');
-  const areaPath = `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${(PAD_TOP + PLOT_H).toFixed(1)} L ${points[0].x.toFixed(1)} ${(PAD_TOP + PLOT_H).toFixed(1)} Z`;
-
   const startLabel = snapshots[0].capturedAt.toISOString().slice(0, 10);
   const endLabel = snapshots[snapshots.length - 1].capturedAt.toISOString().slice(0, 10);
-  const durationDays = Math.max(1, Math.round(timeSpan / (24 * 3600 * 1000)));
+  const durationDays = Math.max(1, Math.round((lastMs - firstMs) / DAY_MS));
+
+  const axisLabel = { fontFamily: 'ui-monospace, monospace', fill: CHART.axis } as const;
 
   return (
-    <div className="mb-4 border border-neutral-900 rounded-lg bg-neutral-950/40 p-3">
+    <div className="mb-4 border border-neutral-800 rounded-lg bg-neutral-950/40 p-3">
       <div className="flex items-baseline justify-between mb-1.5 px-1">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">
+        <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">
           in-scope over <span className="text-neutral-300 tabular-nums">{durationDays}d</span>
         </span>
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
+        <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 tabular-nums">
           peak <span className="text-neutral-300">{maxCount}</span>
         </span>
       </div>
       <svg
-        viewBox={`0 0 ${VIEWBOX_W} ${VIEWBOX_H}`}
-        preserveAspectRatio="none"
-        className="w-full h-24"
+        viewBox={`0 0 ${W} ${H}`}
+        className="w-full h-auto"
         role="img"
         aria-label={`In-scope asset count over ${durationDays} days, ${points.length} snapshots`}
       >
-        {/* baseline */}
-        <line
-          x1={PAD_LEFT}
-          y1={PAD_TOP + PLOT_H}
-          x2={VIEWBOX_W - PAD_RIGHT}
-          y2={PAD_TOP + PLOT_H}
-          stroke={CHART.baseline}
-          strokeWidth="1"
-        />
-        {/* y-max tick */}
-        <text
-          x={PAD_LEFT - 4}
-          y={PAD_TOP + 4}
-          fontSize="8"
-          textAnchor="end"
-          fill={CHART.axis}
-          fontFamily="ui-monospace, monospace"
-        >
-          {yTop}
-        </text>
-        <text
-          x={PAD_LEFT - 4}
-          y={PAD_TOP + PLOT_H + 3}
-          fontSize="8"
-          textAnchor="end"
-          fill={CHART.axis}
-          fontFamily="ui-monospace, monospace"
-        >
-          0
-        </text>
-        {/* area fill */}
-        <path d={areaPath} fill={CHART.accent} fillOpacity="0.06" />
-        {/* line */}
-        <path d={linePath} fill="none" stroke={CHART.accent} strokeOpacity="0.6" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-        {/* points */}
-        {points.map((p, i) => (
-          <circle
-            key={i}
-            cx={p.x}
-            cy={p.y}
-            r={p.kind === 'first' || p.kind === 'quiet' ? 2.2 : 3}
-            fill={KIND_FILL[p.kind]}
-            stroke={CHART.ring}
-            strokeWidth="1"
-          >
-            <title>
-              {p.date.toISOString().slice(0, 10)} · {p.count} in-scope · {labelFor(p.kind)}
-            </title>
-          </circle>
-        ))}
-        {/* x-axis labels */}
-        <text
-          x={PAD_LEFT}
-          y={VIEWBOX_H - 6}
-          fontSize="9"
-          fill={CHART.axis}
-          fontFamily="ui-monospace, monospace"
-        >
-          {startLabel}
-        </text>
-        <text
-          x={VIEWBOX_W - PAD_RIGHT}
-          y={VIEWBOX_H - 6}
-          fontSize="9"
-          textAnchor="end"
-          fill={CHART.axis}
-          fontFamily="ui-monospace, monospace"
-        >
-          {endLabel}
-        </text>
+        <defs>
+          {/* Area gradient: emerald near the line, fading to nothing at the baseline. */}
+          <linearGradient id="lifecycleArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" style={{ stopColor: CHART.accent, stopOpacity: 0.28 }} />
+            <stop offset="100%" style={{ stopColor: CHART.accent, stopOpacity: 0 }} />
+          </linearGradient>
+        </defs>
+        <Group left={M.left} top={M.top}>
+          {/* baseline + y ticks */}
+          <line x1={0} y1={Y_MAX} x2={X_MAX} y2={Y_MAX} style={{ stroke: CHART.baseline }} strokeWidth={1} />
+          <text x={-6} y={4} fontSize={9} textAnchor="end" style={axisLabel}>{yTop}</text>
+          <text x={-6} y={Y_MAX + 3} fontSize={9} textAnchor="end" style={axisLabel}>0</text>
+
+          {/* smooth area + line */}
+          <AreaClosed
+            data={points}
+            x={(d) => xScale(d.date) ?? 0}
+            y={(d) => yScale(d.count) ?? 0}
+            yScale={yScale}
+            curve={curveMonotoneX}
+            fill="url(#lifecycleArea)"
+          />
+          <LinePath
+            data={points}
+            x={(d) => xScale(d.date) ?? 0}
+            y={(d) => yScale(d.count) ?? 0}
+            curve={curveMonotoneX}
+            fill="none"
+            strokeWidth={2}
+            style={{ stroke: CHART.accent }}
+          />
+
+          {/* event points */}
+          {points.map((p, i) => (
+            <circle
+              key={i}
+              cx={xScale(p.date) ?? 0}
+              cy={yScale(p.count) ?? 0}
+              r={p.kind === 'first' || p.kind === 'quiet' ? 2.6 : 3.4}
+              strokeWidth={1.5}
+              style={{ fill: KIND_FILL[p.kind], stroke: CHART.ring }}
+            >
+              <title>
+                {p.date.toISOString().slice(0, 10)} · {p.count} in-scope · {labelFor(p.kind)}
+              </title>
+            </circle>
+          ))}
+
+          {/* x labels */}
+          <text x={0} y={Y_MAX + 20} fontSize={10} style={axisLabel}>{startLabel}</text>
+          <text x={X_MAX} y={Y_MAX + 20} fontSize={10} textAnchor="end" style={axisLabel}>{endLabel}</text>
+        </Group>
       </svg>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 px-1 mono text-[10px] text-neutral-400">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 px-1 mono text-[11px] text-neutral-400">
         <LegendDot color={KIND_FILL.first} label="first indexed" />
         <LegendDot color={KIND_FILL.add} label="scope added" />
         <LegendDot color={KIND_FILL.remove} label="scope removed" />
