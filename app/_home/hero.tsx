@@ -22,7 +22,7 @@ export function Hero({ s, top, mcpRequests }: HeroProps) {
   const topProgram = top[0] ?? null;
 
   return (
-    <section className="relative overflow-hidden">
+    <section className="dark-stage relative overflow-hidden">
       {/* Desktop: the hunt scene covers the hero, anchored right so Fuzz + the bug stay in view and
           bleed off the edge. Scrims keep the left text readable and fade the scene into the page. */}
       <div className="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden>
