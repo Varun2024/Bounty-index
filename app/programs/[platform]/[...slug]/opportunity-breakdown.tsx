@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { opportunityScore, WEIGHTS } from '@/lib/opportunity';
 import { ProgramBadges } from '@/app/_ui/program-badges';
+import { InfoHint } from '@/app/_ui/info-hint';
 
 interface OpportunityBreakdownProps {
   program: {
@@ -27,11 +28,16 @@ export function OpportunityBreakdown({ program }: OpportunityBreakdownProps) {
           : 'text-neutral-400';
 
   return (
-    <section className="mt-10 border border-neutral-900 rounded-xl bg-neutral-950/50 overflow-hidden reveal reveal-delay-1">
+    <section className="mt-10 border border-neutral-900 rounded-xl bg-neutral-950/50 reveal reveal-delay-1">
       <div className="flex flex-col md:flex-row md:items-stretch">
-        <div className="flex md:flex-col items-center md:justify-center gap-3 md:gap-0 px-5 py-4 md:px-6 md:py-5 border-b md:border-b-0 md:border-r border-neutral-900 bg-neutral-950/60 md:min-w-[120px]">
+        <div className="flex md:flex-col items-center md:justify-center gap-3 md:gap-0 px-5 py-4 md:px-6 md:py-5 border-b md:border-b-0 md:border-r border-neutral-900 bg-neutral-950/60 md:min-w-[120px] rounded-t-xl md:rounded-t-none md:rounded-l-xl">
           <div className={`mono text-4xl md:text-5xl font-semibold tabular-nums ${tone}`}>{b.total}</div>
-          <div className="mono text-[10px] uppercase tracking-widest text-neutral-400 md:mt-1">hunt score</div>
+          <div className="mono text-[11px] uppercase tracking-widest text-neutral-400 md:mt-1 inline-flex items-center gap-1.5">
+            hunt score
+            <InfoHint label="What the hunt score means" side="top" align="start">
+              how we sort the index, not an estimate of what you&rsquo;ll earn
+            </InfoHint>
+          </div>
         </div>
         <div className="flex-1 px-5 py-4 space-y-2.5 min-w-0">
           <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -44,7 +50,7 @@ export function OpportunityBreakdown({ program }: OpportunityBreakdownProps) {
             />
             <Link
               href="/how-scored"
-              className="mono text-[10px] uppercase tracking-widest text-neutral-400 hover:text-emerald-300 transition"
+              className="mono text-[11px] uppercase tracking-widest text-neutral-400 hover:text-emerald-300 transition"
               title="How the hunt score is computed"
             >
               formula →
@@ -53,9 +59,6 @@ export function OpportunityBreakdown({ program }: OpportunityBreakdownProps) {
           <AxisRow label="payout" score={b.payout} max={WEIGHTS.payout} hint="log-scaled max bounty · $500 → $250k" />
           <AxisRow label="bounty" score={b.bounty} max={WEIGHTS.bounty} hint="pays cash vs VDP only" />
           <AxisRow label="freshness" score={b.freshness} max={WEIGHTS.freshness} hint="updated within 30d → full; 180d+ → zero" />
-          <p className="mono text-[10px] text-neutral-400 pt-0.5">
-            how we sort the index, not an estimate of what you&rsquo;ll earn
-          </p>
         </div>
       </div>
     </section>
@@ -67,7 +70,7 @@ function AxisRow({ label, score, max, hint }: AxisRowProps) {
   const earned = Math.round(score);
   return (
     <div className="flex items-center gap-3" title={hint}>
-      <div className="mono text-[10px] uppercase tracking-widest text-neutral-400 w-20 shrink-0">{label}</div>
+      <div className="mono text-[11px] uppercase tracking-widest text-neutral-400 w-20 shrink-0">{label}</div>
       <div className="flex-1 h-1.5 rounded-full bg-neutral-900 overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-emerald-500 to-emerald-300"
