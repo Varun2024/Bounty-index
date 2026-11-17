@@ -270,14 +270,14 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                 <CompareButton programId={program.id} />
                 <Link
                   href={`/settings/discord?program=${program.id}`}
-                  className="focus-ring mono text-xs px-3 py-2 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-1.5"
+                  className="focus-ring mono text-xs px-3 py-2.5 border border-neutral-700 bg-neutral-900 rounded-md text-neutral-200 hover:text-emerald-300 hover:border-emerald-400/60 hover:bg-neutral-800 transition inline-flex items-center gap-1.5"
                   title="One webhook, this program, forever. Zero emails, because we don't have yours."
                 >
                   Discord →
                 </Link>
                 <a
                   href={`/rss/programs/${program.platform}/${program.slug}`}
-                  className="focus-ring mono text-xs px-3 py-2 border border-neutral-800 rounded-md text-neutral-400 hover:text-emerald-400 hover:border-neutral-600 transition inline-flex items-center gap-1.5"
+                  className="focus-ring mono text-xs px-3 py-2.5 border border-neutral-700 bg-neutral-900 rounded-md text-neutral-200 hover:text-emerald-300 hover:border-emerald-400/60 hover:bg-neutral-800 transition inline-flex items-center gap-1.5"
                   title="RSS feed of this program's scope and reward changes"
                 >
                   <RssIcon size={12} /> RSS
@@ -285,34 +285,40 @@ export default async function ProgramDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Key facts */}
+            {/* Key facts. The reward band is the one number a hunter scans for, so it leads as a
+                hero row; scope / safe harbor / response follow as compact supporting rows. */}
             <div className="w-full">
-              <dl className="rounded-xl border border-neutral-900 bg-neutral-950/60 divide-y divide-neutral-900 overflow-hidden">
-                <KeyFact label={payoutFactLabel}>
-                  {payout ? (
-                    <span className="text-emerald-300" title="Stated by the program. A ceiling, not a typical or guaranteed payout.">{payout.value}</span>
-                  ) : (
-                    <span className="text-neutral-400">no bounty</span>
-                  )}
-                </KeyFact>
-                <KeyFact label="scope">
-                  <span className="text-neutral-200">{inScope.length} in</span>
-                  <span className="text-neutral-400"> · {outOfScope.length} out</span>
-                </KeyFact>
-                <KeyFact label="safe harbor">
-                  <SafeHarborValue value={program.safeHarbor} />
-                </KeyFact>
-                <KeyFact label="response">
-                  {initialReportStats.medianFirstResponseDays === null ? (
-                    <span className="text-neutral-400">no reports</span>
-                  ) : (
-                    <>
-                      <span className="text-neutral-200">{formatResponseDays(initialReportStats.medianFirstResponseDays)}</span>
-                      <span className="text-neutral-400"> median</span>
-                    </>
-                  )}
-                </KeyFact>
-              </dl>
+              <div className="rounded-xl border border-neutral-800 bg-neutral-950/60 overflow-hidden">
+                <div className="px-4 py-4 border-b border-neutral-800 bg-neutral-900/50">
+                  <dt className="mono text-[11px] uppercase tracking-widest text-neutral-400">{payoutFactLabel}</dt>
+                  <dd className="mono text-xl md:text-2xl text-emerald-300 tabular-nums mt-1.5 leading-tight break-words">
+                    {payout ? (
+                      <span title="Stated by the program. A ceiling, not a typical or guaranteed payout.">{payout.value}</span>
+                    ) : (
+                      <span className="text-neutral-400 text-lg">no bounty</span>
+                    )}
+                  </dd>
+                </div>
+                <dl className="divide-y divide-neutral-800">
+                  <KeyFact label="scope">
+                    <span className="text-neutral-100">{inScope.length} in</span>
+                    <span className="text-neutral-400"> · {outOfScope.length} out</span>
+                  </KeyFact>
+                  <KeyFact label="safe harbor">
+                    <SafeHarborValue value={program.safeHarbor} />
+                  </KeyFact>
+                  <KeyFact label="response">
+                    {initialReportStats.medianFirstResponseDays === null ? (
+                      <span className="text-neutral-400">no reports</span>
+                    ) : (
+                      <>
+                        <span className="text-neutral-100">{formatResponseDays(initialReportStats.medianFirstResponseDays)}</span>
+                        <span className="text-neutral-400"> median</span>
+                      </>
+                    )}
+                  </KeyFact>
+                </dl>
+              </div>
               <a
                 href={program.url}
                 target="_blank"
@@ -380,7 +386,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
 
         {program.raw != null && (
           <details className="mt-10 group">
-            <summary className="mono text-[10px] uppercase tracking-widest text-neutral-400 hover:text-emerald-300 transition cursor-pointer list-none">
+            <summary className="mono text-[11px] uppercase tracking-widest text-neutral-400 hover:text-emerald-300 transition cursor-pointer list-none">
               <span className="text-neutral-700 group-open:hidden">▸</span>
               <span className="text-neutral-700 hidden group-open:inline">▾</span>{' '}
               raw source payload
@@ -398,9 +404,9 @@ export default async function ProgramDetailPage({ params }: PageProps) {
 // One row in the key-facts card: muted label on the left, value on the right.
 function KeyFact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 px-4 py-3">
-      <dt className="mono text-[10px] uppercase tracking-widest text-neutral-400 shrink-0">{label}</dt>
-      <dd className="mono text-sm text-right tabular-nums truncate">{children}</dd>
+    <div className="flex items-center justify-between gap-3 px-4 py-2.5">
+      <dt className="mono text-[11px] uppercase tracking-widest text-neutral-400 shrink-0">{label}</dt>
+      <dd className="mono text-sm text-right tabular-nums">{children}</dd>
     </div>
   );
 }

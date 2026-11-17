@@ -1,6 +1,7 @@
 import type { ProgramSnapshot } from '@/lib/db/queries';
 import { programSignals } from '@/lib/snapshots';
 import { relativeTime } from '@/lib/format';
+import { InfoHint } from '@/app/_ui/info-hint';
 
 interface ProgramSignalsStripProps {
   snapshots: ProgramSnapshot[];
@@ -46,7 +47,13 @@ export function ProgramSignalsStrip({ snapshots }: ProgramSignalsStripProps) {
   return (
     <section className="mt-6 reveal reveal-delay-1" aria-label="Derived signals from change history">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">signals</span>
+        <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 inline-flex items-center gap-1.5">
+          signals
+          <InfoHint label="Where these signals come from" side="bottom" align="start">
+            Computed from our own daily snapshot history, the facts the raw upstream list can&rsquo;t
+            show because they only exist across time.
+          </InfoHint>
+        </span>
         {chips.map((c) => (
           <span
             key={c.text}
@@ -61,7 +68,6 @@ export function ProgramSignalsStrip({ snapshots }: ProgramSignalsStripProps) {
             {c.text}
           </span>
         ))}
-        <span className="mono text-[10px] text-neutral-400">derived from our snapshot history</span>
       </div>
     </section>
   );

@@ -26,7 +26,7 @@ export function CompareButton({ programId }: CompareButtonProps) {
       className={`focus-ring mono text-xs px-3 py-2.5 rounded-md border transition inline-flex items-center gap-2 ${
         active
           ? 'border-emerald-400/60 bg-emerald-400/[0.12] text-emerald-300 hover:bg-emerald-400/[0.18]'
-          : 'border-neutral-800 bg-neutral-950/60 text-neutral-300 hover:border-neutral-600 hover:bg-neutral-900 disabled:opacity-40 disabled:cursor-not-allowed'
+          : 'border-neutral-700 bg-neutral-900 text-neutral-200 hover:border-emerald-400/60 hover:text-emerald-300 hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed'
       }`}
     >
       <span aria-hidden>{active ? '✓' : '+'}</span>

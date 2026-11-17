@@ -5,6 +5,7 @@ import { summarizeRealPayouts, INDIVIDUAL_MIN_N, type PayoutItem } from '@/lib/d
 import { formatBounty } from '@/lib/format';
 import { ExternalIcon } from '@/app/_ui/icons';
 import { BucketBars } from '@/app/_ui/bucket-bars';
+import { InfoHint } from '@/app/_ui/info-hint';
 import { PAYOUT_BANDS, bandIndex, bucketize } from '@/lib/payout-buckets';
 
 interface RealPayoutsProps {
@@ -54,8 +55,15 @@ export function RealPayouts({ reports, snapshots, platform, statedMax, statedCur
     >
       <div className="px-5 py-4 md:px-6 md:py-5 space-y-4">
         <div className="flex items-baseline justify-between gap-4 flex-wrap">
-          <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400">real payouts</h2>
-          <span className="mono text-[10px] text-neutral-400">
+          <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 inline-flex items-center gap-1.5">
+            real payouts
+            <InfoHint label="About these payout figures" side="bottom" align="start">
+              Based on {v.n} disclosed report{v.n === 1 ? '' : 's'} where the researcher revealed the
+              amount, only what was chosen to be public, not every payout. Amounts normalized to USD
+              for comparison.
+            </InfoHint>
+          </h2>
+          <span className="mono text-[11px] text-neutral-400">
             {v.n} disclosed amount{v.n === 1 ? '' : 's'}
             {v.spanFrom && v.spanTo ? ` · ${monthYear(v.spanFrom)}–${monthYear(v.spanTo)}` : ''}
           </span>
@@ -68,7 +76,7 @@ export function RealPayouts({ reports, snapshots, platform, statedMax, statedCur
         {v.median != null && (
           <div className="border-t border-neutral-900 pt-3 space-y-3">
             <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">typical</span>
+              <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">typical</span>
               <span className="mono text-xl text-emerald-300 tabular-nums">{formatBounty(v.median)}</span>
               {v.p25 != null && v.p75 != null && (
                 <span className="mono text-xs text-neutral-400 tabular-nums">
@@ -83,7 +91,7 @@ export function RealPayouts({ reports, snapshots, platform, statedMax, statedCur
 
         {/* Individual disclosed amounts — largest first (the band above carries the honest center). */}
         <div className="space-y-1.5">
-          <div className="mono text-[10px] uppercase tracking-widest text-neutral-400">
+          <div className="mono text-[11px] uppercase tracking-widest text-neutral-400">
             {capped ? 'largest disclosed' : 'disclosed payouts'}
           </div>
           <ul className="divide-y divide-neutral-900/70">
@@ -92,14 +100,10 @@ export function RealPayouts({ reports, snapshots, platform, statedMax, statedCur
             ))}
           </ul>
           {capped && (
-            <p className="mono text-[10px] text-neutral-400 pt-1">+{extra} more disclosed payout{extra === 1 ? '' : 's'}</p>
+            <p className="mono text-[11px] text-neutral-400 pt-1">+{extra} more disclosed payout{extra === 1 ? '' : 's'}</p>
           )}
         </div>
 
-        <p className="mono text-[10px] text-neutral-400 leading-relaxed">
-          based on {v.n} disclosed report{v.n === 1 ? '' : 's'} where the researcher revealed the amount. only what
-          was chosen to be public, not every payout. amounts normalized to USD for comparison.
-        </p>
       </div>
     </section>
   );
@@ -155,10 +159,10 @@ function PayoutRow({ item, platform }: { item: PayoutItem; platform: string }) {
     <li className="flex items-center gap-3 py-1.5">
       <span className="mono text-sm text-emerald-300 tabular-nums w-16 shrink-0">{formatBounty(item.usd)}</span>
       <span className="mono text-[11px] text-neutral-400 w-20 shrink-0">{monthYear(item.disclosedAt)}</span>
-      {sev && <span className="mono text-[10px] uppercase tracking-wide text-neutral-400 w-16 shrink-0">{sev}</span>}
+      {sev && <span className="mono text-[11px] uppercase tracking-wide text-neutral-400 w-16 shrink-0">{sev}</span>}
       <span className="text-sm text-neutral-300 truncate min-w-0 flex-1" title={item.title ?? undefined}>
         {item.title ?? 'disclosed report'}
-        {native && <span className="mono text-[10px] text-neutral-400">{native}</span>}
+        {native && <span className="mono text-[11px] text-neutral-400">{native}</span>}
       </span>
       {href && (
         <a

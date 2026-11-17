@@ -26,10 +26,10 @@ export function CopyScope({ identifiers }: CopyScopeProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`focus-ring mono text-[11px] px-3 py-1.5 border rounded-md inline-flex items-center gap-1.5 transition ${
+      className={`focus-ring mono text-xs px-3 py-2 border rounded-md inline-flex items-center gap-1.5 transition ${
         copied
-          ? 'border-emerald-400/50 bg-emerald-400/[0.06] text-emerald-300'
-          : 'border-neutral-800 text-neutral-400 hover:text-emerald-300 hover:border-neutral-600'
+          ? 'border-emerald-400/60 bg-emerald-400/[0.10] text-emerald-300'
+          : 'border-neutral-700 bg-neutral-900 text-neutral-200 hover:text-emerald-300 hover:border-emerald-400/60 hover:bg-neutral-800'
       }`}
       title="Copy all in-scope identifiers, newline-separated, to paste into Burp, Caido, or a file"
     >
