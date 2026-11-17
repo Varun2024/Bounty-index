@@ -174,7 +174,7 @@ export function FeedbackTab() {
               <div>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="mono text-[10px] uppercase tracking-widest text-neutral-400">Feedback</p>
+                    <p className="mono text-[11px] uppercase tracking-widest text-neutral-400">Feedback</p>
                     <h2 className="mt-1 text-lg font-semibold text-neutral-100">Sign in to send feedback</h2>
                   </div>
                   <button
@@ -205,8 +205,8 @@ export function FeedbackTab() {
                   sign in with GitHub
                 </button>
 
-                <p className="mt-3 mono text-[10px] text-neutral-400 leading-relaxed">
-                  {'// '}read-only GitHub login. I can&rsquo;t post anything or see your repos.
+                <p className="mt-3 mono text-[11px] text-neutral-400 leading-relaxed">
+                  read-only GitHub login. I can&rsquo;t post anything or see your repos.
                 </p>
               </div>
             ) : sent ? (
@@ -227,7 +227,7 @@ export function FeedbackTab() {
               <form onSubmit={onSubmit}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="mono text-[10px] uppercase tracking-widest text-neutral-400">Feedback</p>
+                    <p className="mono text-[11px] uppercase tracking-widest text-neutral-400">Feedback</p>
                     <h2 className="mt-1 text-lg font-semibold text-neutral-100">What would make this better?</h2>
                   </div>
                   <button
@@ -292,8 +292,8 @@ export function FeedbackTab() {
                   </button>
                 </div>
 
-                <p className="mt-3 mono text-[10px] text-neutral-400 leading-relaxed">
-                  {'// '}goes straight to me, under your GitHub. nothing tracked beyond the page you&rsquo;re on.
+                <p className="mt-3 mono text-[11px] text-neutral-400 leading-relaxed">
+                  goes straight to me, under your GitHub. nothing tracked beyond the page you&rsquo;re on.
                 </p>
               </form>
             )}

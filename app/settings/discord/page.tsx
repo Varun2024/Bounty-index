@@ -59,7 +59,7 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
   return (
     <div className="max-w-[900px] mx-auto px-6 py-10">
       <header className="border-b border-neutral-900 pb-6 mb-8">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Settings · Discord alerts</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Settings · Discord alerts</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Discord alerts</h1>
         <p className="mt-3 text-sm text-neutral-400 max-w-2xl leading-relaxed">
           Pipe scope, reward, and safe-harbor changes into a channel in your own Discord server. One HTTPS POST per event.
@@ -81,7 +81,7 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
 
         <div className="mb-4 rounded-lg border border-emerald-400/30 bg-emerald-400/[0.05] p-4">
           <p className="text-sm text-neutral-200 leading-relaxed">
-            <span className="mono text-[10px] uppercase tracking-widest text-emerald-400 mr-2">no server you admin?</span>
+            <span className="mono text-[11px] uppercase tracking-widest text-emerald-400 mr-2">no server you admin?</span>
             Make your own in about 20 seconds and you&rsquo;re automatically admin:
             Discord left rail <span className="text-neutral-100">+</span> &rarr;
             <span className="text-neutral-100"> Create My Own</span> &rarr;
@@ -97,7 +97,7 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
 
         <div className="grid md:grid-cols-2 gap-4">
           <div className="border border-neutral-900 rounded-lg p-4 bg-neutral-950/40">
-            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400 mb-2">Fastest · channel-level</p>
+            <p className="mono text-[11px] uppercase tracking-widest text-emerald-400 mb-2">Fastest · channel-level</p>
             <ol className="text-sm text-neutral-400 space-y-1.5 list-decimal pl-5 leading-relaxed">
               <li>In Discord, hover the channel you want alerts in and click the <span className="text-neutral-200">⚙︎</span> icon (or right-click &rarr; <span className="text-neutral-200">Edit Channel</span>).</li>
               <li>Left sidebar &rarr; <span className="text-neutral-200">Integrations</span>.</li>
@@ -107,10 +107,10 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
           </div>
 
           <div className="border border-neutral-900 rounded-lg p-4 bg-neutral-950/40">
-            <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Alternate · server-level</p>
+            <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Alternate · server-level</p>
             <ol className="text-sm text-neutral-400 space-y-1.5 list-decimal pl-5 leading-relaxed">
               <li>Click your server name at the top-left &rarr; <span className="text-neutral-200">Server Settings</span>.</li>
-              <li>Left sidebar &rarr; scroll to <span className="text-neutral-400 mono text-[10px] uppercase tracking-widest">Apps</span> &rarr; <span className="text-neutral-200">Integrations</span>.</li>
+              <li>Left sidebar &rarr; scroll to <span className="text-neutral-400 mono text-[11px] uppercase tracking-widest">Apps</span> &rarr; <span className="text-neutral-200">Integrations</span>.</li>
               <li>Click the <span className="text-neutral-200">Webhooks</span> card &rarr; <span className="text-neutral-200">New Webhook</span>.</li>
               <li>Pick a channel &rarr; <span className="text-neutral-200">Copy Webhook URL</span>.</li>
             </ol>
@@ -119,12 +119,12 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
 
         <div className="mt-4 space-y-2 text-sm">
           <p className="text-neutral-400">
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 mr-2">on mobile?</span>
+            <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 mr-2">on mobile?</span>
             Long-press the channel &rarr; <span className="text-neutral-300">Edit Channel</span> &rarr; <span className="text-neutral-300">Webhooks</span>. Same flow, one extra tap.
           </p>
           <p className="text-neutral-400">
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 mr-2">the URL</span>
-            looks like <code className="mono text-[10px] text-neutral-400 break-all">https://discord.com/api/webhooks/1234567890/AbCd-xyz…</code>,
+            <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 mr-2">the URL</span>
+            looks like <code className="mono text-[11px] text-neutral-400 break-all">https://discord.com/api/webhooks/1234567890/AbCd-xyz…</code>,
             treat it like a password. Anyone with it can post to that channel.
           </p>
         </div>
@@ -141,7 +141,7 @@ export default async function DiscordSettingsPage({ searchParams }: PageProps) {
         <AddWebhookForm prefillProgram={prefillProgram} watchlistCount={watchlistCount} signedIn={signedIn} />
         {signedIn && (
           <p className="mt-3 mono text-[11px] text-neutral-400">
-            {'// '}after saving, hit <span className="text-emerald-400">test</span> on the row to fire a sample embed right now, no need to wait for the daily cron.
+            after saving, hit <span className="text-emerald-400">test</span> on the row to fire a sample embed right now, no need to wait for the daily cron.
           </p>
         )}
       </section>
@@ -190,7 +190,7 @@ function DiscordEmbedPreview() {
             <p className="text-emerald-400">+ *.checkout-v2.shopify.com</p>
             <p className="text-emerald-400">+ mobile.shopify.com</p>
           </div>
-          <p className="mono text-[10px] text-neutral-400 mt-2">bountyindex.in · just now</p>
+          <p className="mono text-[11px] text-neutral-400 mt-2">bountyindex.in · just now</p>
         </div>
       </div>
     </div>

@@ -41,17 +41,16 @@ export function SavedFiltersSection() {
   return (
     <div className="space-y-2.5">
       <div className="flex items-baseline justify-between">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">Saved filters</span>
+        <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">Saved filters</span>
         {filters.length > 0 && (
-          <span className="mono text-[10px] uppercase tracking-widest text-neutral-700 tabular-nums">
+          <span className="mono text-[11px] uppercase tracking-widest text-neutral-700 tabular-nums">
             {filters.length.toString().padStart(2, '0')}
           </span>
         )}
       </div>
 
       {filters.length === 0 ? (
-        <p className="mono text-[10px] leading-relaxed text-neutral-400">
-          <span className="text-neutral-700">{'// '}</span>
+        <p className="mono text-[11px] leading-relaxed text-neutral-400">
           save the <span className="text-neutral-400">current filter combo</span> to jump back to it later.
           {!isAuthed && (
             <>

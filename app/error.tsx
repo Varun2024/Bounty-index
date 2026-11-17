@@ -15,7 +15,7 @@ export default function RouteError({ error, reset }: ErrorProps) {
 
   return (
     <div className="max-w-[600px] mx-auto px-6 py-24 text-center">
-      <p className="mono text-[10px] uppercase tracking-widest text-amber-400/80 mb-3">// something broke</p>
+      <p className="mono text-[11px] uppercase tracking-widest text-amber-400/80 mb-3">something broke</p>
       <h1 className="text-5xl font-semibold tracking-tight text-neutral-50">500</h1>
       <p className="mt-4 text-sm text-neutral-400 leading-relaxed">
         This page tripped on the way up. Not your fault.
@@ -25,7 +25,7 @@ export default function RouteError({ error, reset }: ErrorProps) {
         </span>
       </p>
       {error.digest && (
-        <p className="mt-4 mono text-[10px] text-neutral-400 tracking-widest">
+        <p className="mt-4 mono text-[11px] text-neutral-400 tracking-widest">
           ref: {error.digest}
         </p>
       )}
