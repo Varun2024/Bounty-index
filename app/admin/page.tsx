@@ -148,7 +148,7 @@ export default async function AdminPage() {
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10 space-y-10">
       <header className="border-b border-neutral-900 pb-6">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Internal · noindex</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Internal · noindex</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Admin</h1>
         <p className="mt-3 text-sm text-neutral-400">
           Everything here is a live query, no caching. Refresh to re-run.
@@ -156,7 +156,7 @@ export default async function AdminPage() {
       </header>
 
       <section>
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">Signed-in users</h2>
+        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Signed-in users</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Tile label="Total users" value={totalUsers} />
           <Tile label="Watchlist entries" value={totalWatchlist} />
@@ -170,7 +170,7 @@ export default async function AdminPage() {
       </section>
 
       <section>
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">Index</h2>
+        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Index</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Tile label="Programs indexed" value={totalPrograms} />
           <Tile label="Snapshots stored" value={totalSnapshots} />
@@ -178,7 +178,7 @@ export default async function AdminPage() {
       </section>
 
       <section>
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">
+        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">
           MCP endpoint <span className="text-neutral-700">· unauthenticated · clients = distinct IPs</span>
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -188,13 +188,13 @@ export default async function AdminPage() {
           <Tile label="Requests · 7d" value={mcpRequests7d} />
         </div>
         <McpUaList items={mcpUa} />
-        <p className="mt-3 mono text-[10px] text-neutral-400">
-          {'// '}one row per POST, handshake calls included. IP from x-forwarded-for; a shared NAT undercounts clients.
+        <p className="mt-3 mono text-[11px] text-neutral-400">
+          one row per POST, handshake calls included. IP from x-forwarded-for; a shared NAT undercounts clients.
         </p>
       </section>
 
       <section>
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">
+        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">
           Activity <span className="text-neutral-700">· per day · last 30 days</span>
         </h2>
         <div className="grid md:grid-cols-2 gap-3">
@@ -202,19 +202,19 @@ export default async function AdminPage() {
             title="MCP requests"
             data={mcpDaily}
             unit="req"
-            note="// adoption of the agent surface"
+            note="adoption of the agent surface"
           />
           <DailyBars
             title="Snapshots written"
             data={snapDaily}
             unit="snap"
-            note="// ingest health: an empty bar is a missed cron run"
+            note="ingest health: an empty bar is a missed cron run"
           />
         </div>
       </section>
 
       <section>
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">Recent sign-ups <span className="text-neutral-700">· latest 20</span></h2>
+        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Recent sign-ups <span className="text-neutral-700">· latest 20</span></h2>
         {!recentUsers ? (
           <p className="mono text-xs text-neutral-400">unavailable (DB degraded)</p>
         ) : recentUsers.length === 0 ? (
@@ -227,7 +227,7 @@ export default async function AdminPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={u.image} alt="" width={24} height={24} className="w-6 h-6 rounded-full border border-neutral-800" />
                 ) : (
-                  <span className="w-6 h-6 rounded-full border border-neutral-800 flex items-center justify-center mono text-[10px] text-neutral-400">
+                  <span className="w-6 h-6 rounded-full border border-neutral-800 flex items-center justify-center mono text-[11px] text-neutral-400">
                     {(u.name ?? u.email ?? '?').charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -235,7 +235,7 @@ export default async function AdminPage() {
                   <p className="text-sm text-neutral-100 truncate">{u.name ?? u.email ?? '(no name)'}</p>
                   {u.email && u.name ? <p className="mono text-[11px] text-neutral-400 truncate">{u.email}</p> : null}
                 </div>
-                <p className="mono text-[10px] text-neutral-400 truncate max-w-[240px]">{u.id}</p>
+                <p className="mono text-[11px] text-neutral-400 truncate max-w-[240px]">{u.id}</p>
               </li>
             ))}
           </ul>
@@ -243,7 +243,7 @@ export default async function AdminPage() {
       </section>
 
       <section>
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">
+        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">
           Pending signups <span className="text-neutral-700">· captured during DB outage</span>
         </h2>
         {pendingSignups.length === 0 ? (
@@ -256,7 +256,7 @@ export default async function AdminPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={s.image} alt="" width={24} height={24} className="w-6 h-6 rounded-full border border-neutral-800" />
                 ) : (
-                  <span className="w-6 h-6 rounded-full border border-neutral-800 flex items-center justify-center mono text-[10px] text-neutral-400">
+                  <span className="w-6 h-6 rounded-full border border-neutral-800 flex items-center justify-center mono text-[11px] text-neutral-400">
                     {(s.name ?? s.email ?? '?').charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -266,20 +266,20 @@ export default async function AdminPage() {
                     {s.email ?? '(no email)'} · attempted {new Date(s.attemptedAt).toLocaleString()}
                   </p>
                 </div>
-                <p className="mono text-[10px] text-amber-300/70 truncate max-w-[280px]" title={s.reason}>
+                <p className="mono text-[11px] text-amber-300/70 truncate max-w-[280px]" title={s.reason}>
                   {s.reason}
                 </p>
               </li>
             ))}
           </ul>
         )}
-        <p className="mt-3 mono text-[10px] text-neutral-400">
-          {'// '}entries are best-effort captures during DB outages. Replay/ping them once Neon is back.
+        <p className="mt-3 mono text-[11px] text-neutral-400">
+          entries are best-effort captures during DB outages. Replay/ping them once Neon is back.
         </p>
       </section>
 
       <section>
-        <h2 className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">Most-watched programs <span className="text-neutral-700">· top 10</span></h2>
+        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Most-watched programs <span className="text-neutral-700">· top 10</span></h2>
         {topWatched.length === 0 ? (
           <p className="mono text-xs text-neutral-400">nobody&rsquo;s watching anything yet</p>
         ) : (
@@ -293,7 +293,7 @@ export default async function AdminPage() {
                 >
                   {w.program!.name}
                 </a>
-                <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 ml-auto">{w.program!.platform}</span>
+                <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 ml-auto">{w.program!.platform}</span>
               </li>
             ))}
           </ul>
@@ -326,7 +326,7 @@ function DailyBars({ title, data, unit, note }: DailyBarsProps) {
     <figure className="border border-neutral-900 rounded-lg p-4 bg-neutral-950/40 m-0">
       <figcaption className="flex items-baseline justify-between mb-3">
         <span className="text-sm text-neutral-100">{title}</span>
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
+        <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 tabular-nums">
           {unavailable ? '·' : `${total.toLocaleString()} ${unit} · peak ${peak.toLocaleString()}`}
         </span>
       </figcaption>
@@ -368,7 +368,7 @@ function DailyBars({ title, data, unit, note }: DailyBarsProps) {
           })}
         </svg>
       )}
-      <p className="mt-2 mono text-[10px] text-neutral-400">
+      <p className="mt-2 mono text-[11px] text-neutral-400">
         {note} · {data.length ? `${fmt(data[0].day)}–${fmt(data[data.length - 1].day)}` : '30d'}
       </p>
     </figure>
@@ -390,7 +390,7 @@ function Tile({ label, value, tone }: TileProps) {
     : 'text-neutral-100';
   return (
     <div className="border border-neutral-900 rounded-lg p-4 bg-neutral-950/40">
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-400">{label}</p>
+      <p className="mono text-[11px] uppercase tracking-widest text-neutral-400">{label}</p>
       <p className={`mt-1 text-2xl font-semibold tabular-nums ${color}`}>
         {unavailable ? '·' : value.toLocaleString()}
       </p>

@@ -12,7 +12,7 @@ export default function Loading() {
         priority
         className="mx-auto w-36 h-36 opacity-90"
       />
-      <p className="mono text-[11px] uppercase tracking-widest text-neutral-500 mt-4">{'// on the scent…'}</p>
+      <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mt-4">{'on the scent…'}</p>
       <p className="text-sm text-neutral-400 mt-2">Fuzz is checking every program&rsquo;s scope.</p>
     </div>
   );

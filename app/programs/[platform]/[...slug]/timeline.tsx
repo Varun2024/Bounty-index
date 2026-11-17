@@ -29,7 +29,7 @@ export function ProgramTimeline({ snapshots, currency }: ProgramTimelineProps) {
   return (
     <section className="mt-10 reveal reveal-delay-2">
       <SectionHeading title="Change history" variant="prominent" className="mb-4">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
+        <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 tabular-nums">
           {meaningfulChanges.length} event{meaningfulChanges.length === 1 ? '' : 's'}
         </span>
       </SectionHeading>
@@ -43,7 +43,6 @@ export function ProgramTimeline({ snapshots, currency }: ProgramTimelineProps) {
       </ol>
       {snapshots.length === 1 && (
         <p className="mono text-[11px] text-neutral-400 mt-3">
-          <span className="text-neutral-700">{'// '}</span>
           only one snapshot on record, changes appear from the next ingest onward
         </p>
       )}
@@ -68,12 +67,12 @@ function TimelineEntry({ entry, currency }: TimelineEntryProps) {
   if (entry.isFirst) {
     return (
       <div className="flex items-start gap-4 px-4 py-3">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums shrink-0 w-24 mt-0.5">
+        <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 tabular-nums shrink-0 w-24 mt-0.5">
           {dateLabel}
         </span>
         <div className="flex-1">
           <p className="mono text-xs text-neutral-300">first indexed</p>
-          <p className="mono text-[10px] text-neutral-400 mt-0.5">{rel} · {entry.payload.inScopeCount} in-scope assets</p>
+          <p className="mono text-[11px] text-neutral-400 mt-0.5">{rel} · {entry.payload.inScopeCount} in-scope assets</p>
         </div>
       </div>
     );
@@ -84,7 +83,7 @@ function TimelineEntry({ entry, currency }: TimelineEntryProps) {
 
   return (
     <div className="flex items-start gap-4 px-4 py-3">
-      <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums shrink-0 w-24 mt-0.5">
+      <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 tabular-nums shrink-0 w-24 mt-0.5">
         {dateLabel}
       </span>
       <div className="flex-1 space-y-1">
@@ -139,7 +138,7 @@ function TimelineEntry({ entry, currency }: TimelineEntryProps) {
             )}
           </p>
         )}
-        <p className="mono text-[10px] text-neutral-400">{rel}</p>
+        <p className="mono text-[11px] text-neutral-400">{rel}</p>
       </div>
     </div>
   );

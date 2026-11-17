@@ -41,7 +41,7 @@ export default async function WatchlistPage({ searchParams }: PageProps) {
     <div className="max-w-[1100px] mx-auto px-6 py-10">
       <WatchlistSync />
       <header className="mb-8">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Signals</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Signals</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Watchlist</h1>
         <p className="mt-3 text-sm text-neutral-400 max-w-2xl">
           Programs you watch, with the most recent scope and reward changes tracked from daily snapshots.
@@ -129,7 +129,7 @@ function WatchlistRow({ entry }: { entry: WatchlistEntry }) {
 
       {hasChanges && diff ? (
         <div className="px-5 py-4 space-y-2 bg-amber-400/[0.02]">
-          <p className="mono text-[10px] uppercase tracking-widest text-amber-400">Changes since previous snapshot</p>
+          <p className="mono text-[11px] uppercase tracking-widest text-amber-400">Changes since previous snapshot</p>
           {diff.rewardDelta !== null && (
             <ChangeLine>
               <span className="text-neutral-400">max payout: </span>
@@ -155,7 +155,7 @@ function WatchlistRow({ entry }: { entry: WatchlistEntry }) {
         </div>
       ) : (
         <p className="px-5 py-3 mono text-[11px] text-neutral-400">
-          {!previous ? '// only one snapshot on record, changes appear after the next ingest' : '// no changes since previous snapshot'}
+          {!previous ? 'only one snapshot on record, changes appear after the next ingest' : 'no changes since previous snapshot'}
         </p>
       )}
     </li>
@@ -179,7 +179,7 @@ function IdentifierBlock({
 }) {
   return (
     <div>
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-1">{label}</p>
+      <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-1">{label}</p>
       <ul className="space-y-0.5">
         {identifiers.slice(0, 20).map((id) => (
           <li key={id}>
@@ -190,7 +190,7 @@ function IdentifierBlock({
           </li>
         ))}
         {identifiers.length > 20 && (
-          <li className="mono text-[10px] text-neutral-400 italic">…and {identifiers.length - 20} more</li>
+          <li className="mono text-[11px] text-neutral-400 italic">…and {identifiers.length - 20} more</li>
         )}
       </ul>
     </div>

@@ -17,7 +17,7 @@ export default function NotFound() {
         priority
         className="mx-auto mb-6 w-40 h-40 md:w-44 md:h-44"
       />
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">// route not found</p>
+      <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">route not found</p>
       <h1 className="text-5xl font-semibold tracking-tight text-neutral-50">404</h1>
       <p className="mt-4 text-sm text-neutral-400 leading-relaxed">
         Fuzz sniffed around, and there&rsquo;s nothing at this route.

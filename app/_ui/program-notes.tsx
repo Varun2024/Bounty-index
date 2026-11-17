@@ -125,14 +125,14 @@ function StatusPill({ isAuthed, sessionLoading, status, updatedAt, length }: Sta
   if (sessionLoading) return null;
   if (!isAuthed) {
     return (
-      <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">sign in to save</span>
+      <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">sign in to save</span>
     );
   }
   const pctFull = length / NOTE_MAX_LEN;
   const counterColor =
     pctFull >= 0.95 ? 'text-amber-300' : pctFull >= 0.8 ? 'text-neutral-400' : 'text-neutral-400';
   return (
-    <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums flex items-center gap-3">
+    <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 tabular-nums flex items-center gap-3">
       {status === 'saving' && <span className="text-neutral-400">saving…</span>}
       {status === 'saved' && updatedAt && (
         <span className="text-emerald-400/70">saved {relativeTime(new Date(updatedAt))}</span>
@@ -161,7 +161,6 @@ function SignedOutPlaceholder({ onSignIn }: { onSignIn: () => void }) {
         {' '}to add private notes on this program.
       </p>
       <p className="mono text-[11px] text-neutral-400 mt-2 leading-relaxed">
-        <span className="text-neutral-700">{'// '}</span>
         notes are per-account and never public. Autosaved as you type. Cross-device.
       </p>
     </button>

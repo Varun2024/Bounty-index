@@ -50,7 +50,7 @@ export default function HowItWorksPage() {
   return (
     <div className="max-w-[1200px] mx-auto px-6 py-16 md:py-24">
       <header className="reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">Under the hood</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Under the hood</p>
         <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-neutral-50 leading-[1.02]">
           How it&apos;s built.
         </h1>
@@ -70,11 +70,10 @@ export default function HowItWorksPage() {
             key={s.key}
             className="border border-neutral-900 rounded-lg bg-neutral-950/50 p-5 hover:border-neutral-800 transition"
           >
-            <p className="mono text-[10px] uppercase tracking-widest text-emerald-400/80">{s.eyebrow}</p>
+            <p className="mono text-[11px] uppercase tracking-widest text-emerald-400/80">{s.eyebrow}</p>
             <h3 className="mt-3 text-lg font-semibold text-neutral-100 tracking-tight">{s.title}</h3>
             <p className="mt-2 text-sm text-neutral-400 leading-relaxed">{s.body}</p>
             <p className="mono text-[11px] text-neutral-400 mt-4 pt-3 border-t border-neutral-900">
-              <span className="text-neutral-700">{'// '}</span>
               {s.detail}
             </p>
           </div>
@@ -137,7 +136,7 @@ interface StackColProps {
 function StackCol({ title, items }: StackColProps) {
   return (
     <div>
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-4">{title}</p>
+      <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-4">{title}</p>
       <ul className="space-y-4">
         {items.map(([name, desc]) => (
           <li key={name}>
@@ -160,10 +159,10 @@ function PipelineDiagram() {
           backgroundSize: '18px 18px',
         }}
       />
-      <div className="absolute top-4 left-5 mono text-[10px] uppercase tracking-widest text-neutral-400">
+      <div className="absolute top-4 left-5 mono text-[11px] uppercase tracking-widest text-neutral-400">
         $ pipeline --trace
       </div>
-      <div className="absolute top-4 right-5 mono text-[10px] uppercase tracking-widest text-emerald-400">● live</div>
+      <div className="absolute top-4 right-5 mono text-[11px] uppercase tracking-widest text-emerald-400">● live</div>
 
       <svg viewBox="0 0 1200 320" className="w-full h-auto block" preserveAspectRatio="xMidYMid meet" aria-hidden>
         <defs>

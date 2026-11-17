@@ -39,8 +39,8 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
           className="mx-auto mb-6 w-40 h-40"
         />
       )}
-      <p className="mono text-[10px] uppercase tracking-widest text-amber-400 mb-3">
-        {looksLikeOutage ? '// sign-in paused' : '// sign-in failed'}
+      <p className="mono text-[11px] uppercase tracking-widest text-amber-400 mb-3">
+        {looksLikeOutage ? 'sign-in paused' : 'sign-in failed'}
       </p>
       <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">
         {looksLikeOutage ? 'Sign-in is napping' : 'Sign-in failed'}
@@ -54,7 +54,7 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
             works. Watchlists and Discord alerts will pick up where you left off once the DB is back.
           </p>
           <p className="mt-3 mono text-[11px] text-neutral-400">
-            {'// nothing you did is broken. this is on our end.'}
+            {'nothing you did is broken. this is on our end.'}
           </p>
         </>
       ) : (
@@ -63,7 +63,7 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
             Sign-in didn&rsquo;t complete. The GitHub handshake got interrupted somewhere.
             Try again, it usually just works the second time.
           </p>
-          <p className="mt-3 mono text-[11px] text-neutral-400">// error code: {error}</p>
+          <p className="mt-3 mono text-[11px] text-neutral-400">error code: {error}</p>
         </>
       )}
 

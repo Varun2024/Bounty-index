@@ -78,7 +78,7 @@ export function ReportDialog({ programId, programName, existing, onClose, onSubm
     >
       <form onSubmit={onSubmit} className="bg-neutral-950 border border-neutral-800 rounded-lg overflow-hidden">
         <header className="px-5 py-4 border-b border-neutral-900">
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-400">Report your times</p>
+          <p className="mono text-[11px] uppercase tracking-widest text-neutral-400">Report your times</p>
           <h3 className="text-lg font-semibold text-neutral-50 mt-0.5">{programName}</h3>
         </header>
 
@@ -118,7 +118,6 @@ export function ReportDialog({ programId, programName, existing, onClose, onSubm
           {error && <p className="mono text-xs text-amber-300">{error}</p>}
 
           <p className="mono text-[11px] leading-relaxed text-neutral-400">
-            <span className="text-neutral-700">{'// '}</span>
             your report is <span className="text-neutral-400">anonymized in aggregates</span>. individual rows are not shown to other users. one report per program per account, resubmitting updates.
           </p>
         </div>
@@ -169,14 +168,13 @@ interface FieldProps {
 function Field({ label, hint, required, children }: FieldProps) {
   return (
     <div className="space-y-1.5">
-      <label className="mono text-[10px] uppercase tracking-widest text-neutral-400 block">
+      <label className="mono text-[11px] uppercase tracking-widest text-neutral-400 block">
         {label}
         {required && <span className="text-emerald-400 ml-1">*</span>}
       </label>
       {children}
       {hint && (
-        <p className="mono text-[10px] text-neutral-400">
-          <span className="text-neutral-700">{'// '}</span>
+        <p className="mono text-[11px] text-neutral-400">
           {hint}
         </p>
       )}
