@@ -72,7 +72,7 @@ export function HeroScopeCheck({ programCount }: { programCount: string | null }
             placeholder="is a domain in scope? e.g. shopify.com"
             className="flex-1 min-w-0 bg-transparent h-full px-3.5 text-base md:text-lg text-neutral-50 placeholder:text-neutral-400 outline-none"
           />
-          <kbd className="hidden md:inline-flex items-center justify-center mono text-[10px] text-neutral-400 h-6 px-1.5 mr-2 rounded border border-neutral-800 bg-neutral-900/80 pointer-events-none">
+          <kbd className="hidden md:inline-flex items-center justify-center mono text-[11px] text-neutral-400 h-6 px-1.5 mr-2 rounded border border-neutral-800 bg-neutral-900/80 pointer-events-none">
             /
           </kbd>
           <button
@@ -163,7 +163,7 @@ function Result({ result }: { result: Extract<HeroScopeResult, { ok: true }> }) 
       <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent ${s.rail} to-transparent`} aria-hidden />
       <div className="px-5 py-4">
         <div className="flex items-center gap-2.5 flex-wrap">
-          <span className={`mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded border ${s.pill}`}>{s.label}</span>
+          <span className={`mono text-[11px] uppercase tracking-widest px-2 py-0.5 rounded border ${s.pill}`}>{s.label}</span>
           <p className="text-sm text-neutral-200 min-w-0">
             <code className={`mono ${verdict === 'in' ? 'text-emerald-300' : verdict === 'out' ? 'text-amber-300' : 'text-neutral-300'}`}>{domain}</code>{' '}
             {verdict === 'in' && (

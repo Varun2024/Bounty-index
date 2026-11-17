@@ -15,7 +15,7 @@ export function CompareTray() {
         {ids.length}
         <span className="text-neutral-400">/{max}</span>
       </span>
-      <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">to compare</span>
+      <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">to compare</span>
       <Link
         href={href}
         className="mono text-xs px-3 py-1.5 rounded-full bg-emerald-400 text-neutral-950 hover:bg-emerald-300 transition ml-1"

@@ -56,7 +56,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
   return (
     <aside className="md:sticky md:top-20 self-start space-y-5 text-sm">
       <div className="flex items-center justify-between pb-3 border-b border-neutral-900">
-        <span className="flex items-center gap-2 mono text-[10px] uppercase tracking-widest text-neutral-400">
+        <span className="flex items-center gap-2 mono text-[11px] uppercase tracking-widest text-neutral-400">
           <FilterIcon size={12} />
           Filters
           {activeCount > 0 && <span className="text-emerald-300 tabular-nums">{activeCount}</span>}
@@ -64,7 +64,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
         {activeCount > 0 && (
           <Link
             href="/programs"
-            className="focus-ring rounded mono text-[10px] uppercase tracking-widest text-neutral-400 hover:text-amber-300 transition"
+            className="focus-ring rounded mono text-[11px] uppercase tracking-widest text-neutral-400 hover:text-amber-300 transition"
           >
             clear all
           </Link>
@@ -83,7 +83,7 @@ export function FiltersRail({ platforms, assetTypes, filters }: FiltersRailProps
             className="focus-ring w-full mono text-xs pl-8 pr-3 py-2 bg-neutral-900 border border-neutral-800 rounded focus:outline-none focus:border-emerald-400/50"
           />
         </div>
-        <p className="mono text-[10px] text-neutral-400 mt-1.5">matches a name or any in-scope identifier</p>
+        <p className="mono text-[11px] text-neutral-400 mt-1.5">matches a name or any in-scope identifier</p>
       </div>
 
       <SavedFiltersSection />
@@ -176,9 +176,9 @@ interface FilterGroupProps {
 function FilterGroup({ label, hint, children }: FilterGroupProps) {
   return (
     <div>
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">{label}</p>
+      <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">{label}</p>
       <div className="flex flex-wrap gap-1.5">{children}</div>
-      {hint && <p className="mono text-[10px] text-neutral-400 mt-1.5">{hint}</p>}
+      {hint && <p className="mono text-[11px] text-neutral-400 mt-1.5">{hint}</p>}
     </div>
   );
 }

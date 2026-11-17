@@ -117,7 +117,7 @@ export function ShortcutsHelp() {
         <div className="px-5 py-4 space-y-5">
           {SECTIONS.map((section) => (
             <div key={section.title}>
-              <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2.5">{section.title}</p>
+              <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2.5">{section.title}</p>
               <ul className="space-y-2">
                 {section.rows.map((row) => (
                   <li key={row.label} className="flex items-center justify-between gap-4">

@@ -12,7 +12,7 @@ export function SimilarPrograms({ items }: SimilarProgramsProps) {
   return (
     <section className="mt-10">
       <SectionHeading title="Similar programs">
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">
+        <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">
           by shared scope
         </span>
       </SectionHeading>
@@ -42,7 +42,7 @@ export function SimilarPrograms({ items }: SimilarProgramsProps) {
                   </span>
                 )}
                 <span
-                  className="mono text-[10px] uppercase tracking-widest text-neutral-400 shrink-0 tabular-nums"
+                  className="mono text-[11px] uppercase tracking-widest text-neutral-400 shrink-0 tabular-nums"
                   title="shared in-scope identifiers"
                 >
                   {overlap}× overlap

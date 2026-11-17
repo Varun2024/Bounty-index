@@ -38,8 +38,8 @@ export function ScopeMixBar({ mix }: ScopeMixBarProps) {
   return (
     <section className="mt-6">
       <div className="flex items-baseline justify-between mb-2">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400">Attack surface</p>
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400">Attack surface</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 tabular-nums">
           {total} in-scope
         </p>
       </div>

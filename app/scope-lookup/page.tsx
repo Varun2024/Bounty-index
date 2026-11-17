@@ -19,7 +19,7 @@ export default async function ScopeLookup({ searchParams }: PageProps) {
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10">
       <div className="reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Search</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Search</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Scope lookup</h1>
         <p className="text-neutral-400 mt-3 max-w-xl">
           Paste a domain, subdomain, or wildcard, and I&apos;ll show you every program it appears in, plus a warning if it&apos;s explicitly out-of-scope.

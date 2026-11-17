@@ -61,7 +61,7 @@ export function FinalCTA({ s }: FinalCTAProps) {
               height={420}
               className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80"
             />
-            <p className="mono text-[11px] text-neutral-500 text-center lg:text-right">
+            <p className="mono text-[11px] text-neutral-400 text-center lg:text-right">
               Fuzz, your scope hound. He finds the scent so you can take the shot.
             </p>
           </div>

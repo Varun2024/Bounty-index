@@ -79,7 +79,7 @@ export function ScopeColumn({ kind, items }: ScopeColumnProps) {
   return (
     <section>
       <SectionHeading title={title} variant={isIn ? 'prominent' : 'subtle'}>
-        <span className={`mono text-xs tabular-nums ${isIn ? 'text-neutral-400' : 'text-neutral-400 uppercase tracking-widest text-[10px]'}`}>
+        <span className={`mono text-xs tabular-nums ${isIn ? 'text-neutral-400' : 'text-neutral-400 uppercase tracking-widest text-[11px]'}`}>
           {items.length.toString().padStart(3, '0')}
         </span>
       </SectionHeading>
@@ -115,10 +115,10 @@ function ScopeBucket({ type, items, kind, showTypeTag }: ScopeBucketProps) {
   return (
     <div>
       <div className="flex items-baseline gap-2 mb-2">
-        <span className="mono text-[10px] uppercase tracking-widest text-emerald-400/80">
+        <span className="mono text-[11px] uppercase tracking-widest text-emerald-400/80">
           {ASSET_TYPE_LABEL[type] ?? type}
         </span>
-        <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 tabular-nums">
+        <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 tabular-nums">
           {items.length.toString().padStart(2, '0')}
         </span>
       </div>
@@ -174,17 +174,17 @@ function ScopeList({ items, kind, showTypeTag }: ScopeListProps) {
           <Link
             href={`/scope/${encodeURIComponent(scopeRoot)}`}
             prefetch={false}
-            className="mono text-[10px] uppercase tracking-widest text-neutral-400 hover:text-emerald-300 transition shrink-0 border border-neutral-800 hover:border-emerald-400/40 rounded px-1.5 py-0.5"
+            className="mono text-[11px] uppercase tracking-widest text-neutral-400 hover:text-emerald-300 transition shrink-0 border border-neutral-800 hover:border-emerald-400/40 rounded px-1.5 py-0.5"
             title={`See all programs touching ${scopeRoot}`}
           >
             scope
           </Link>
         )}
         {showTypeTag && (
-          <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 shrink-0">{s.assetType}</span>
+          <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 shrink-0">{s.assetType}</span>
         )}
         {s.severity && (
-          <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 shrink-0">· {s.severity}</span>
+          <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 shrink-0">· {s.severity}</span>
         )}
       </li>
     );

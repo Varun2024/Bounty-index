@@ -113,7 +113,7 @@ export function FuzzWhisper() {
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
         </button>
-        <p className="mono text-[10px] uppercase tracking-widest text-emerald-400/90">Fuzz says</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-emerald-400/90">Fuzz says</p>
         <p className="mt-1 text-sm text-neutral-200 leading-snug pr-4">{line}</p>
       </div>
     </div>

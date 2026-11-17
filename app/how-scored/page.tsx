@@ -26,7 +26,7 @@ export default function HowScoredPage() {
   return (
     <div className="max-w-[900px] mx-auto px-6 py-10">
       <div className="border-b border-neutral-900 pb-6 reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Methodology · public formula</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Methodology · public formula</p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">How the Hunt Score works</h1>
         <p className="text-neutral-400 mt-3 max-w-2xl leading-relaxed">
           A 0&ndash;100 sort signal for the question <em>&ldquo;which programs are worth an hour of my time this week&rdquo;</em>. Three
@@ -53,7 +53,7 @@ export default function HowScoredPage() {
         <div className="border border-neutral-900 rounded-lg p-5 bg-neutral-950/40">
           <div className="flex items-baseline justify-between mb-2">
             <h3 className="text-neutral-100 font-medium">Payout <span className="text-neutral-400 mono text-xs">· {WEIGHTS.payout}%</span></h3>
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">log-scale</span>
+            <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">log-scale</span>
           </div>
           <p className="text-sm text-neutral-400 leading-relaxed">
             <code className="mono text-neutral-200">max_bounty</code> on a natural-log scale between <span className="text-neutral-200 tabular-nums">$500</span> (floor,
@@ -65,7 +65,7 @@ export default function HowScoredPage() {
         <div className="border border-neutral-900 rounded-lg p-5 bg-neutral-950/40">
           <div className="flex items-baseline justify-between mb-2">
             <h3 className="text-neutral-100 font-medium">Bounty vs VDP <span className="text-neutral-400 mono text-xs">· {WEIGHTS.bounty}%</span></h3>
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">binary</span>
+            <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">binary</span>
           </div>
           <p className="text-sm text-neutral-400 leading-relaxed">
             <span className="text-emerald-300">+{WEIGHTS.bounty}</span> if the program actually pays cash,
@@ -77,7 +77,7 @@ export default function HowScoredPage() {
         <div className="border border-neutral-900 rounded-lg p-5 bg-neutral-950/40">
           <div className="flex items-baseline justify-between mb-2">
             <h3 className="text-neutral-100 font-medium">Freshness <span className="text-neutral-400 mono text-xs">· {WEIGHTS.freshness}%</span></h3>
-            <span className="mono text-[10px] uppercase tracking-widest text-neutral-400">linear decay 30 &rarr; 180 days</span>
+            <span className="mono text-[11px] uppercase tracking-widest text-neutral-400">linear decay 30 &rarr; 180 days</span>
           </div>
           <p className="text-sm text-neutral-400 leading-relaxed">
             Full credit if <code className="mono text-neutral-200">last_updated_at</code> is within 30 days. Linear decay to zero at
@@ -93,11 +93,11 @@ export default function HowScoredPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-neutral-900 bg-neutral-950/60">
-                <th className="text-left px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal">Scenario</th>
-                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-20">Payout</th>
-                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-20">Bounty</th>
-                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-neutral-400 font-normal w-20">Fresh</th>
-                <th className="text-right px-4 py-3 mono text-[10px] uppercase tracking-widest text-emerald-400 font-normal w-20">Hunt</th>
+                <th className="text-left px-4 py-3 mono text-[11px] uppercase tracking-widest text-neutral-400 font-normal">Scenario</th>
+                <th className="text-right px-4 py-3 mono text-[11px] uppercase tracking-widest text-neutral-400 font-normal w-20">Payout</th>
+                <th className="text-right px-4 py-3 mono text-[11px] uppercase tracking-widest text-neutral-400 font-normal w-20">Bounty</th>
+                <th className="text-right px-4 py-3 mono text-[11px] uppercase tracking-widest text-neutral-400 font-normal w-20">Fresh</th>
+                <th className="text-right px-4 py-3 mono text-[11px] uppercase tracking-widest text-emerald-400 font-normal w-20">Hunt</th>
               </tr>
             </thead>
             <tbody>

@@ -66,7 +66,7 @@ export default async function PlatformLandingPage({ params }: PageProps) {
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10">
       <header className="reveal">
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
           <Link href="/programs" className="hover:text-neutral-300 transition">programs</Link>
           <span className="text-neutral-700"> / platforms / </span>
           <span className="text-neutral-300">{id}</span>
@@ -171,10 +171,10 @@ export default async function PlatformLandingPage({ params }: PageProps) {
 function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="border border-neutral-900 rounded-lg bg-neutral-950/40 px-4 py-3">
-      <div className="mono text-[10px] uppercase tracking-widest text-neutral-400">{label}</div>
+      <div className="mono text-[11px] uppercase tracking-widest text-neutral-400">{label}</div>
       <div className="mt-1 text-neutral-100 text-lg tabular-nums">{value}</div>
       {sub && (
-        <div className="mono text-[10px] uppercase tracking-widest text-neutral-400 truncate">{sub}</div>
+        <div className="mono text-[11px] uppercase tracking-widest text-neutral-400 truncate">{sub}</div>
       )}
     </div>
   );

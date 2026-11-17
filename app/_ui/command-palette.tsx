@@ -172,7 +172,7 @@ export function CommandPalette() {
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-3.5-3.5" />
         </svg>
-        <span className="hidden md:flex mono text-[10px] uppercase tracking-widest items-center gap-1">
+        <span className="hidden md:flex mono text-[11px] uppercase tracking-widest items-center gap-1">
           <kbd className="px-1 py-0.5 border border-neutral-800 rounded bg-neutral-900/80 normal-case tracking-normal">⌘K</kbd>
         </span>
       </button>
@@ -216,7 +216,7 @@ export function CommandPalette() {
                 autoComplete="off"
                 spellCheck={false}
               />
-              <kbd className="mono text-[10px] text-neutral-400 px-1.5 py-0.5 border border-neutral-800 rounded">esc</kbd>
+              <kbd className="mono text-[11px] text-neutral-400 px-1.5 py-0.5 border border-neutral-800 rounded">esc</kbd>
             </div>
 
             <ul id={listboxId} role="listbox" aria-label="Results" className="max-h-[52vh] overflow-y-auto py-1.5">
@@ -246,7 +246,7 @@ export function CommandPalette() {
                         )}
                         <span className="truncate text-sm text-neutral-100">{item.label}</span>
                         {item.kind === 'command' && item.beta && (
-                          <span className="mono text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300">beta</span>
+                          <span className="mono text-[10px] uppercase tracking-widest px-1.5 py-0.5 rounded border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300">beta</span>
                         )}
                       </span>
                       {'hint' in item && item.hint && (

@@ -90,7 +90,7 @@ export default async function StatsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(faqLd(faqs)) }} />
 
       <header>
-        <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">Live aggregate</p>
+        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Live aggregate</p>
         <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-neutral-50 leading-[1.03]">
           Bug bounty statistics
         </h1>

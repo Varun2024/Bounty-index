@@ -55,7 +55,7 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
     <div className="max-w-[1000px] mx-auto px-6 py-10">
       <div className="flex items-end justify-between gap-4 border-b border-neutral-900 pb-6 reveal">
         <div className="min-w-0">
-          <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">Changelog</p>
+          <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Changelog</p>
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">What&rsquo;s new</h1>
           <p className="text-neutral-400 mt-2">
             Every scope, reward, and safe-harbor change across all platforms, over the last <span className="text-neutral-100 tabular-nums">{windowLabel}</span>.{' '}
@@ -93,7 +93,7 @@ export default async function WhatsNewPage({ searchParams }: PageProps) {
             <section key={date} className="md:grid md:grid-cols-[92px_minmax(0,1fr)] md:gap-6">
               <div className="mb-3 md:mb-0 md:pt-1 flex md:block items-baseline gap-3">
                 <p className="mono text-xs text-neutral-400 tabular-nums">{date}</p>
-                <p className="mono text-[10px] uppercase tracking-widest text-neutral-700 md:mt-1">
+                <p className="mono text-[11px] uppercase tracking-widest text-neutral-700 md:mt-1">
                   {entries.length} {entries.length === 1 ? 'change' : 'changes'}
                 </p>
               </div>

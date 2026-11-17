@@ -33,7 +33,7 @@ export function ActiveFilters({ filters }: ActiveFiltersProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 mb-6">
-      <span className="mono text-[10px] uppercase tracking-widest text-neutral-400 mr-1">
+      <span className="mono text-[11px] uppercase tracking-widest text-neutral-400 mr-1">
         {active.length} active
       </span>
       {active.map((a) => (

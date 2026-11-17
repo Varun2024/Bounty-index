@@ -87,7 +87,7 @@ function Verdict({ domain, verdict, inScopePrograms, outOfScopePrograms, inScope
     <div className={`mt-10 relative overflow-hidden rounded-xl border ${style.border} ${style.bg}`}>
       <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent ${style.rail} to-transparent`} />
       <div className="px-6 py-6 flex items-center gap-4 flex-wrap">
-        <span className={`mono text-[10px] uppercase tracking-widest px-2 py-1 rounded border ${style.chipText} ${style.chipBg} ${style.chipBorder}`}>
+        <span className={`mono text-[11px] uppercase tracking-widest px-2 py-1 rounded border ${style.chipText} ${style.chipBg} ${style.chipBorder}`}>
           {style.label}
         </span>
         <p className="text-lg text-neutral-100">
@@ -193,7 +193,7 @@ function MatchList({ title, matches, kind, note }: MatchListProps) {
 
   return (
     <div className="mt-8">
-      <p className={`mono text-[10px] uppercase tracking-widest mb-3 ${kind === 'in' ? 'text-neutral-400' : 'text-amber-400'}`}>
+      <p className={`mono text-[11px] uppercase tracking-widest mb-3 ${kind === 'in' ? 'text-neutral-400' : 'text-amber-400'}`}>
         {title}
       </p>
       {note && (
