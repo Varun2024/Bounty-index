@@ -10,6 +10,29 @@
   --accent: #34d399;
   --accent-strong: #10b981;
   --border: #1f1f22;
+
+  /* Chart vocabulary (dark surface). Mirrors app/_ui/chart.ts; the light overrides live in the
+     light trigger below. SVG marks read these as CSS properties via style={{ fill }}. */
+  --ck-accent: #34d399;
+  --ck-accent-soft: rgba(52, 211, 153, 0.07);
+  --ck-accent-muted: rgba(52, 211, 153, 0.35);
+  --ck-axis: #a3a3a3;
+  --ck-grid: #1a1a1d;
+  --ck-baseline: #262626;
+  --ck-ring: #0a0a0b;
+  --ck-zero: #2a2a2e;
+  --ck-good: #34d399;
+  --ck-warn: #fbbf24;
+  --ck-bad: #f87171;
+  --ck-info: #22d3ee;
+  --ck-s1: #3987e5;
+  --ck-s2: #d95926;
+  --ck-s3: #199e70;
+  --ck-s4: #c98500;
+  --ck-s5: #d55181;
+  --ck-s6: #008300;
+  --ck-s7: #9085e9;
+  --ck-s8: #e66767;
 }
 
 @theme inline {
@@ -37,51 +60,186 @@ html:not(.dark):where([data-system-light]) {
      or the @media block. We keep this selector so the group reads clearly. */
 }
 
+/* Light palette. The site is authored dark-first with ~1000 neutral and emerald utility
+   call sites, so light mode inverts the ramp at the token level instead of touching them.
+   The values are a purpose-built light scale, not a raw inversion of the dark hexes:
+   - 950 -> pure white and 900 -> #f5f5f5 so panels actually separate from the #fafafa page
+     (the old inversion put both within 2% of the page, so every surface read flat).
+   - 400 -> #737373 so muted/metadata text sits clearly secondary while still clearing
+     WCAG AA (4.7:1), where the old #525252 read as primary-weight.
+   - emerald darkened (200/300/400) so the accent keeps >=3:1 on white for headings, bars,
+     and links. */
+:root {
+  /* A calm, warm off-white paper base (not pure white), with white elevated surfaces
+     (n-950 -> #fff) so cards lift off the page. The whole ramp carries a faint warm cast
+     that pairs with the emerald accent; text and muted tones share the warmth so nothing
+     reads as a cold grey patch on warm paper. */
+  --light-bg: #f4f3ee;
+  --light-fg: #1c1b18;
+  --light-accent: #059669;
+  --light-accent-strong: #047857;
+  --light-border: #e6e3dc;
+
+  --light-n-50:  #1c1b18;
+  --light-n-100: #2a2824;
+  --light-n-200: #403d37;
+  --light-n-300: #55524a;
+  --light-n-400: #6a675f;
+  --light-n-600: #908b81;
+  --light-n-700: #d7d3cb;
+  --light-n-800: #e6e3dc;
+  --light-n-900: #efede7;
+  --light-n-950: #ffffff;
+
+  --light-em-200: #065f46;
+  --light-em-300: #047857;
+  --light-em-400: #059669;
+
+  /* Chart vocabulary (light surface: white cards / warm paper). Axis darkened to clear AA on
+     white; grid/baseline/zero are warm light greys; categorical series are the dataviz reference
+     light steps (validated, CVD-safe; the sub-3:1 slots ship with direct labels). */
+  --light-ck-accent: #059669;
+  --light-ck-accent-soft: rgba(5, 150, 105, 0.08);
+  --light-ck-accent-muted: rgba(5, 150, 105, 0.30);
+  --light-ck-axis: #6a675f;
+  --light-ck-grid: #ece9e2;
+  --light-ck-baseline: #d7d3cb;
+  --light-ck-ring: #ffffff;
+  --light-ck-zero: #ebe8e1;
+  --light-ck-good: #059669;
+  --light-ck-warn: #b45309;
+  --light-ck-bad: #dc2626;
+  --light-ck-info: #0e7490;
+  --light-ck-s1: #2a78d6;
+  --light-ck-s2: #eb6834;
+  --light-ck-s3: #1baf7a;
+  --light-ck-s4: #eda100;
+  --light-ck-s5: #e87ba4;
+  --light-ck-s6: #008300;
+  --light-ck-s7: #6250d6;
+  --light-ck-s8: #e34948;
+}
+
 html.light {
-  --background: #fafaf9;
-  --foreground: #171717;
-  --accent: #059669;
-  --accent-strong: #047857;
-  --border: #e5e5e5;
+  --background: var(--light-bg);
+  --foreground: var(--light-fg);
+  --accent: var(--light-accent);
+  --accent-strong: var(--light-accent-strong);
+  --border: var(--light-border);
 
-  --color-neutral-50:  #0a0a0a;
-  --color-neutral-100: #171717;
-  --color-neutral-200: #262626;
-  --color-neutral-300: #404040;
-  --color-neutral-400: #525252;
-  --color-neutral-600: #a3a3a3;
-  --color-neutral-700: #d4d4d4;
-  --color-neutral-800: #e5e5e5;
-  --color-neutral-900: #ececec;
-  --color-neutral-950: #f5f5f4;
+  --color-neutral-50:  var(--light-n-50);
+  --color-neutral-100: var(--light-n-100);
+  --color-neutral-200: var(--light-n-200);
+  --color-neutral-300: var(--light-n-300);
+  --color-neutral-400: var(--light-n-400);
+  --color-neutral-600: var(--light-n-600);
+  --color-neutral-700: var(--light-n-700);
+  --color-neutral-800: var(--light-n-800);
+  --color-neutral-900: var(--light-n-900);
+  --color-neutral-950: var(--light-n-950);
 
-  --color-emerald-200: #065f46;
-  --color-emerald-300: #047857;
-  --color-emerald-400: #059669;
+  --color-emerald-200: var(--light-em-200);
+  --color-emerald-300: var(--light-em-300);
+  --color-emerald-400: var(--light-em-400);
+
+  --ck-accent: var(--light-ck-accent);
+  --ck-accent-soft: var(--light-ck-accent-soft);
+  --ck-accent-muted: var(--light-ck-accent-muted);
+  --ck-axis: var(--light-ck-axis);
+  --ck-grid: var(--light-ck-grid);
+  --ck-baseline: var(--light-ck-baseline);
+  --ck-ring: var(--light-ck-ring);
+  --ck-zero: var(--light-ck-zero);
+  --ck-good: var(--light-ck-good);
+  --ck-warn: var(--light-ck-warn);
+  --ck-bad: var(--light-ck-bad);
+  --ck-info: var(--light-ck-info);
+  --ck-s1: var(--light-ck-s1);
+  --ck-s2: var(--light-ck-s2);
+  --ck-s3: var(--light-ck-s3);
+  --ck-s4: var(--light-ck-s4);
+  --ck-s5: var(--light-ck-s5);
+  --ck-s6: var(--light-ck-s6);
+  --ck-s7: var(--light-ck-s7);
+  --ck-s8: var(--light-ck-s8);
 }
 @media (prefers-color-scheme: light) {
   html:not(.dark) {
-    --background: #fafaf9;
-    --foreground: #171717;
-    --accent: #059669;
-    --accent-strong: #047857;
-    --border: #e5e5e5;
+    --background: var(--light-bg);
+    --foreground: var(--light-fg);
+    --accent: var(--light-accent);
+    --accent-strong: var(--light-accent-strong);
+    --border: var(--light-border);
 
-    --color-neutral-50:  #0a0a0a;
-    --color-neutral-100: #171717;
-    --color-neutral-200: #262626;
-    --color-neutral-300: #404040;
-    --color-neutral-400: #525252;
-    --color-neutral-600: #a3a3a3;
-    --color-neutral-700: #d4d4d4;
-    --color-neutral-800: #e5e5e5;
-    --color-neutral-900: #ececec;
-    --color-neutral-950: #f5f5f4;
+    --color-neutral-50:  var(--light-n-50);
+    --color-neutral-100: var(--light-n-100);
+    --color-neutral-200: var(--light-n-200);
+    --color-neutral-300: var(--light-n-300);
+    --color-neutral-400: var(--light-n-400);
+    --color-neutral-600: var(--light-n-600);
+    --color-neutral-700: var(--light-n-700);
+    --color-neutral-800: var(--light-n-800);
+    --color-neutral-900: var(--light-n-900);
+    --color-neutral-950: var(--light-n-950);
 
-    --color-emerald-200: #065f46;
-    --color-emerald-300: #047857;
-    --color-emerald-400: #059669;
+    --color-emerald-200: var(--light-em-200);
+    --color-emerald-300: var(--light-em-300);
+    --color-emerald-400: var(--light-em-400);
+
+    --ck-accent: var(--light-ck-accent);
+    --ck-accent-soft: var(--light-ck-accent-soft);
+    --ck-accent-muted: var(--light-ck-accent-muted);
+    --ck-axis: var(--light-ck-axis);
+    --ck-grid: var(--light-ck-grid);
+    --ck-baseline: var(--light-ck-baseline);
+    --ck-ring: var(--light-ck-ring);
+    --ck-zero: var(--light-ck-zero);
+    --ck-good: var(--light-ck-good);
+    --ck-warn: var(--light-ck-warn);
+    --ck-bad: var(--light-ck-bad);
+    --ck-info: var(--light-ck-info);
+    --ck-s1: var(--light-ck-s1);
+    --ck-s2: var(--light-ck-s2);
+    --ck-s3: var(--light-ck-s3);
+    --ck-s4: var(--light-ck-s4);
+    --ck-s5: var(--light-ck-s5);
+    --ck-s6: var(--light-ck-s6);
+    --ck-s7: var(--light-ck-s7);
+    --ck-s8: var(--light-ck-s8);
   }
+}
+
+/* Dark "stage" bands on a light page. The hero and footer are built around dark
+   artwork (fuzz-hero.webp / footer-bg.webp) with baked-in dark scrims, so they are
+   deliberately dark in BOTH themes rather than inverted into unreadable dark-on-dark.
+   This re-pins the neutral and emerald ramps to their dark defaults for the subtree, so
+   every neutral/emerald utility inside renders exactly as it does in dark mode.
+   The `html:not(.dark)` selector covers the .light class and system-light; on an
+   already-dark page it re-asserts the same dark values, so it is a no-op there. */
+html:not(.dark) .dark-stage {
+  color-scheme: dark;
+  background: #0a0a0b;
+
+  --background: #0a0a0b;
+  --foreground: #e5e5e5;
+  --accent: #34d399;
+  --accent-strong: #10b981;
+  --border: #1f1f22;
+
+  --color-neutral-50:  #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #0a0a0a;
+
+  --color-emerald-200: #a7f3d0;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
 }
 
 html, body {
@@ -95,7 +253,52 @@ body {
 
 .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace; }
 
-::selection { background: rgba(52, 211, 153, 0.25); color: #fff; }
+/* Info-hint: a muted (i) whose explanation appears on hover/focus, keeping disclaimer microcopy off
+   the layout. The tooltip is a small surface card; it opens above by default, aligned so it clears
+   the viewport edge where the trigger sits near one. */
+.info-hint { position: relative; display: inline-flex; align-items: center; vertical-align: middle; }
+.info-hint__btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--color-neutral-400); border-radius: 9999px; cursor: help;
+  transition: color 150ms;
+}
+.info-hint__btn:hover { color: var(--accent); }
+.info-hint__pop {
+  position: absolute;
+  width: max-content; max-width: 250px;
+  background: var(--color-neutral-950);
+  color: var(--color-neutral-200);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 11px;
+  font-size: 12px; line-height: 1.5; font-family: inherit; text-align: left; white-space: normal;
+  /* Reset any inherited label styling (an uppercase/tracked eyebrow would otherwise distort it). */
+  text-transform: none; letter-spacing: normal; font-weight: 400;
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.45);
+  opacity: 0; pointer-events: none;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 40;
+}
+.info-hint__pop--top { bottom: calc(100% + 7px); transform: translateY(4px); }
+.info-hint__pop--bottom { top: calc(100% + 7px); transform: translateY(-4px); }
+.info-hint__pop--center { left: 50%; margin-left: 0; }
+.info-hint__pop--center.info-hint__pop--top,
+.info-hint__pop--center.info-hint__pop--bottom { transform: translateX(-50%) translateY(4px); }
+.info-hint__pop--center.info-hint__pop--bottom { transform: translateX(-50%) translateY(-4px); }
+.info-hint__pop--start { left: -8px; }
+.info-hint__pop--end { right: -8px; }
+.info-hint:hover .info-hint__pop,
+.info-hint:focus-within .info-hint__pop {
+  opacity: 1; pointer-events: auto;
+}
+.info-hint:hover .info-hint__pop--center,
+.info-hint:focus-within .info-hint__pop--center { transform: translateX(-50%) translateY(0); }
+.info-hint:hover .info-hint__pop--start,
+.info-hint:hover .info-hint__pop--end,
+.info-hint:focus-within .info-hint__pop--start,
+.info-hint:focus-within .info-hint__pop--end { transform: translateY(0); }
+
+::selection { background: rgba(52, 211, 153, 0.25); color: var(--foreground); }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
@@ -226,6 +429,15 @@ html.light .hdb-item { color: rgba(10, 10, 11, 0.9); }
 /* Row lift + emerald edge */
 .row-lift { transition: background-color 150ms, transform 200ms; }
 .row-lift:hover { background-color: rgba(23, 23, 23, 0.6); }
+/* Light mode: the near-black hover reads as a black bar on a light row. Use a faint ink
+   wash instead. Scoped to real light only (not system-dark, where :not(.dark) would also
+   match), and dark-stage rows keep the dark hover above. */
+html.light .row-lift:hover { background-color: rgba(0, 0, 0, 0.045); }
+@media (prefers-color-scheme: light) {
+  html:not(.dark) .row-lift:hover { background-color: rgba(0, 0, 0, 0.045); }
+}
+html.light .dark-stage .row-lift:hover,
+html:not(.dark) .dark-stage .row-lift:hover { background-color: rgba(23, 23, 23, 0.6); }
 
 /* Focus ring, unified */
 .focus-ring:focus-visible {

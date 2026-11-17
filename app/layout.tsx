@@ -83,7 +83,7 @@ interface RootLayoutProps {
 function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="mono text-[10px] uppercase tracking-widest text-neutral-400 mb-4">{title}</p>
+      <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-4">{title}</p>
       <ul className="space-y-2.5">{children}</ul>
     </div>
   );
@@ -226,7 +226,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </div>
         </section>
 
-        <footer className="border-t border-neutral-900 relative overflow-hidden">
+        <footer className="dark-stage border-t border-neutral-900 relative overflow-hidden">
           {/* Atmospheric field of scent-trails and glowing bugs. The art fades to black along its
               top (baked in) so it melts into the page; the gradient scrim keeps the lede readable up
               top and lets the glows breathe toward the bottom. */}
@@ -248,7 +248,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 </p>
                 <div className="mt-5 flex items-center gap-2.5">
                   <Image src="/fuzz.png" alt="" width={36} height={36} className="w-9 h-9 opacity-90" />
-                  <span className="mono text-[11px] text-neutral-500">Fuzz, your scope hound.</span>
+                  <span className="mono text-[11px] text-neutral-400">Fuzz, your scope hound.</span>
                 </div>
               </div>
 
