@@ -492,5 +492,14 @@ export async function ingestAll() {
   } catch (e) {
     results.push({ platform: 'hackerone-disclosed', error: e instanceof Error ? e.message : String(e) });
   }
+  // Disclosed reports (Bugcrowd CrowdStream) — same append-only real-payout discipline, second
+  // source. Amounts are sparse (researcher-controlled visibility). Isolated like the others.
+  try {
+    const { ingestBugcrowdDisclosed } = await import('./disclosed/bugcrowd');
+    const r = await ingestBugcrowdDisclosed();
+    results.push({ ...r });
+  } catch (e) {
+    results.push({ platform: 'bugcrowd-disclosed', error: e instanceof Error ? e.message : String(e) });
+  }
   return results;
 }
