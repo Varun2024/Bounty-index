@@ -336,8 +336,14 @@ export async function ingestHackenproof(): Promise<Result> {
 
     // Persist processed programs + scopes + snapshots.
     for (const p of toProcess) {
+      // A failed Stage-2 fetch (undefined, vs a genuine []) must not persist: setting stage1Hash
+      // would permanently mark the program "done" with empty scope — wiping existing scope and
+      // stranding it at zero until its Stage-1 fields change. Skip so it retries next run. This is
+      // what stranded ~109 programs. A genuine empty ([]) still persists normally.
+      const fetched = scopesBySlug.get(p.slug);
+      if (fetched === undefined) continue;
       const url = programUrl(p.slug);
-      const scopes = scopesBySlug.get(p.slug) ?? [];
+      const scopes = fetched;
       const programType = p.maxBounty ? 'bounty' : 'vdp';
       const raw: Record<string, unknown> = {
         description: p.description,
