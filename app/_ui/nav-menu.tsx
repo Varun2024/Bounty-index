@@ -28,6 +28,7 @@ const GROUPS: NavGroup[] = [
       { href: '/scope-lookup', label: 'Scope lookup', desc: 'Paste a domain, see which programs cover it' },
       { href: '/whats-new', label: "What's new", desc: 'Scope and reward changes across every program' },
       { href: '/reward-changes', label: 'Reward changes', desc: 'Payouts going up and down over time' },
+      { href: '/payouts', label: 'Real payouts', desc: 'What programs actually pay, from disclosed reports' },
       { href: '/feed', label: 'New programs', desc: 'Programs added in the last two weeks' },
     ],
   },
