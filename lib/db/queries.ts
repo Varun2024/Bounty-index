@@ -586,6 +586,21 @@ export const realPayoutsReport = cachedWithDates(
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
 );
 
+// Lightweight name+slug index of every program on a platform, for the crawlable "all programs"
+// list on the platform hub. SEO: shallow crawl paths to the long tail (home → footer → hub →
+// program) so Google reaches tail pages without a 60-deep pagination walk. Cached like other reads.
+export const platformProgramIndex = cachedWithDates(
+  async (platform: string): Promise<{ name: string; slug: string }[]> => {
+    return db
+      .select({ name: schema.programs.name, slug: schema.programs.slug })
+      .from(schema.programs)
+      .where(eq(schema.programs.platform, platform))
+      .orderBy(sql`lower(${schema.programs.name})`);
+  },
+  ['platformProgramIndex'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+
 export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
   if (!ids.length) return [];
   const programs = await db.select().from(schema.programs).where(inArray(schema.programs.id, ids));

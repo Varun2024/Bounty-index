@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { listPrograms, stats } from '@/lib/db/queries';
+import { listPrograms, stats, platformProgramIndex } from '@/lib/db/queries';
 import { formatBounty, PLATFORM_META, platformLabel } from '@/lib/format';
 import { opportunityScore } from '@/lib/opportunity';
 
@@ -52,9 +52,10 @@ export default async function PlatformLandingPage({ params }: PageProps) {
   const dot = PLATFORM_META[id]?.dot ?? 'bg-neutral-500';
 
   // ponytail: listPrograms already returns `total` with the rows. Second count query dropped.
-  const [top, s] = await Promise.all([
+  const [top, s, allPrograms] = await Promise.all([
     listPrograms({ platform: [id], sort: 'opportunity', pageSize: 10 }).catch(() => ({ rows: [], total: 0 })),
     stats().catch(() => null),
+    platformProgramIndex(id).catch(() => [] as { name: string; slug: string }[]),
   ]);
 
   const topPayouts = [...top.rows]
@@ -165,6 +166,30 @@ export default async function PlatformLandingPage({ params }: PageProps) {
           wildcards →
         </Link>
       </section>
+
+      {/* Full crawlable program index. SEO: a shallow link path to every program on this platform
+          (home → footer → hub → program), so Google reaches the long tail without a deep pagination
+          walk. Also a real browse affordance. */}
+      {allPrograms.length > 0 && (
+        <section className="mt-12 border-t border-neutral-900 pt-8">
+          <h2 className="text-sm mono uppercase tracking-widest text-neutral-400 mb-5">
+            All {label} programs <span className="text-neutral-600">({allPrograms.length.toLocaleString()})</span>
+          </h2>
+          <ul className="columns-2 md:columns-3 gap-x-6 text-sm [column-fill:balance]">
+            {allPrograms.map((p) => (
+              <li key={`${id}/${p.slug}`} className="break-inside-avoid mb-1.5">
+                <Link
+                  href={`/programs/${id}/${p.slug}`}
+                  className="text-neutral-300 hover:text-emerald-300 transition focus-ring rounded inline-block max-w-full truncate align-top"
+                  title={p.name}
+                >
+                  {p.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }
