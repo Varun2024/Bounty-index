@@ -26,7 +26,7 @@ export default function TermsPage() {
       <section className="mt-10 space-y-4">
         <h2 className="text-xl font-semibold text-neutral-100">What this is</h2>
         <p className="text-sm text-neutral-400 leading-relaxed">
-          bounty.index is a free index of public bug bounty programs, pulled together across seven platforms. Browsing is
+          bounty.index is a free index of public bug bounty programs, pulled together across eight platforms. Browsing is
           free and needs no account. Signing in with GitHub unlocks saved features like your watchlist, notes, and alerts.
           I build and run it solo.
         </p>

@@ -25,6 +25,7 @@ const BRAND_HEX: Record<string, string> = {
   federacy: '#A78BFA',  // violet-400
   immunefi: '#FBBF24',  // amber-400
   hackenproof: '#E879F9', // fuchsia-400
+  standoff365: '#A3E635', // lime-400
 };
 
 // Real brand marks (single- or dual-path). Trademarks belong to their owners; used nominatively.

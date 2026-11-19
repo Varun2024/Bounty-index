@@ -30,6 +30,7 @@ export const PLATFORM_META: Record<string, { label: string; dot: string }> = {
   federacy: { label: 'Federacy', dot: 'bg-violet-400' },
   immunefi: { label: 'Immunefi', dot: 'bg-amber-400' },
   hackenproof: { label: 'HackenProof', dot: 'bg-fuchsia-400' },
+  standoff365: { label: 'Standoff 365', dot: 'bg-lime-400' },
 };
 
 export function platformLabel(id: string): string {
