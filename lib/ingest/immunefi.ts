@@ -7,7 +7,7 @@ import { upsertScopes } from './upsert-scopes';
 //
 // Stage 1: fetch /bug-bounty/ once → parse the program list (name, slug, logo, maxBounty,
 //          safe-harbor, kyc, premium-triaging).
-// Stage 2: for each program, fetch /bug-bounty/{slug}/information/ → extract the assets
+// Stage 2: for each program, fetch /bug-bounty/{slug}/scope/ → extract the assets
 //          array (each asset = a smart-contract address or web URL in-scope).
 //
 // ponytail: HTML scrape, not an API. Fragile if their RSC shape changes. Snapshotting
@@ -152,7 +152,9 @@ function normalizeAsset(a: ImmunefiAsset): NormalizedScope | null {
 }
 
 async function fetchDetailScopes(slug: string): Promise<NormalizedScope[]> {
-  const url = `https://immunefi.com/bug-bounty/${encodeURIComponent(slug)}/information/`;
+  // Assets live on the /scope/ page. Immunefi moved them off /information/ (which now serves an
+  // empty `assets:[]`), which silently zeroed scope for ~87% of programs until this was caught.
+  const url = `https://immunefi.com/bug-bounty/${encodeURIComponent(slug)}/scope/`;
   const res = await fetch(url, { cache: 'no-store', headers: { 'user-agent': UA }, signal: AbortSignal.timeout(20_000) });
   if (!res.ok) return [];
   const html = await res.text();
@@ -293,7 +295,11 @@ export async function ingestImmunefi(): Promise<Result> {
     // Persist programs + scopes + snapshots — CHANGED only.
     for (const p of changed) {
       const url = `https://immunefi.com/bug-bounty/${p.slug}/information/`;
-      const scopes = scopesBySlug.get(p.slug) ?? [];
+      // undefined = Stage-2 fetch failed for this program; [] = fetched and genuinely empty. Only
+      // the latter may touch scope/snapshot — a failed fetch must not wipe existing scope or append
+      // a false "all scopes removed" snapshot into append-only history.
+      const fetched = scopesBySlug.get(p.slug);
+      const scopes = fetched ?? [];
       const raw: Record<string, unknown> = {
         logo: p.logo,
         launchDate: p.launchDate,
@@ -340,10 +346,11 @@ export async function ingestImmunefi(): Promise<Result> {
         .returning({ id: schema.programs.id });
       programsUpserted++;
 
-      scopesUpserted += await upsertScopes(prog.id, scopes);
-
-      const wrote = await maybeSnapshot(prog.id, run.id, buildSnapshotPayload(p, url, scopes));
-      if (wrote) snapshotsWritten++;
+      if (fetched !== undefined) {
+        scopesUpserted += await upsertScopes(prog.id, scopes);
+        const wrote = await maybeSnapshot(prog.id, run.id, buildSnapshotPayload(p, url, scopes));
+        if (wrote) snapshotsWritten++;
+      }
     }
 
     await db
