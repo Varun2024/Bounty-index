@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'bounty.index: every public bounty, one index',
-    description: 'Every public bug bounty program across seven platforms, filterable by scope, payout, and asset type.',
+    description: 'Every public bug bounty program across eight platforms, filterable by scope, payout, and asset type.',
     type: 'website',
     siteName: 'bounty.index',
     images: [{ url: '/og/default', width: 1200, height: 630, alt: 'bounty.index: every public bounty, one index' }],
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'bounty.index: every public bounty, one index',
-    description: 'Every public bug bounty program across seven platforms.',
+    description: 'Every public bug bounty program across eight platforms.',
     images: ['/og/default'],
   },
 };
@@ -336,6 +336,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <FooterLink href="/programs?platform=federacy" platform="federacy">Federacy</FooterLink>
                 <FooterLink href="/programs?platform=immunefi" platform="immunefi">Immunefi</FooterLink>
                 <FooterLink href="/programs?platform=hackenproof" platform="hackenproof">HackenProof</FooterLink>
+                <FooterLink href="/programs?platform=standoff365" platform="standoff365">Standoff 365</FooterLink>
               </FooterCol>
 
               <FooterCol title="Build">

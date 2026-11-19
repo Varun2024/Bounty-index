@@ -78,7 +78,7 @@ export function Hero({ s, top, mcpRequests }: HeroProps) {
                 <span className="mono text-neutral-100 tabular-nums">{platformCount}</span> platforms. Fuzz checks any domain against all of them, live.
               </>
             ) : (
-              <>Every public bug bounty program across seven platforms, in one index.</>
+              <>Every public bug bounty program across eight platforms, in one index.</>
             )}
           </p>
 

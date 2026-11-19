@@ -55,7 +55,7 @@ export default function HowItWorksPage() {
           How it&apos;s built.
         </h1>
         <p className="mt-6 text-neutral-400 text-lg max-w-2xl leading-relaxed">
-          One quiet daily job, indexed for scan speed. Every public bounty program on seven platforms flows through
+          One quiet daily job, indexed for scan speed. Every public bounty program on eight platforms flows through
           this pipeline into a single searchable index. Here&rsquo;s exactly how I build it, nothing hidden.
         </p>
       </header>

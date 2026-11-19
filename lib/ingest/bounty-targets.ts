@@ -482,6 +482,14 @@ export async function ingestAll() {
   } catch (e) {
     results.push({ platform: 'hackenproof', error: e instanceof Error ? e.message : String(e) });
   }
+  // Standoff 365 — not in arkadiyt; first-party __NEXT_DATA__ scrape. Small Russian-market platform.
+  try {
+    const { ingestStandoff365 } = await import('./standoff365');
+    const r = await ingestStandoff365();
+    results.push({ ...r });
+  } catch (e) {
+    results.push({ platform: 'standoff365', error: e instanceof Error ? e.message : String(e) });
+  }
   // Disclosed reports (H1 Hacktivity) — append-only real-payout/response data the upstream mirror
   // can't have. Isolated: a GraphQL shape drift here never aborts program ingest. See
   // docs/plans/PLAN_DISCLOSED_REPORTS.md (Phase 1, data-only gate).
