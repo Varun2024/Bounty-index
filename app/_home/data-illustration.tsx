@@ -43,6 +43,12 @@ export function PayoutPanel({ dist }: { dist: PayoutDistribution }) {
           ariaLabel={`Distribution of ${dist.n} disclosed payouts across amount bands; ${bars.map((b) => `${b.value} in ${b.label}`).join(', ')}.`}
         />
       </div>
+      <Link
+        href="/payouts"
+        className="cta-arrow flex items-center justify-between px-5 py-2.5 border-t border-neutral-900 mono text-xs text-neutral-400 hover:text-emerald-400 hover:bg-neutral-900/30 transition focus-ring"
+      >
+        what programs actually pay <span className="arrow">→</span>
+      </Link>
     </div>
   );
 }

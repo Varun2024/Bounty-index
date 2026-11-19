@@ -17,6 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/reward-changes`, priority: 0.7 },
     { url: `${base}/stats`, priority: 0.8 },
     { url: `${base}/how-scored`, priority: 0.6 },
+    { url: `${base}/payouts`, priority: 0.8 },
     { url: `${base}/settings/discord`, priority: 0.4 },
     { url: `${base}/feed`, priority: 0.7 },
     { url: `${base}/programs/paying`, priority: 0.8 },

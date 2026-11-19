@@ -518,6 +518,74 @@ export const disclosedPayoutDistribution = cachedWithDates(
   { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
 );
 
+export interface RealPayoutRankRow {
+  name: string;
+  platform: string;
+  slug: string;
+  median: number; // USD, disclosed-report median
+  top: number; // USD, single highest disclosed amount
+  n: number; // disclosed USD amounts for this program
+}
+
+export interface RealPayoutsReport {
+  rows: RealPayoutRankRow[]; // programs at the aggregate tier, sorted by median desc
+  spanFrom: Date | null; // earliest / latest amount-bearing disclosure in the corpus
+  spanTo: Date | null;
+}
+
+// Powers the /payouts report: programs ranked by what they ACTUALLY pay (disclosed-report median),
+// only at the aggregate tier (n >= AGGREGATE_MIN_N) so no thin sample poses as a stat. USD-only,
+// amount>0, matching disclosedPayoutDistribution + lib/disclosed.ts. Fetch-then-group in JS mirrors
+// the distribution query — the amount-bearing corpus is small (~1.8k rows) and joins to programs once.
+export const realPayoutsReport = cachedWithDates(
+  async (): Promise<RealPayoutsReport> => {
+    const rows = await db
+      .select({
+        amt: schema.disclosedReports.bountyAmount,
+        at: schema.disclosedReports.disclosedAt,
+        name: schema.programs.name,
+        platform: schema.programs.platform,
+        slug: schema.programs.slug,
+      })
+      .from(schema.disclosedReports)
+      .innerJoin(schema.programs, eq(schema.disclosedReports.programId, schema.programs.id))
+      .where(
+        sql`${schema.disclosedReports.bountyAmount} IS NOT NULL AND ${schema.disclosedReports.bountyAmount} > 0 AND (${schema.disclosedReports.currency} IS NULL OR upper(${schema.disclosedReports.currency}) = 'USD')`,
+      );
+
+    const byProgram = new Map<string, { meta: { name: string; platform: string; slug: string }; amts: number[] }>();
+    let spanFrom: Date | null = null;
+    let spanTo: Date | null = null;
+    for (const r of rows) {
+      if (typeof r.amt !== 'number') continue;
+      const key = `${r.platform}/${r.slug}`;
+      let e = byProgram.get(key);
+      if (!e) {
+        e = { meta: { name: r.name, platform: r.platform, slug: r.slug }, amts: [] };
+        byProgram.set(key, e);
+      }
+      e.amts.push(r.amt);
+      if (r.at) {
+        if (!spanFrom || r.at < spanFrom) spanFrom = r.at;
+        if (!spanTo || r.at > spanTo) spanTo = r.at;
+      }
+    }
+
+    const ranked: RealPayoutRankRow[] = [];
+    for (const { meta, amts } of byProgram.values()) {
+      if (amts.length < AGGREGATE_MIN_N) continue;
+      const asc = [...amts].sort((a, b) => a - b);
+      const n = asc.length;
+      const median = n % 2 ? asc[(n - 1) / 2] : Math.round((asc[n / 2 - 1] + asc[n / 2]) / 2);
+      ranked.push({ ...meta, median, top: asc[n - 1], n });
+    }
+    ranked.sort((a, b) => b.median - a.median || b.n - a.n);
+    return { rows: ranked, spanFrom, spanTo };
+  },
+  ['realPayoutsReport'],
+  { revalidate: CACHE_REVALIDATE, tags: [CACHE_TAG] },
+);
+
 export async function getWatchlist(ids: number[]): Promise<WatchlistEntry[]> {
   if (!ids.length) return [];
   const programs = await db.select().from(schema.programs).where(inArray(schema.programs.id, ids));
