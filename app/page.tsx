@@ -6,6 +6,7 @@ import { Comparison } from './_home/comparison';
 import { Features } from './_home/features';
 import { Receipts } from './_home/receipts';
 import { FinalCTA } from './_home/final-cta';
+import { Sponsors } from './_home/sponsors';
 import { SectionOrnament } from './_home/shared';
 import { datasetLd, jsonLdScript } from '@/lib/structured-data';
 
@@ -43,6 +44,7 @@ export default async function Home() {
       <SectionOrnament />
       <Comparison />
       <Receipts s={s} />
+      <Sponsors />
       <FinalCTA s={s} />
     </>
   );
