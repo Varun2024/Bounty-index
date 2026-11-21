@@ -33,6 +33,7 @@ export default async function AdminPage() {
     mcp_requests_7d: number; mcp_clients_7d: number;
   };
   type McpUa = { ua: string | null; clients: number; requests: number };
+  type McpTool = { tool: string | null; requests: number; avg_ms: number | null; p95_ms: number | null };
   type DayCount = { day: string; n: number };
   // MCP counts are a SEPARATE settled query on purpose: mcp_hits is a newer table and a
   // deploy can land before its migration runs. Folding it into the main counts query would
@@ -53,7 +54,7 @@ export default async function AdminPage() {
       ORDER BY day
     `));
 
-  const [countsRows, recentUsers, topWatchedRows, mcpCountsRows, mcpUaRows, mcpDailyRows, snapDailyRows] = await Promise.all([
+  const [countsRows, recentUsers, topWatchedRows, mcpCountsRows, mcpUaRows, mcpToolRows, mcpDailyRows, snapDailyRows] = await Promise.all([
     settle(db.execute<Counts>(sql`
       SELECT
         (SELECT count(*) FROM "user")::int               AS total_users,
@@ -101,6 +102,19 @@ export default async function AdminPage() {
       ORDER BY requests DESC
       LIMIT 100
     `)),
+    // Per-tool usage + latency, from the tool/duration_ms columns (migration 004). Only rows
+    // written after that deploy carry a tool, so this fills in going forward; older rows are null.
+    settle(db.execute<McpTool>(sql`
+      SELECT tool,
+             count(*)::int                                                              AS requests,
+             round(avg(duration_ms))::int                                               AS avg_ms,
+             round(percentile_cont(0.95) WITHIN GROUP (ORDER BY duration_ms))::int      AS p95_ms
+      FROM mcp_hits
+      WHERE tool IS NOT NULL
+      GROUP BY tool
+      ORDER BY requests DESC
+      LIMIT 50
+    `)),
     dailySeries('mcp_hits', 'ts'),
     dailySeries('program_snapshots', 'captured_at'),
   ]);
@@ -126,6 +140,7 @@ export default async function AdminPage() {
   const mcpClients7d       = mc?.mcp_clients_7d      ?? null;
 
   const mcpUa = (mcpUaRows as unknown as { rows?: McpUa[] } | null)?.rows ?? [];
+  const mcpTools = (mcpToolRows as unknown as { rows?: McpTool[] } | null)?.rows ?? [];
 
   const pendingSignups = await listPendingSignups().catch(() => []);
 
@@ -188,6 +203,35 @@ export default async function AdminPage() {
           <Tile label="Requests · 7d" value={mcpRequests7d} />
         </div>
         <McpUaList items={mcpUa} />
+        <h3 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mt-6 mb-2">
+          Tool usage <span className="text-neutral-700">· since telemetry (migration 004) · latency in ms</span>
+        </h3>
+        {mcpTools.length === 0 ? (
+          <p className="mono text-xs text-neutral-400">no tool-tagged calls yet (rows predate telemetry, or no calls since deploy)</p>
+        ) : (
+          <div className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">
+            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2 border-b border-neutral-900 mono text-[10px] uppercase tracking-widest text-neutral-500">
+              <span>tool / method</span>
+              <span className="text-right tabular-nums">calls</span>
+              <span className="text-right tabular-nums">avg</span>
+              <span className="text-right tabular-nums">p95</span>
+            </div>
+            <ul className="divide-y divide-neutral-900">
+              {mcpTools.map((t) => (
+                <li key={t.tool} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2 items-baseline">
+                  <span className="mono text-xs text-emerald-300 truncate">{t.tool}</span>
+                  <span className="mono text-xs text-neutral-200 text-right tabular-nums">{t.requests.toLocaleString()}</span>
+                  <span className="mono text-[11px] text-neutral-400 text-right tabular-nums">{t.avg_ms ?? '·'}</span>
+                  <span
+                    className={`mono text-[11px] text-right tabular-nums ${t.p95_ms != null && t.p95_ms > 1000 ? 'text-amber-300' : 'text-neutral-400'}`}
+                  >
+                    {t.p95_ms ?? '·'}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <p className="mt-3 mono text-[11px] text-neutral-400">
           one row per POST, handshake calls included. IP from x-forwarded-for; a shared NAT undercounts clients.
         </p>
