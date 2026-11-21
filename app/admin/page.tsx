@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { desc, sql } from 'drizzle-orm';
 import { auth } from '@/auth';
@@ -164,7 +165,15 @@ export default async function AdminPage() {
     <div className="max-w-[1100px] mx-auto px-6 py-10 space-y-10">
       <header className="border-b border-neutral-900 pb-6">
         <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Internal · noindex</p>
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Admin</h1>
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Admin</h1>
+          <Link
+            href="/admin/content"
+            className="mono text-xs px-3 py-1.5 border border-neutral-800 rounded-md text-neutral-300 hover:border-emerald-400/40 hover:text-emerald-300 transition focus-ring"
+          >
+            edit site content →
+          </Link>
+        </div>
         <p className="mt-3 text-sm text-neutral-400">
           Everything here is a live query, no caching. Refresh to re-run.
         </p>
