@@ -439,6 +439,34 @@ html.light .row-lift:hover { background-color: rgba(0, 0, 0, 0.045); }
 html.light .dark-stage .row-lift:hover,
 html:not(.dark) .dark-stage .row-lift:hover { background-color: rgba(23, 23, 23, 0.6); }
 
+/* Primary CTA — one canonical call-to-action treatment (emerald-400/50 border, /10 fill,
+   emerald-200 text, /18 fill on hover). Apply `cta` for the look; keep per-site layout
+   utilities (padding, radius, inline-flex, mono, focus-ring). Unlayered, so it overrides any
+   leftover emerald hover utilities. emerald-400 = rgb(52 211 153), emerald-200 = #a7f3d0. */
+.cta {
+  border: 1px solid rgba(52, 211, 153, 0.5);
+  background-color: rgba(52, 211, 153, 0.1);
+  color: #a7f3d0;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.cta:hover {
+  background-color: rgba(52, 211, 153, 0.18);
+  border-color: rgba(52, 211, 153, 0.5);
+}
+/* Light theme: emerald-200 text is for dark surfaces; on light paper it fails contrast.
+   Switch to emerald-700 text over a tinted emerald-600 fill for AA on both themes. */
+html.light .cta,
+html:not(.dark) .cta {
+  color: #047857; /* emerald-700 */
+  border-color: rgba(5, 150, 105, 0.5); /* emerald-600 */
+  background-color: rgba(5, 150, 105, 0.08);
+}
+html.light .cta:hover,
+html:not(.dark) .cta:hover {
+  background-color: rgba(5, 150, 105, 0.15);
+  border-color: rgba(5, 150, 105, 0.6);
+}
+
 /* Focus ring, unified */
 .focus-ring:focus-visible {
   outline: none;

@@ -29,7 +29,7 @@ export function McpSupport() {
         href={COFFEE_URL}
         target="_blank"
         rel="noreferrer noopener"
-        className="mt-4 w-full inline-flex items-center justify-center gap-2 mono text-sm px-4 py-2 border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300 rounded-md hover:border-emerald-400/60 hover:bg-emerald-400/[0.12] transition focus-ring"
+        className="mt-4 w-full inline-flex items-center justify-center gap-2 mono text-sm px-4 py-2 cta rounded-md focus-ring"
       >
         <span aria-hidden>&#9749;</span>
         buy me a coffee

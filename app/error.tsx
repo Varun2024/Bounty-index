@@ -33,7 +33,7 @@ export default function RouteError({ error, reset }: ErrorProps) {
         <button
           type="button"
           onClick={reset}
-          className="mono text-sm px-4 py-2 border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300 rounded-md hover:border-emerald-400/70 hover:bg-emerald-400/[0.14] transition focus-ring"
+          className="mono text-sm px-4 py-2 cta rounded-md focus-ring"
         >
           retry →
         </button>

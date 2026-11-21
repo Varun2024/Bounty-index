@@ -235,7 +235,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount, signedIn }: Pro
       <button
         type="submit"
         disabled={pending || !url || !programId}
-        className="mono text-xs px-4 py-2 border border-emerald-400/40 bg-emerald-400/[0.06] text-emerald-300 rounded hover:bg-emerald-400/[0.12] transition disabled:opacity-40 disabled:cursor-not-allowed"
+        className="mono text-xs px-4 py-2 cta rounded disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {pending ? 'saving…' : signedIn ? 'subscribe →' : 'sign in & subscribe →'}
       </button>

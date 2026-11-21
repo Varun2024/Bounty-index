@@ -114,7 +114,7 @@ export function FeedbackNudge({ settings }: { settings: FeedbackNudgeConfig }) {
         <button
           type="button"
           onClick={openFeedback}
-          className="mt-3 w-full inline-flex items-center justify-center gap-2 mono text-sm px-4 py-2 border border-emerald-400/40 bg-emerald-400/[0.06] text-emerald-300 rounded-md hover:bg-emerald-400/[0.12] hover:border-emerald-400/60 transition focus-ring"
+          className="mt-3 w-full inline-flex items-center justify-center gap-2 mono text-sm px-4 py-2 cta rounded-md focus-ring"
         >
           send feedback
         </button>
