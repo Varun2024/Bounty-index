@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { after } from 'next/server';
 import { and, eq, gte, sql } from 'drizzle-orm';
 import type { McpServer } from '@modelcontextprotocol/server';
 import {
@@ -14,9 +15,14 @@ import { db } from '@/lib/db/client';
 import { mcpHits } from '@/lib/db/schema';
 
 function clientIp(req: Request): string | null {
+  // On Vercel, x-vercel-forwarded-for / x-real-ip are proxy-set and not client-forgeable, so
+  // prefer them. x-forwarded-for's first value is only trustworthy while Vercel is the outermost
+  // proxy (put a CDN in front and a client could forge it to evade or poison the rate limit).
+  const trusted = req.headers.get('x-vercel-forwarded-for') ?? req.headers.get('x-real-ip');
+  if (trusted) return trusted.trim();
   const xff = req.headers.get('x-forwarded-for');
   if (xff) return xff.split(',')[0].trim();
-  return req.headers.get('x-real-ip');
+  return null;
 }
 
 // Per-IP rate limit. The endpoint is public and unauthenticated, and every tool call hits
@@ -46,8 +52,9 @@ async function isRateLimited(ip: string | null): Promise<boolean> {
 async function peekTool(req: Request): Promise<string | null> {
   try {
     const body = (await req.clone().json()) as { method?: unknown; params?: { name?: unknown } };
-    if (body?.method === 'tools/call' && typeof body.params?.name === 'string') return body.params.name;
-    return typeof body?.method === 'string' ? body.method : null;
+    // Truncate: `params.name` is untrusted and could be megabytes (table-bloat vector).
+    if (body?.method === 'tools/call' && typeof body.params?.name === 'string') return body.params.name.slice(0, 100);
+    return typeof body?.method === 'string' ? body.method.slice(0, 100) : null;
   } catch {
     return null;
   }
@@ -61,7 +68,7 @@ async function logMcpHit(
   tool: string | null,
   durationMs: number,
 ): Promise<void> {
-  const ip = clientIp(req);
+  const ip = clientIp(req)?.slice(0, 45) ?? null; // cap at max IPv6 length
   const ua = req.headers.get('user-agent')?.slice(0, 500) ?? null;
   try {
     await db.insert(mcpHits).values({ version, ip, ua, tool, durationMs });
@@ -104,9 +111,15 @@ export function withMcpLogging(handler: RouteHandler, version: 'v1' | 'v2'): Rou
     if (await isRateLimited(ip)) return rateLimitedResponse();
     const tool = await peekTool(req);
     const start = Date.now();
-    const res = await handler(req);
-    void logMcpHit(req, version, tool, Date.now() - start);
-    return res;
+    try {
+      return await handler(req);
+    } finally {
+      // finally: count + record even when the handler throws, so failed calls still hit the cap.
+      // after(): on Vercel, work kicked off post-response can be frozen/dropped; after() guarantees
+      // the insert runs in this invocation after the response is sent, off the response's critical path.
+      const durationMs = Date.now() - start;
+      after(() => logMcpHit(req, version, tool, durationMs));
+    }
   };
 }
 
