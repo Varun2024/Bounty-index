@@ -305,7 +305,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
                     href="https://buymeacoffee.com/varun_builds"
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="inline-flex items-center gap-2 mono text-xs px-3 py-2 border border-emerald-400/30 bg-emerald-400/[0.06] text-emerald-300 rounded-md hover:border-emerald-400/60 hover:bg-emerald-400/[0.12] transition focus-ring"
+                    className="inline-flex items-center gap-2 mono text-xs px-3 py-2 cta rounded-md focus-ring"
                   >
                     buy me a coffee
                   </a>

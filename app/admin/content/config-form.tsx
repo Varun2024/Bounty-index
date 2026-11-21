@@ -220,7 +220,7 @@ export function ConfigForm({ initial }: { initial: SiteConfig }) {
           type="button"
           onClick={save}
           disabled={pending}
-          className="mono text-sm px-5 py-2.5 border border-emerald-400/50 bg-emerald-400/[0.1] text-emerald-200 rounded-md hover:bg-emerald-400/[0.18] transition focus-ring disabled:opacity-50"
+          className="mono text-sm px-5 py-2.5 cta rounded-md focus-ring disabled:opacity-50"
         >
           {pending ? 'saving…' : 'save changes'}
         </button>
