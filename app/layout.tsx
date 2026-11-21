@@ -23,6 +23,7 @@ import { RestoredBanner } from './_ui/restored-banner';
 import { AnnouncementStrip } from './_ui/announcement-strip';
 import { Analytics } from '@vercel/analytics/next';
 import { ThemeToggle } from './_ui/theme-toggle';
+import { getSiteConfig, activeAnnouncements } from '@/lib/site-config';
 
 // Dark is the default (design.md is dark-first). Only an explicit stored 'light' opts out;
 // anything else, including no preference and a light system setting, resolves to dark. The
@@ -115,7 +116,8 @@ function FooterLink({
   );
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const config = await getSiteConfig();
   return (
     <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
@@ -156,15 +158,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </div>
           </div>
         </header>
-        <DegradedBanner />
-        <RestoredBanner />
-        <AnnouncementStrip />
+        <DegradedBanner {...config.degradedBanner} />
+        <RestoredBanner {...config.restoredBanner} />
+        <AnnouncementStrip announcements={activeAnnouncements(config)} />
         <main id="main" className="flex-1">{children}</main>
         <GlobalKeyboard />
         <ShortcutsHelp />
-        <SupportNudge />
+        <SupportNudge settings={config.supportNudge} />
         <FeedbackTab />
-        <FeedbackNudge />
+        <FeedbackNudge settings={config.feedbackNudge} />
         <FuzzWhisper />
         <CompareTray />
         <AuthSync />
