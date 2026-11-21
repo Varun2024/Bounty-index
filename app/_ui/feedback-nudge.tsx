@@ -1,18 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { FeedbackNudgeConfig } from '@/lib/site-config';
 
 // A quiet, dismissible reminder pinned under the navbar (top-right) that points at the feedback
 // form. Separate from the always-present feedback edge tab: the tab is a standing offer, this is
 // an occasional prompt. It opens the existing FeedbackDialog by dispatching OPEN_FEEDBACK, so the
 // dialog keeps owning its own state. Shown at most once every couple of weeks, and not at all once
 // the visitor has already opened feedback (that's tracked by the dialog's own seen key).
+// Timing + frequency caps come from admin-editable config (lib/site-config.ts).
 const KEY = 'bi:feedback-nudge';
 const SEEN_KEY = 'bi:feedback-seen'; // set by the dialog once it's been opened; suppresses this nudge
 const OPEN_FEEDBACK = 'bi:open-feedback';
-const DISMISS_DAYS = 7; // rarer than the support nudge (3d): this is the secondary ask
-const ENGAGED_DAYS = 14; // they opened feedback from here, so back off for a couple of weeks
-const SHOW_AFTER_MS = 40_000; // let them actually read the page first; no exit-intent (coffee owns that)
 
 function suppressed(): boolean {
   try {
@@ -34,7 +33,10 @@ function remember(days: number) {
   }
 }
 
-export function FeedbackNudge() {
+export function FeedbackNudge({ settings }: { settings: FeedbackNudgeConfig }) {
+  const DISMISS_DAYS = settings.dismissDays;
+  const ENGAGED_DAYS = settings.engagedDays;
+  const SHOW_AFTER_MS = settings.showAfterSec * 1000;
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState(false); // drives the slide-in transition
 
@@ -45,6 +47,7 @@ export function FeedbackNudge() {
       remember(DISMISS_DAYS); // cap re-show even if they never interact
     }, SHOW_AFTER_MS);
     return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Trigger the slide-in one frame after mount.

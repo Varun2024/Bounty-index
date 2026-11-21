@@ -358,6 +358,15 @@ export const mcpHits = pgTable(
   }),
 );
 
+// Singleton-ish key/value store for admin-editable site config (announcement strip, nudge
+// timing/caps, banner copy). One row per config domain; see lib/site-config.ts. Kept tiny and
+// cached (revalidateTag on write) so it is never a per-request DB read on the hot layout path.
+export const appConfig = pgTable('app_config', {
+  key: text('key').primaryKey(),
+  value: jsonb('value').notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type Program = typeof programs.$inferSelect;
 export type NewProgram = typeof programs.$inferInsert;
 export type Scope = typeof scopes.$inferSelect;

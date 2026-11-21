@@ -2,15 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
+import type { SupportNudgeConfig } from '@/lib/site-config';
 
 // A humble, dismissible corner nudge. Fires on desktop exit-intent (mouse leaving toward the tab
 // bar) once the visitor has stuck around a bit, with a time fallback so touch devices get it too.
 // Shown at most once every few days; much longer if they engage. Never blocks, always easy to dismiss.
+// Timing + frequency caps come from admin-editable config (lib/site-config.ts).
 const KEY = 'bi:support-nudge';
-const DISMISS_DAYS = 3;
-const ENGAGED_DAYS = 180;
-const ARM_DELAY_MS = 20_000; // don't arm exit-intent for the first 20s (ignore quick bounces)
-const FALLBACK_MS = 90_000; // no-exit-intent fallback (mobile, or a patient desktop reader)
 const COFFEE_URL = 'https://buymeacoffee.com/varun_builds';
 const REPO_URL = 'https://github.com/Varun2024/Bounty-index';
 
@@ -33,7 +31,11 @@ function remember(days: number) {
   }
 }
 
-export function SupportNudge() {
+export function SupportNudge({ settings }: { settings: SupportNudgeConfig }) {
+  const DISMISS_DAYS = settings.dismissDays;
+  const ENGAGED_DAYS = settings.engagedDays;
+  const ARM_DELAY_MS = settings.armDelaySec * 1000;
+  const FALLBACK_MS = settings.fallbackSec * 1000;
   const { status } = useSession();
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState(false); // drives the slide-in transition
@@ -66,6 +68,8 @@ export function SupportNudge() {
       window.clearTimeout(fallbackTimer);
       document.removeEventListener('mouseout', onMouseOut);
     };
+    // settings is server-provided and stable for the page; arm once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Trigger the slide-in one frame after mount.

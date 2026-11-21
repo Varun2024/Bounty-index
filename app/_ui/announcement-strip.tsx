@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { activeAnnouncements, type Announcement } from '@/lib/announcements';
+import type { Announcement } from '@/lib/site-config';
 
 // Top strip for product news. Shows the newest active announcement the viewer
 // hasn't dismissed; dismissing reveals the next one, then nothing. Dismissals
 // are per-browser (localStorage), no account needed. Mirrors RestoredBanner.
+// The active (date-filtered) list is passed from the server layout (admin-editable config).
 
 const STORAGE_KEY = 'bi:dismissed-announcements';
 
@@ -21,12 +22,11 @@ function readDismissed(): string[] {
   }
 }
 
-function pickNext(dismissed: string[]): Announcement | null {
-  return activeAnnouncements().find((a) => !dismissed.includes(a.id)) ?? null;
-}
-
-export function AnnouncementStrip() {
+export function AnnouncementStrip({ announcements }: { announcements: Announcement[] }) {
   const [current, setCurrent] = useState<Announcement | null>(null);
+
+  const pickNext = (dismissed: string[]): Announcement | null =>
+    announcements.find((a) => !dismissed.includes(a.id)) ?? null;
 
   useEffect(() => {
     const next = pickNext(readDismissed());
@@ -34,7 +34,8 @@ export function AnnouncementStrip() {
     // Deferred so the reveal stays client-only (no hydration flash).
     const id = requestAnimationFrame(() => setCurrent(next));
     return () => cancelAnimationFrame(id);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [announcements]);
 
   if (!current) return null;
 
