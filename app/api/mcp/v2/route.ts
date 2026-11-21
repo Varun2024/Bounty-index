@@ -1,4 +1,5 @@
 import { createMcpHandler } from 'mcp-handler';
+import { ResourceTemplate } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 import {
   registerCoreTools,
@@ -18,6 +19,8 @@ import {
   getProgramsByIds,
   findByDomain,
   realPayoutsReport,
+  getProgramBySlug,
+  getDisclosedReports,
 } from '@/lib/db/queries';
 
 // v2 adds leaderboard + discovery tools, batch asset lookup, and three prompts
@@ -157,20 +160,49 @@ const handler = createMcpHandler(
         description:
           'Programs ranked by MEDIAN disclosed bounty in USD, with report count (reports) and the single highest disclosed payout (topUsd). This is the data behind the /payouts report and the one view the public program list cannot give you: what a program typically pays, versus the outlier at the top. Only programs with enough disclosed reports to be statistically meaningful are included. Disclosed reports are a self-selected sample, not all payouts. Use for "what does X actually pay" and typical-vs-top-payout angles.',
         inputSchema: z.object({
-          limit: z.number().int().positive().max(200).optional().describe('Default 50, max 200.'),
+          platform: z.string().optional().describe('With `slug`, return stats for this ONE program instead of the ranking.'),
+          slug: z.string().optional().describe('With `platform`, the program slug, e.g. "shopify".'),
+          limit: z.number().int().positive().max(200).optional().describe('Ranking mode: default 50, max 200.'),
           minReports: z
             .number()
             .int()
             .positive()
             .optional()
-            .describe('Only programs with at least this many disclosed USD reports.'),
+            .describe('Ranking mode: only programs with at least this many disclosed USD reports.'),
           sort: z
             .enum(['median', 'reports', 'spread'])
             .optional()
-            .describe('median (default, highest typical payout first), reports (most-disclosed first), or spread (biggest top-to-median multiple first: where the headline payout most overstates the typical one).'),
+            .describe('Ranking mode: median (default, highest typical payout first), reports (most-disclosed first), or spread (biggest top-to-median multiple first: where the headline payout most overstates the typical one).'),
         }),
       },
-      async ({ limit, minReports, sort }) => {
+      async ({ platform, slug, limit, minReports, sort }) => {
+        // Single-program mode: disclosed-payout stats for one program, including the thin-sample tier
+        // the ranking excludes (with an honest caveat), so an agent triaging one target gets its real
+        // payout profile in one call.
+        if (platform && slug) {
+          const target = await getProgramBySlug(platform, slug);
+          if (!target) return json({ error: 'not_found', platform, slug });
+          const reports = await getDisclosedReports(target.program.id);
+          const amts = reports
+            .filter((r) => typeof r.bountyAmount === 'number' && r.bountyAmount > 0 && (r.currency == null || r.currency.toUpperCase() === 'USD'))
+            .map((r) => r.bountyAmount as number)
+            .sort((a, b) => a - b);
+          const n = amts.length;
+          const median = n === 0 ? null : n % 2 ? amts[(n - 1) / 2] : Math.round((amts[n / 2 - 1] + amts[n / 2]) / 2);
+          return json({
+            program: { name: target.program.name, platform, slug, bountyIndexUrl: programUrl(platform, slug) },
+            medianUsd: median,
+            topUsd: n ? amts[n - 1] : null,
+            reports: n,
+            note:
+              n === 0
+                ? 'No disclosed USD reports for this program.'
+                : n < 8
+                  ? `Only ${n} disclosed USD reports; treat as indicative, not a stable median.`
+                  : 'Disclosed reports only (a self-selected sample), normalized to USD.',
+          });
+        }
+
         const report = await realPayoutsReport();
         // spread = how many times the biggest disclosed payout exceeds the median; both from our corpus, same currency.
         const spread = (r: { top: number; median: number }): number => (r.median > 0 ? r.top / r.median : 0);
@@ -299,6 +331,32 @@ const handler = createMcpHandler(
     );
 
     // --- Resources: pre-rendered data agents can bind to without a tool call. ---
+
+    server.registerResource(
+      'program',
+      new ResourceTemplate('program://{platform}/{slug}', { list: undefined }),
+      {
+        title: 'A bug bounty program record',
+        description:
+          'Bind one program as a resource by platform + slug, e.g. program://hackerone/shopify. Returns headers + in-scope / out-of-scope, the same record get_program gives. (Single-segment slugs only.)',
+        mimeType: 'application/json',
+      },
+      async (uri, variables) => {
+        const platform = Array.isArray(variables.platform) ? variables.platform[0] : variables.platform;
+        const slug = Array.isArray(variables.slug) ? variables.slug.join('/') : variables.slug;
+        const result = await getProgramBySlug(String(platform), String(slug));
+        const body = result
+          ? {
+              ...summarize(result.program as ProgramRow),
+              scope: {
+                inScope: result.scopes.filter((s) => s.inScope).map((s) => ({ identifier: s.identifier, assetType: s.assetType })),
+                outOfScope: result.scopes.filter((s) => !s.inScope).map((s) => ({ identifier: s.identifier, assetType: s.assetType })),
+              },
+            }
+          : { error: 'not_found', platform, slug };
+        return { contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(body, null, 2) }] };
+      },
+    );
 
     server.registerResource(
       'stats-overview',
