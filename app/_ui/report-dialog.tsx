@@ -147,7 +147,7 @@ export function ReportDialog({ programId, programName, existing, onClose, onSubm
             <button
               type="submit"
               disabled={busy || !submittedAt}
-              className="focus-ring mono text-xs px-3 py-1.5 border border-emerald-400/50 bg-emerald-400/10 text-emerald-300 hover:bg-emerald-400/20 rounded transition disabled:opacity-50"
+              className="focus-ring mono text-xs px-3 py-1.5 cta rounded disabled:opacity-50"
             >
               {busy ? 'saving…' : existing ? 'update report' : 'submit report'}
             </button>

@@ -92,7 +92,7 @@ export function CommunityReports({ programId, programName, initialStats, initial
           <button
             type="button"
             onClick={openDialog}
-            className="focus-ring mono text-xs px-3 py-1.5 border border-emerald-400/40 bg-emerald-400/[0.06] text-emerald-300 rounded hover:bg-emerald-400/[0.12] hover:border-emerald-400/60 transition"
+            className="focus-ring mono text-xs px-3 py-1.5 cta rounded"
           >
             {userReport ? 'update your report' : isAuthed ? '+ report your times' : 'sign in to report'}
           </button>

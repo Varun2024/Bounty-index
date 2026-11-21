@@ -70,7 +70,7 @@ export default async function AuthErrorPage({ searchParams }: PageProps) {
       <div className="mt-8 flex items-center justify-center gap-3">
         <Link
           href="/programs"
-          className="mono text-sm px-4 py-2 border border-emerald-400/40 bg-emerald-400/[0.08] text-emerald-300 rounded-md hover:border-emerald-400/70 hover:bg-emerald-400/[0.14] transition focus-ring inline-flex items-center gap-2"
+          className="mono text-sm px-4 py-2 cta rounded-md focus-ring inline-flex items-center gap-2"
         >
           browse programs anyway →
         </Link>
