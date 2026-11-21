@@ -170,7 +170,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const totalUsersPages = totalUsers != null ? Math.max(1, Math.ceil(totalUsers / USERS_PER_PAGE)) : null;
 
   return (
-    <div className="max-w-[1100px] mx-auto px-6 py-10 space-y-12">
+    <div className="max-w-[1100px] mx-auto px-6 py-10 space-y-16">
       <header className="border-b border-neutral-900 pb-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -218,37 +218,46 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <Tile label="Requests (all time)" value={mcpRequests} />
             <Tile label="Requests · 7d" value={mcpRequests7d} />
           </div>
-          <McpUaList items={mcpUa} />
-        <h4 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mt-6 mb-2">
-          Tool usage <span className="text-neutral-700">· since telemetry (migration 004) · latency in ms</span>
-        </h4>
-        {mcpTools.length === 0 ? (
-          <p className="mono text-xs text-neutral-400">no tool-tagged calls yet (rows predate telemetry, or no calls since deploy)</p>
-        ) : (
-          <div className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">
-            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2 border-b border-neutral-900 mono text-[10px] uppercase tracking-widest text-neutral-500">
-              <span>tool / method</span>
-              <span className="text-right tabular-nums">calls</span>
-              <span className="text-right tabular-nums">avg</span>
-              <span className="text-right tabular-nums">p95</span>
+          <div className="grid lg:grid-cols-2 gap-6 mt-6 items-start">
+            <div>
+              <h4 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
+                Clients <span className="text-neutral-700">· by user-agent</span>
+              </h4>
+              <McpUaList items={mcpUa} />
             </div>
-            <ul className="divide-y divide-neutral-900">
-              {mcpTools.map((t) => (
-                <li key={t.tool} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2 items-baseline">
-                  <span className="mono text-xs text-emerald-300 truncate">{t.tool}</span>
-                  <span className="mono text-xs text-neutral-200 text-right tabular-nums">{t.requests.toLocaleString()}</span>
-                  <span className="mono text-[11px] text-neutral-400 text-right tabular-nums">{t.avg_ms ?? '·'}</span>
-                  <span
-                    className={`mono text-[11px] text-right tabular-nums ${t.p95_ms != null && t.p95_ms > 1000 ? 'text-amber-300' : 'text-neutral-400'}`}
-                  >
-                    {t.p95_ms ?? '·'}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <div>
+              <h4 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
+                Tool usage <span className="text-neutral-700">· latency in ms · p95 &gt;1s flagged</span>
+              </h4>
+              {mcpTools.length === 0 ? (
+                <p className="mono text-xs text-neutral-400">no tool-tagged calls yet (rows predate telemetry, or no calls since deploy)</p>
+              ) : (
+                <div className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40">
+                  <div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2 border-b border-neutral-900 mono text-[10px] uppercase tracking-widest text-neutral-500">
+                    <span>tool / method</span>
+                    <span className="text-right tabular-nums">calls</span>
+                    <span className="text-right tabular-nums">avg</span>
+                    <span className="text-right tabular-nums">p95</span>
+                  </div>
+                  <ul className="divide-y divide-neutral-900">
+                    {mcpTools.map((t) => (
+                      <li key={t.tool} className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 px-4 py-2 items-baseline">
+                        <span className="mono text-xs text-emerald-300 truncate">{t.tool}</span>
+                        <span className="mono text-xs text-neutral-200 text-right tabular-nums">{t.requests.toLocaleString()}</span>
+                        <span className="mono text-[11px] text-neutral-400 text-right tabular-nums">{t.avg_ms ?? '·'}</span>
+                        <span
+                          className={`mono text-[11px] text-right tabular-nums ${t.p95_ms != null && t.p95_ms > 1000 ? 'text-amber-300' : 'text-neutral-400'}`}
+                        >
+                          {t.p95_ms ?? '·'}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
-        )}
-          <p className="mt-3 mono text-[11px] text-neutral-400">
+          <p className="mt-4 mono text-[11px] text-neutral-400">
             one row per POST, handshake calls included. IP from x-forwarded-for; a shared NAT undercounts clients.
           </p>
         </SubSection>
@@ -270,7 +279,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         ) : recentUsers.length === 0 ? (
           <p className="mono text-xs text-neutral-400">no users yet</p>
         ) : (
-          <ul className="border border-neutral-900 rounded-lg overflow-hidden bg-neutral-950/40 divide-y divide-neutral-900">
+          <ul className="border border-neutral-900 rounded-lg max-h-[420px] overflow-y-auto bg-neutral-950/40 divide-y divide-neutral-900">
             {recentUsers.map((u) => (
               <li key={u.id} className="px-4 py-3 flex items-center gap-3">
                 {u.image ? (
@@ -365,12 +374,17 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   );
 }
 
-// Top-level admin area: a large heading with a rule, then its sub-sections.
+// Top-level admin area: a strong heading with an em-dash rule running to the edge, then its
+// sub-sections. The size jump (h2 here vs the tiny mono h3 labels) is what carries the hierarchy.
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="space-y-6">
-      <h2 className="text-lg font-semibold tracking-tight text-neutral-100 border-b border-neutral-900 pb-2">{title}</h2>
-      <div className="space-y-8">{children}</div>
+    <section className="space-y-7">
+      <div className="flex items-center gap-4">
+        <span aria-hidden className="h-2 w-2 rounded-full bg-emerald-400/70 shrink-0" />
+        <h2 className="text-xl font-semibold tracking-tight text-neutral-50 whitespace-nowrap">{title}</h2>
+        <span aria-hidden className="h-px flex-1 bg-neutral-800" />
+      </div>
+      <div className="space-y-9 pl-[18px]">{children}</div>
     </section>
   );
 }
@@ -379,9 +393,9 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 function SubSection({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">
+      <h3 className="mono text-[11px] uppercase tracking-widest text-neutral-300 mb-3">
         {label}
-        {hint ? <span className="text-neutral-700"> · {hint}</span> : null}
+        {hint ? <span className="text-neutral-600"> · {hint}</span> : null}
       </h3>
       {children}
     </div>
