@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { desc, sql } from 'drizzle-orm';
 import { auth } from '@/auth';
@@ -15,9 +16,14 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AdminPage() {
+const USERS_PER_PAGE = 25;
+
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ up?: string }> }) {
   const session = await auth();
   if (!isAdmin(session)) notFound();
+
+  const sp = await searchParams;
+  const usersPage = Math.max(1, parseInt(sp.up ?? '1', 10) || 1);
 
   // One round-trip for every count (neon-http = 1 HTTPS request per query).
   // allSettled-style: a dead counts query renders tiles as "—" instead of 500ing the page.
@@ -73,7 +79,8 @@ export default async function AdminPage() {
         .select({ id: users.id, name: users.name, email: users.email, image: users.image })
         .from(users)
         .orderBy(desc(users.id))
-        .limit(20),
+        .limit(USERS_PER_PAGE)
+        .offset((usersPage - 1) * USERS_PER_PAGE),
     ),
     settle(
       db
@@ -160,52 +167,61 @@ export default async function AdminPage() {
       })()
     : [];
 
+  const totalUsersPages = totalUsers != null ? Math.max(1, Math.ceil(totalUsers / USERS_PER_PAGE)) : null;
+
   return (
-    <div className="max-w-[1100px] mx-auto px-6 py-10 space-y-10">
+    <div className="max-w-[1100px] mx-auto px-6 py-10 space-y-12">
       <header className="border-b border-neutral-900 pb-6">
-        <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Internal · noindex</p>
-        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Admin</h1>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Internal · noindex</p>
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-neutral-50">Admin</h1>
+          </div>
+          <Link
+            href="/admin/content"
+            className="mono text-xs px-3 py-1.5 border border-neutral-800 rounded-md text-neutral-300 hover:border-emerald-400/40 hover:text-emerald-300 transition focus-ring"
+          >
+            edit site content →
+          </Link>
+        </div>
         <p className="mt-3 text-sm text-neutral-400">
           Everything here is a live query, no caching. Refresh to re-run.
         </p>
       </header>
 
-      <section>
-        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Signed-in users</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Tile label="Total users" value={totalUsers} />
-          <Tile label="Watchlist entries" value={totalWatchlist} />
-          <Tile label="Compare entries" value={totalCompare} />
-          <Tile label="Saved filters" value={totalSavedFilters} />
-          <Tile label="Notes" value={totalNotes} />
-          <Tile label="Community reports" value={totalReports} />
-          <Tile label="Discord webhooks" value={totalWebhooks} />
-          <Tile label="Broken webhooks" value={brokenWebhooks} tone={brokenWebhooks && brokenWebhooks > 0 ? 'warn' : undefined} />
-        </div>
-      </section>
+      <Group title="At a glance">
+        <SubSection label="Signed-in users">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Tile label="Total users" value={totalUsers} />
+            <Tile label="Watchlist entries" value={totalWatchlist} />
+            <Tile label="Compare entries" value={totalCompare} />
+            <Tile label="Saved filters" value={totalSavedFilters} />
+            <Tile label="Notes" value={totalNotes} />
+            <Tile label="Community reports" value={totalReports} />
+            <Tile label="Discord webhooks" value={totalWebhooks} />
+            <Tile label="Broken webhooks" value={brokenWebhooks} tone={brokenWebhooks && brokenWebhooks > 0 ? 'warn' : undefined} />
+          </div>
+        </SubSection>
+        <SubSection label="Index">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Tile label="Programs indexed" value={totalPrograms} />
+            <Tile label="Snapshots stored" value={totalSnapshots} />
+          </div>
+        </SubSection>
+      </Group>
 
-      <section>
-        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Index</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Tile label="Programs indexed" value={totalPrograms} />
-          <Tile label="Snapshots stored" value={totalSnapshots} />
-        </div>
-      </section>
-
-      <section>
-        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">
-          MCP endpoint <span className="text-neutral-700">· unauthenticated · clients = distinct IPs</span>
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Tile label="Clients (all time)" value={mcpClients} />
-          <Tile label="Clients · 7d" value={mcpClients7d} />
-          <Tile label="Requests (all time)" value={mcpRequests} />
-          <Tile label="Requests · 7d" value={mcpRequests7d} />
-        </div>
-        <McpUaList items={mcpUa} />
-        <h3 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mt-6 mb-2">
+      <Group title="Traffic & health">
+        <SubSection label="MCP endpoint" hint="unauthenticated · clients = distinct IPs">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Tile label="Clients (all time)" value={mcpClients} />
+            <Tile label="Clients · 7d" value={mcpClients7d} />
+            <Tile label="Requests (all time)" value={mcpRequests} />
+            <Tile label="Requests · 7d" value={mcpRequests7d} />
+          </div>
+          <McpUaList items={mcpUa} />
+        <h4 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mt-6 mb-2">
           Tool usage <span className="text-neutral-700">· since telemetry (migration 004) · latency in ms</span>
-        </h3>
+        </h4>
         {mcpTools.length === 0 ? (
           <p className="mono text-xs text-neutral-400">no tool-tagged calls yet (rows predate telemetry, or no calls since deploy)</p>
         ) : (
@@ -232,33 +248,23 @@ export default async function AdminPage() {
             </ul>
           </div>
         )}
-        <p className="mt-3 mono text-[11px] text-neutral-400">
-          one row per POST, handshake calls included. IP from x-forwarded-for; a shared NAT undercounts clients.
-        </p>
-      </section>
+          <p className="mt-3 mono text-[11px] text-neutral-400">
+            one row per POST, handshake calls included. IP from x-forwarded-for; a shared NAT undercounts clients.
+          </p>
+        </SubSection>
+        <SubSection label="Activity" hint="per day · last 30 days">
+          <div className="grid md:grid-cols-2 gap-3">
+            <DailyBars title="MCP requests" data={mcpDaily} unit="req" note="adoption of the agent surface" />
+            <DailyBars title="Snapshots written" data={snapDaily} unit="snap" note="ingest health: an empty bar is a missed cron run" />
+          </div>
+        </SubSection>
+      </Group>
 
-      <section>
-        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">
-          Activity <span className="text-neutral-700">· per day · last 30 days</span>
-        </h2>
-        <div className="grid md:grid-cols-2 gap-3">
-          <DailyBars
-            title="MCP requests"
-            data={mcpDaily}
-            unit="req"
-            note="adoption of the agent surface"
-          />
-          <DailyBars
-            title="Snapshots written"
-            data={snapDaily}
-            unit="snap"
-            note="ingest health: an empty bar is a missed cron run"
-          />
-        </div>
-      </section>
-
-      <section>
-        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Recent sign-ups <span className="text-neutral-700">· latest 20</span></h2>
+      <Group title="People">
+        <SubSection
+          label="Recent sign-ups"
+          hint={totalUsersPages ? `page ${usersPage} of ${totalUsersPages} · ${totalUsers?.toLocaleString()} total` : `page ${usersPage}`}
+        >
         {!recentUsers ? (
           <p className="mono text-xs text-neutral-400">unavailable (DB degraded)</p>
         ) : recentUsers.length === 0 ? (
@@ -284,12 +290,24 @@ export default async function AdminPage() {
             ))}
           </ul>
         )}
-      </section>
+        {totalUsersPages && totalUsersPages > 1 ? (
+          <div className="mt-4 flex items-center justify-between mono text-[11px]">
+            {usersPage > 1 ? (
+              <Link href={`/admin?up=${usersPage - 1}`} className="px-3 py-1.5 border border-neutral-800 rounded text-neutral-300 hover:border-emerald-400/40 hover:text-emerald-300 transition focus-ring">← prev</Link>
+            ) : (
+              <span className="px-3 py-1.5 border border-neutral-900 rounded text-neutral-700">← prev</span>
+            )}
+            <span className="text-neutral-400">page {usersPage} of {totalUsersPages}</span>
+            {usersPage < totalUsersPages ? (
+              <Link href={`/admin?up=${usersPage + 1}`} className="px-3 py-1.5 border border-neutral-800 rounded text-neutral-300 hover:border-emerald-400/40 hover:text-emerald-300 transition focus-ring">next →</Link>
+            ) : (
+              <span className="px-3 py-1.5 border border-neutral-900 rounded text-neutral-700">next →</span>
+            )}
+          </div>
+        ) : null}
+        </SubSection>
 
-      <section>
-        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">
-          Pending signups <span className="text-neutral-700">· captured during DB outage</span>
-        </h2>
+        <SubSection label="Pending signups" hint="captured during DB outage">
         {pendingSignups.length === 0 ? (
           <p className="mono text-xs text-neutral-400">none</p>
         ) : (
@@ -320,10 +338,9 @@ export default async function AdminPage() {
         <p className="mt-3 mono text-[11px] text-neutral-400">
           entries are best-effort captures during DB outages. Replay/ping them once Neon is back.
         </p>
-      </section>
+        </SubSection>
 
-      <section>
-        <h2 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">Most-watched programs <span className="text-neutral-700">· top 10</span></h2>
+        <SubSection label="Most-watched programs" hint="top 10">
         {topWatched.length === 0 ? (
           <p className="mono text-xs text-neutral-400">nobody&rsquo;s watching anything yet</p>
         ) : (
@@ -342,7 +359,31 @@ export default async function AdminPage() {
             ))}
           </ul>
         )}
-      </section>
+        </SubSection>
+      </Group>
+    </div>
+  );
+}
+
+// Top-level admin area: a large heading with a rule, then its sub-sections.
+function Group({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-6">
+      <h2 className="text-lg font-semibold tracking-tight text-neutral-100 border-b border-neutral-900 pb-2">{title}</h2>
+      <div className="space-y-8">{children}</div>
+    </section>
+  );
+}
+
+// A labeled block within a Group (the old section-label style, now a sub-heading).
+function SubSection({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h3 className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-3">
+        {label}
+        {hint ? <span className="text-neutral-700"> · {hint}</span> : null}
+      </h3>
+      {children}
     </div>
   );
 }
