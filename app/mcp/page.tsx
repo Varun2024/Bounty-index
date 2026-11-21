@@ -30,6 +30,7 @@ const TOOLS: Capability[] = [
   { name: 'trending_programs', desc: 'Highest-paying new additions in a rolling window.', v2: true },
   { name: 'programs_by_ids', desc: 'Bulk fetch up to 100 program summaries by numeric id.', v2: true },
   { name: 'bulk_scope_lookup', desc: 'Reverse-lookup up to 50 assets in one call.', v2: true },
+  { name: 'payout_stats', desc: 'Programs ranked by real disclosed-bounty median, with report count and top payout. Typical vs outlier.', v2: true },
 ];
 
 const PROMPTS: Capability[] = [

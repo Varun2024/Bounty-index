@@ -6,6 +6,7 @@ import {
   summarize,
   json,
   normalizeAsset,
+  programUrl,
   type ProgramRow,
   type ProgramSummary,
 } from '../_shared';
@@ -16,6 +17,7 @@ import {
   trendingNewPayouts,
   getProgramsByIds,
   findByDomain,
+  realPayoutsReport,
 } from '@/lib/db/queries';
 
 // v2 adds leaderboard + discovery tools, batch asset lookup, and three prompts
@@ -145,6 +147,54 @@ const handler = createMcpHandler(
           }),
         );
         return json({ count: results.length, results });
+      },
+    );
+
+    server.registerTool(
+      'payout_stats',
+      {
+        title: 'What programs actually pay (disclosed-report medians)',
+        description:
+          'Programs ranked by MEDIAN disclosed bounty in USD, with report count (reports) and the single highest disclosed payout (topUsd). This is the data behind the /payouts report and the one view the public program list cannot give you: what a program typically pays, versus the outlier at the top. Only programs with enough disclosed reports to be statistically meaningful are included. Disclosed reports are a self-selected sample, not all payouts. Use for "what does X actually pay" and typical-vs-top-payout angles.',
+        inputSchema: z.object({
+          limit: z.number().int().positive().max(200).optional().describe('Default 50, max 200.'),
+          minReports: z
+            .number()
+            .int()
+            .positive()
+            .optional()
+            .describe('Only programs with at least this many disclosed USD reports.'),
+          sort: z
+            .enum(['median', 'reports', 'spread'])
+            .optional()
+            .describe('median (default, highest typical payout first), reports (most-disclosed first), or spread (biggest top-to-median multiple first: where the headline payout most overstates the typical one).'),
+        }),
+      },
+      async ({ limit, minReports, sort }) => {
+        const report = await realPayoutsReport();
+        // spread = how many times the biggest disclosed payout exceeds the median; both from our corpus, same currency.
+        const spread = (r: { top: number; median: number }): number => (r.median > 0 ? r.top / r.median : 0);
+        let rows = report.rows;
+        if (minReports) rows = rows.filter((r) => r.n >= minReports);
+        if (sort === 'reports') rows = [...rows].sort((a, b) => b.n - a.n || b.median - a.median);
+        else if (sort === 'spread') rows = [...rows].sort((a, b) => spread(b) - spread(a) || b.median - a.median);
+        // default 'median' is the query's native order (median desc).
+        const top = rows.slice(0, Math.min(limit ?? 50, 200));
+        return json({
+          spanFrom: report.spanFrom,
+          spanTo: report.spanTo,
+          note: 'Medians and tops are from disclosed reports only (a self-selected sample), normalized to USD. The median is what a program typically pays; topUsd is the single biggest disclosed payout, which is usually an outlier.',
+          count: top.length,
+          programs: top.map((r) => ({
+            name: r.name,
+            platform: r.platform,
+            slug: r.slug,
+            medianUsd: r.median,
+            topUsd: r.top,
+            reports: r.n,
+            bountyIndexUrl: programUrl(r.platform, r.slug),
+          })),
+        });
       },
     );
 
