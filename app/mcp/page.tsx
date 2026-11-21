@@ -41,6 +41,7 @@ const PROMPTS: Capability[] = [
 
 const RESOURCES: Capability[] = [
   { name: 'stats://overview', desc: 'Live site-wide totals. Zero-tool-call orientation.' },
+  { name: 'program://{platform}/{slug}', desc: 'Bind one program as a resource: headers + in-scope / out-of-scope.', v2: true },
 ];
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.bountyindex.in';

@@ -340,23 +340,35 @@ export function registerCoreTools(server: McpServer): void {
       inputSchema: z.object({
         hoursBack: z.number().int().positive().max(720).optional().describe('Window size in hours. Default 168 (7 days), max 720 (30 days).'),
         limit: z.number().int().positive().max(500).optional().describe('Max events. Default 100, hard max 500.'),
+        since: z
+          .string()
+          .datetime()
+          .optional()
+          .describe('ISO timestamp cursor: return only events captured strictly after it. Pass back the `nextCursor` from your last call to poll incrementally without re-fetching or missing events.'),
       }),
     },
-    async ({ hoursBack, limit }) => {
+    async ({ hoursBack, limit, since }) => {
       const changes = await getRecentChanges(hoursBack ?? 168, Math.min(limit ?? 100, 500));
+      const sinceMs = since ? Date.parse(since) : NaN;
+      const events = (Number.isNaN(sinceMs) ? changes : changes.filter((c) => c.capturedAt.getTime() > sinceMs)).map((c) => ({
+        program: summarize(c.program as ProgramRow),
+        capturedAt: c.capturedAt,
+        added: c.diff.added,
+        removed: c.diff.removed,
+        rewardDelta: c.diff.rewardDelta,
+        safeHarborChanged: c.diff.safeHarborChanged,
+        bountyTransition: c.diff.bountyTransition,
+        statusChange: c.diff.statusChange,
+      }));
+      // Cursor = newest capturedAt in this window (independent of the `since` filter), so a follow-up
+      // call with since=nextCursor advances even when this page returned nothing new.
+      const nextCursor =
+        changes.reduce<number>((max, c) => Math.max(max, c.capturedAt.getTime()), 0) || null;
       return json({
         windowHours: hoursBack ?? 168,
-        count: changes.length,
-        events: changes.map((c) => ({
-          program: summarize(c.program as ProgramRow),
-          capturedAt: c.capturedAt,
-          added: c.diff.added,
-          removed: c.diff.removed,
-          rewardDelta: c.diff.rewardDelta,
-          safeHarborChanged: c.diff.safeHarborChanged,
-          bountyTransition: c.diff.bountyTransition,
-          statusChange: c.diff.statusChange,
-        })),
+        count: events.length,
+        nextCursor: nextCursor ? new Date(nextCursor).toISOString() : null,
+        events,
       });
     },
   );
