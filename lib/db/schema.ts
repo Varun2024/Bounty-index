@@ -348,9 +348,13 @@ export const mcpHits = pgTable(
     version: text('version').notNull(), // 'v1' | 'v2'
     ip: text('ip'),
     ua: text('ua'),
+    tool: text('tool'), // JSON-RPC method or tools/call target, e.g. 'payout_stats', 'initialize'. null if unparseable.
+    durationMs: integer('duration_ms'), // handler wall-time for this call, for latency telemetry
   },
   (t) => ({
     tsIdx: index('mcp_hits_ts_idx').on(t.ts),
+    // Per-IP rate-limit count walks (ip, ts) over a short window; see app/api/mcp/_shared.ts.
+    ipTsIdx: index('mcp_hits_ip_ts_idx').on(t.ip, t.ts),
   }),
 );
 
