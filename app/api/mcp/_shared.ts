@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { and, eq, gte, sql } from 'drizzle-orm';
 import type { McpServer } from '@modelcontextprotocol/server';
 import {
   listPrograms,
@@ -18,30 +19,93 @@ function clientIp(req: Request): string | null {
   return req.headers.get('x-real-ip');
 }
 
-// Log one usage row (headers only — never touches the body the handler needs).
-// Best-effort: a logging failure must never break the MCP call.
-async function logMcpHit(req: Request, version: 'v1' | 'v2'): Promise<void> {
+// Per-IP rate limit. The endpoint is public and unauthenticated, and every tool call hits
+// Neon, so a scraper looping a tool could run up the DB bill unchecked. We count this IP's
+// recent hits (the row set we already log) and 429 past the cap.
+// ponytail: fixed window, DB-backed, approximate — the count reads rows logged after prior
+// handlers, so a tight burst can momentarily undercount (permissive, never over-blocks).
+// Upgrade to a token bucket in Upstash/KV only if this ever needs to be exact or cheaper.
+const RATE_WINDOW_MS = 60_000;
+const RATE_MAX_PER_WINDOW = 150; // generous for a real agent session; stops sustained abuse
+
+async function isRateLimited(ip: string | null): Promise<boolean> {
+  if (!ip) return false; // can't attribute (no XFF) → don't block; shared NATs would be collateral
   try {
-    await db.insert(mcpHits).values({
-      version,
-      ip: clientIp(req),
-      ua: req.headers.get('user-agent')?.slice(0, 500) ?? null,
-    });
+    const since = new Date(Date.now() - RATE_WINDOW_MS);
+    const [row] = await db
+      .select({ c: sql<number>`count(*)::int` })
+      .from(mcpHits)
+      .where(and(eq(mcpHits.ip, ip), gte(mcpHits.ts, since)));
+    return (row?.c ?? 0) >= RATE_MAX_PER_WINDOW;
   } catch {
-    // swallow — usage logging is non-critical
+    return false; // fail-open: a limiter outage must never take the endpoint down
   }
+}
+
+// Peek the JSON-RPC method / tool name off a CLONE so the real handler still gets the body.
+async function peekTool(req: Request): Promise<string | null> {
+  try {
+    const body = (await req.clone().json()) as { method?: unknown; params?: { name?: unknown } };
+    if (body?.method === 'tools/call' && typeof body.params?.name === 'string') return body.params.name;
+    return typeof body?.method === 'string' ? body.method : null;
+  } catch {
+    return null;
+  }
+}
+
+// Log one usage row (headers + which tool + how long it took). Best-effort: a logging
+// failure must never break the MCP call.
+async function logMcpHit(
+  req: Request,
+  version: 'v1' | 'v2',
+  tool: string | null,
+  durationMs: number,
+): Promise<void> {
+  const ip = clientIp(req);
+  const ua = req.headers.get('user-agent')?.slice(0, 500) ?? null;
+  try {
+    await db.insert(mcpHits).values({ version, ip, ua, tool, durationMs });
+  } catch {
+    // If the tool/duration_ms columns aren't present yet (code deployed ahead of migration 004),
+    // fall back to the base row so usage logging — and the rate-limit count that reads it — never
+    // regress. Deploy order then doesn't matter. Best-effort throughout.
+    try {
+      await db.insert(mcpHits).values({ version, ip, ua });
+    } catch {
+      // swallow — usage logging is non-critical
+    }
+  }
+}
+
+function rateLimitedResponse(): Response {
+  return new Response(
+    JSON.stringify({
+      jsonrpc: '2.0',
+      id: null,
+      error: { code: -32000, message: 'Rate limit exceeded. Slow down and retry shortly.' },
+    }),
+    {
+      status: 429,
+      headers: { 'content-type': 'application/json', 'retry-after': String(Math.ceil(RATE_WINDOW_MS / 1000)) },
+    },
+  );
 }
 
 type RouteHandler = (req: Request) => Promise<Response>;
 
-// Wrap an mcp-handler route so every POST (a JSON-RPC call) is counted. GET is the SSE
-// stream negotiation and would double-count a session, so only POSTs are logged. The
-// insert runs concurrently with the handler (headers only, no body contention) → no
-// added latency on the response.
+// Wrap an mcp-handler route so every POST (a JSON-RPC call) is rate-limited and counted. GET
+// is the SSE stream negotiation and would double-count a session, so only POSTs are handled.
+// The rate-limit check is awaited (one indexed COUNT) before the handler; the usage insert
+// fires after, without blocking the response.
 export function withMcpLogging(handler: RouteHandler, version: 'v1' | 'v2'): RouteHandler {
   return async (req) => {
     if (req.method !== 'POST') return handler(req);
-    const [, res] = await Promise.all([logMcpHit(req, version), handler(req)]);
+    const ip = clientIp(req);
+    if (await isRateLimited(ip)) return rateLimitedResponse();
+    const tool = await peekTool(req);
+    const start = Date.now();
+    const res = await handler(req);
+    void logMcpHit(req, version, tool, Date.now() - start);
     return res;
   };
 }
