@@ -1,5 +1,6 @@
-import { createMcpHandler, withMcpAuth } from 'mcp-handler';
-import { ResourceTemplate, type AuthInfo } from '@modelcontextprotocol/server';
+import { createMcpHandler } from 'mcp-handler';
+import { ResourceTemplate } from '@modelcontextprotocol/server';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { z } from 'zod';
 import { and, desc, eq } from 'drizzle-orm';
 import {
@@ -33,10 +34,13 @@ const MAX_SUBS_PER_USER = 50;
 const AUTH_HELP =
   'This action needs a bounty.index MCP token. Create one at https://bountyindex.in/settings/mcp and set it as the "Authorization: Bearer <token>" header in your MCP client config.';
 
-// The authenticated user id, if withMcpAuth attached one (clientId / extra.userId). null = anonymous.
-function userIdFrom(extra: unknown): string | null {
-  const ai = (extra as { authInfo?: { clientId?: string; extra?: { userId?: string } } } | undefined)?.authInfo;
-  return ai?.extra?.userId ?? ai?.clientId ?? null;
+// Request-scoped authenticated user id. mcp-handler's withMcpAuth works by mutating `req.auth`, which
+// does NOT survive to the SDK handler on OpenNext/workerd (verified: token resolves, but the tool's
+// `extra` never carries authInfo). So we resolve the token ourselves in the request wrapper (bottom
+// of file) and stash the user id in AsyncLocalStorage; the write tools read it here. null = anonymous.
+const mcpUserStore = new AsyncLocalStorage<{ userId: string | null }>();
+function currentUserId(): string | null {
+  return mcpUserStore.getStore()?.userId ?? null;
 }
 
 // Verify a Discord webhook is live before we persist it (and confirm the caller controls it).
@@ -283,8 +287,8 @@ const handler = createMcpHandler(
           label: z.string().max(80).optional().describe('Optional label for this subscription.'),
         }),
       },
-      async ({ platform, slug, webhookUrl, label }, extra) => {
-        const userId = userIdFrom(extra);
+      async ({ platform, slug, webhookUrl, label }) => {
+        const userId = currentUserId();
         if (!userId) return json({ error: 'authentication_required', message: AUTH_HELP });
         const v = validateDiscordWebhookUrl(webhookUrl);
         if (!v.ok || !v.normalized) return json({ error: 'invalid_webhook', message: v.error });
@@ -325,8 +329,8 @@ const handler = createMcpHandler(
           webhookUrl: z.string().optional().describe('Remove only this webhook. Omit to remove all of yours for the program.'),
         }),
       },
-      async ({ platform, slug, webhookUrl }, extra) => {
-        const userId = userIdFrom(extra);
+      async ({ platform, slug, webhookUrl }) => {
+        const userId = currentUserId();
         if (!userId) return json({ error: 'authentication_required', message: AUTH_HELP });
         const target = await getProgramBySlug(platform, slug);
         if (!target) return json({ error: 'not_found', platform, slug });
@@ -348,8 +352,8 @@ const handler = createMcpHandler(
         description: 'List the programs you have Discord alert subscriptions for. Requires an MCP token. Webhook URLs are never returned.',
         inputSchema: z.object({}),
       },
-      async (_args, extra) => {
-        const userId = userIdFrom(extra);
+      async () => {
+        const userId = currentUserId();
         if (!userId) return json({ error: 'authentication_required', message: AUTH_HELP });
         const rows = await db
           .select({
@@ -535,15 +539,18 @@ const handler = createMcpHandler(
   },
 );
 
-// Resolve a Bearer MCP token to its user. required:false → anonymous reads still work; only the
-// write tools check for a user. A valid token attaches the user id, which the write tools read.
-async function verifyMcpBearer(_req: Request, bearer?: string): Promise<AuthInfo | undefined> {
-  const res = await verifyMcpToken(bearer);
-  if (!res) return undefined;
-  return { token: bearer as string, clientId: res.userId, scopes: ['mcp:write'], extra: { userId: res.userId } };
+// Resolve the Bearer MCP token to a user ourselves and stash it in AsyncLocalStorage for the tools.
+// (withMcpAuth relies on mutating req.auth, which does not survive to the SDK handler on workerd.)
+// Reads work with no token; only the write tools require a resolved user. A bad/absent token just
+// leaves userId null — it never blocks the public reads.
+async function withMcpUser(req: Request): Promise<Response> {
+  const authHeader = req.headers.get('authorization') ?? '';
+  const [type, token] = authHeader.split(' ');
+  const bearer = type?.toLowerCase() === 'bearer' ? token : undefined;
+  const res = bearer ? await verifyMcpToken(bearer).catch(() => null) : null;
+  return mcpUserStore.run({ userId: res?.userId ?? null }, () => handler(req));
 }
 
-const authed = withMcpAuth(handler, verifyMcpBearer, { required: false });
-const logged = withMcpLogging(authed, 'v2');
+const logged = withMcpLogging(withMcpUser, 'v2');
 
 export { logged as GET, logged as POST, logged as DELETE };
