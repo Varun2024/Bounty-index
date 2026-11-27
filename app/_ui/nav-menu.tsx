@@ -39,6 +39,7 @@ const GROUPS: NavGroup[] = [
       { href: '/watchlist', label: 'Watchlist', desc: 'Pin programs and watch their scope move' },
       { href: '/compare', label: 'Compare', desc: 'Put up to three programs side by side' },
       { href: '/settings/discord', label: 'Discord alerts', desc: 'One webhook per program, no email needed' },
+      { href: '/settings/mcp', label: 'MCP tokens', desc: 'Let your AI agent subscribe and act for you' },
     ],
   },
   {

@@ -119,6 +119,7 @@ export function UserMenu() {
           <MenuLink href="/watchlist" icon="★" label="Watchlist" />
           <MenuLink href="/compare" icon="◫" label="Compare" />
           <MenuLink href="/settings/discord" icon="◈" label="Discord alerts" />
+          <MenuLink href="/settings/mcp" icon="⌘" label="MCP tokens" />
           {admin && <MenuLink href="/admin" icon="⚙" label="Admin" />}
         </ul>
 

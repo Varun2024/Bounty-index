@@ -23,6 +23,7 @@ const COMMANDS: Command[] = [
   { label: 'Watchlist', href: '/watchlist', hint: 'your pinned programs', keywords: 'saved track pin' },
   { label: 'Compare', href: '/compare', hint: 'side by side', keywords: 'versus diff' },
   { label: 'Discord alerts', href: '/settings/discord', hint: 'per-program webhook', keywords: 'notify webhook' },
+  { label: 'MCP tokens', href: '/settings/mcp', hint: 'API tokens for agents', keywords: 'mcp token api agent subscribe action' },
   { label: 'Hunt score', href: '/how-scored', hint: 'the 0-100 formula', keywords: 'ranking rank formula opportunity score' },
   { label: 'How it works', href: '/how-it-works', hint: 'data + cadence', keywords: 'about source faq' },
   { label: 'MCP server', href: '/mcp', hint: 'query from AI tools', keywords: 'claude cursor agent api', beta: true },
