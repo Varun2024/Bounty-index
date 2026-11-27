@@ -4,6 +4,16 @@ Purpose: move bountyindex.in off Vercel (Hobby limits hit, project paused) onto 
 Workers via the OpenNext adapter, keeping Neon Postgres as-is. Decided 2026-11-27: straight
 cutover, accept downtime (no interim Vercel Pro).
 
+## STATUS: COMPLETE (2026-11-27)
+
+bountyindex.in serves entirely from Cloudflare Workers. Verified live: all core pages + MCP +
+auth 200; R2 incremental cache (96 entries) + D1 tag cache + DO queue active; GitHub login works
+(prod OAuth app `Ov23liQu6nBMPXKQ6hMV`); www → apex 301; daily ingest = GitHub Action at 06:00 UTC
+(green, revalidates via `/api/revalidate`), NOT a CF cron (full scrape blows the Worker subrequest
+cap — see [[project-cloudflare-migration]] memory). standoff365 retired (re-platformed to an
+unscrapeable SPA). Vercel kept paused as rollback for one cycle. Remaining optional: delete Vercel
+project after a stable cycle; revisit standoff365 only if it matters; finish CF free-feature toggles.
+
 ## Why this is a real fix, not a band-aid
 
 The last incident's band-aid was a fresh Vercel account to reset the counter. This is different:
