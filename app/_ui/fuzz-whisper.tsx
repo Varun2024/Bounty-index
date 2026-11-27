@@ -2,26 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { pickFuzzLine } from '@/lib/fuzz-lines';
 
 // Fuzz pops into the bottom-left corner every few minutes with a short word of encouragement,
 // then slips away on its own. Dismissible, non-blocking, and still under prefers-reduced-motion
 // (it just fades instead of sliding). Not a nag: long gaps, and it never covers anything.
-
-// Hunter-flavored encouragement. Kept genuine and specific, no buzzwords, no em dashes.
-const LINES = [
-  'Recon pays. Map the scope before you poke it.',
-  'The boring programs have the lonely bugs.',
-  'Read the policy twice. Dupes hide in the fine print.',
-  'Low-hanging fruit is gone. Go one subdomain deeper.',
-  'A small bug reported well beats a big one reported badly.',
-  'Scope moved today. Someone is already looking. Be first.',
-  'Chain the mediums. Impact adds up.',
-  'New program, smaller crowd. Worth a look.',
-  'Tired eyes miss bugs. Save a filter, come back sharp.',
-  'The best bug is the one nobody filtered for.',
-  'Out of scope is a trap, not a dare. Respect it.',
-  'Came up empty? That is recon, not failure. Next target.',
-];
+// Quip lines live in lib/fuzz-lines (shared with the interactive home mascot).
 
 const FIRST_DELAY_MS = 60_000; // let people settle in before the first one
 const VISIBLE_MS = 9_000;
@@ -51,10 +37,9 @@ export function FuzzWhisper() {
 
   function reveal() {
     // Pick a line that isn't the one we just showed.
-    let i = Math.floor(Math.random() * LINES.length);
-    if (LINES.length > 1 && i === lastIndex.current) i = (i + 1) % LINES.length;
+    const [i, text] = pickFuzzLine(lastIndex.current);
     lastIndex.current = i;
-    setLine(LINES[i]);
+    setLine(text);
     setOpen(true);
     const hideT = window.setTimeout(() => hide(randomGap()), VISIBLE_MS);
     timers.current.push(hideT);

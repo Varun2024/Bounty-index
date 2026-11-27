@@ -5,6 +5,7 @@ import { Signals } from './_home/signals';
 import { Comparison } from './_home/comparison';
 import { Features } from './_home/features';
 import { Receipts } from './_home/receipts';
+import { FuzzPlay } from './_home/fuzz-play';
 import { FinalCTA } from './_home/final-cta';
 import { Sponsors } from './_home/sponsors';
 import { SectionOrnament } from './_home/shared';
@@ -44,6 +45,7 @@ export default async function Home() {
       <SectionOrnament />
       <Comparison />
       <Receipts s={s} />
+      <FuzzPlay />
       <Sponsors />
       <FinalCTA s={s} />
     </>
