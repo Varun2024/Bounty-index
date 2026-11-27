@@ -1,0 +1,34 @@
+name: Daily ingest
+
+# Daily program/scope refresh. Moved off the Cloudflare cron: the full scrape does thousands of
+# per-query Neon HTTP calls (one CF subrequest each) and blows the Worker 50/invocation cap. Node
+# has no such cap. The job writes to Neon directly, then pings the Worker's /api/revalidate to bust
+# the live cache. See docs/plans/PLAN_CLOUDFLARE_MIGRATION.md.
+on:
+  schedule:
+    # 06:00 UTC daily — same wall-clock as the old Vercel/CF cron ("0 6 * * *").
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}
+
+# Never run two ingests at once (a slow run + the next schedule would double-write).
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run ingest
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          REVALIDATE_URL: ${{ secrets.REVALIDATE_URL }}

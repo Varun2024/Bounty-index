@@ -3,9 +3,8 @@
   "main": "./custom-worker.ts",
   "name": "bounty-index",
   "compatibility_date": "2024-12-30",
-  "triggers": {
-    "crons": ["0 6 * * *"]
-  },
+  // Ingest cron lives in GitHub Actions (.github/workflows/ingest.yml), not here: the full scrape
+  // blows the Worker subrequest cap. The Worker only serves pages + /api/revalidate (cache-bust).
   "compatibility_flags": [
     // Node.js API surface — mandatory for the OpenNext adapter.
     "nodejs_compat",
