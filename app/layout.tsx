@@ -21,7 +21,6 @@ import { AuthSync } from './_ui/auth-sync';
 import { DegradedBanner } from './_ui/degraded-banner';
 import { RestoredBanner } from './_ui/restored-banner';
 import { AnnouncementStrip } from './_ui/announcement-strip';
-import { Analytics } from '@vercel/analytics/next';
 import { ThemeToggle } from './_ui/theme-toggle';
 import { getSiteConfig, activeAnnouncements } from '@/lib/site-config';
 
@@ -170,7 +169,6 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <FuzzWhisper />
         <CompareTray />
         <AuthSync />
-        <Analytics />
 
         {/* Featured-on strip. Keeps badges out of the footer, breathes on all screen sizes. */}
         <section className="border-t border-neutral-900 bg-neutral-950/40">

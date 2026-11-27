@@ -4,36 +4,15 @@ import GitHub from 'next-auth/providers/github';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { getDrizzleInstance } from '@/lib/db/client';
 import { users, accounts, sessions, verificationTokens } from '@/lib/db/schema';
-import { enqueueSignup } from '@/lib/signup-queue';
-
-// Wrap the Drizzle adapter so a DB outage during OAuth doesn't just drop the user on
-// the floor — capture the GitHub profile to the Vercel Blob signup queue.
+// Wrap the Drizzle adapter so a DB outage during OAuth fails cleanly instead of bailing
+// the whole flow with a raw stack trace.
 //
 // NextAuth's sign-in path hits multiple adapter methods before createUser:
 //   getUserByAccount → getUserByEmail → createUser → linkAccount
 // A DB error in any of the read methods bails the whole flow with error=Configuration
-// before we ever reach createUser. So: read methods swallow errors and return null
-// (letting flow fall through to createUser), and createUser is where we enqueue.
-async function enqueueFromUser(user: { id?: string; email?: string | null; name?: string | null; image?: string | null }, reason: string) {
-  await enqueueSignup({
-    githubId: user.id ?? 'unknown',
-    handle: null,
-    email: user.email ?? null,
-    name: user.name ?? null,
-    image: user.image ?? null,
-    reason,
-    attemptedAt: new Date().toISOString(),
-  }).catch(() => {});
-}
-
-async function nullOnError<T>(runner: () => unknown): Promise<T | null> {
-  try {
-    return (await runner()) as T | null;
-  } catch {
-    return null;
-  }
-}
-
+// before we ever reach createUser. So read methods swallow errors and return null
+// (letting flow fall through to createUser), and write failures log and re-throw to the
+// custom /auth/error page.
 function log(step: string, extra?: unknown) {
   // Prefix so it's greppable in Vercel Functions logs.
   console.log(`[auth-adapter] ${step}`, extra ?? '');
@@ -80,9 +59,7 @@ function withOutageCapture(base: Adapter): Adapter {
             log('createUser succeeded');
             return result;
           } catch (err) {
-            log('createUser threw → enqueue', err instanceof Error ? err.message : err);
-            await enqueueFromUser(user, err instanceof Error ? err.message : 'createUser failed');
-            log('enqueue done, re-throwing');
+            log('createUser threw → re-throwing to /auth/error', err instanceof Error ? err.message : err);
             throw err;
           }
         }
@@ -94,16 +71,7 @@ function withOutageCapture(base: Adapter): Adapter {
             await base.linkAccount!(account);
             log('linkAccount succeeded');
           } catch (err) {
-            log('linkAccount threw → enqueue', err instanceof Error ? err.message : err);
-            await enqueueSignup({
-              githubId: String(account.providerAccountId ?? 'unknown'),
-              handle: null,
-              email: null,
-              name: null,
-              image: null,
-              reason: `linkAccount failed: ${err instanceof Error ? err.message : 'unknown'}`,
-              attemptedAt: new Date().toISOString(),
-            }).catch((e) => log('link-enqueue also failed', e));
+            log('linkAccount threw → re-throwing to /auth/error', err instanceof Error ? err.message : err);
             throw err;
           }
         }

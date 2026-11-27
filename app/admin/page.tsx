@@ -6,7 +6,6 @@ import { auth } from '@/auth';
 import { isAdmin } from '@/lib/admin';
 import { db } from '@/lib/db/client';
 import { users, userWatchlist, programs } from '@/lib/db/schema';
-import { listPendingSignups } from '@/lib/signup-queue';
 import { McpUaList } from './mcp-ua-list';
 
 export const dynamic = 'force-dynamic';
@@ -149,7 +148,6 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const mcpUa = (mcpUaRows as unknown as { rows?: McpUa[] } | null)?.rows ?? [];
   const mcpTools = (mcpToolRows as unknown as { rows?: McpTool[] } | null)?.rows ?? [];
 
-  const pendingSignups = await listPendingSignups().catch(() => []);
 
   // Enrich the top-watched list with program names.
   const topWatched = topWatchedRows && topWatchedRows.length
@@ -314,39 +312,6 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             )}
           </div>
         ) : null}
-        </SubSection>
-
-        <SubSection label="Pending signups" hint="captured during DB outage">
-        {pendingSignups.length === 0 ? (
-          <p className="mono text-xs text-neutral-400">none</p>
-        ) : (
-          <ul className="border border-amber-500/20 rounded-lg overflow-hidden bg-amber-500/[0.03] divide-y divide-neutral-900">
-            {pendingSignups.map((s) => (
-              <li key={s.key} className="px-4 py-3 flex items-center gap-3">
-                {s.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={s.image} alt="" width={24} height={24} className="w-6 h-6 rounded-full border border-neutral-800" />
-                ) : (
-                  <span className="w-6 h-6 rounded-full border border-neutral-800 flex items-center justify-center mono text-[11px] text-neutral-400">
-                    {(s.name ?? s.email ?? '?').charAt(0).toUpperCase()}
-                  </span>
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm text-neutral-100 truncate">{s.name ?? s.email ?? s.githubId}</p>
-                  <p className="mono text-[11px] text-neutral-400 truncate">
-                    {s.email ?? '(no email)'} · attempted {new Date(s.attemptedAt).toLocaleString()}
-                  </p>
-                </div>
-                <p className="mono text-[11px] text-amber-300/70 truncate max-w-[280px]" title={s.reason}>
-                  {s.reason}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
-        <p className="mt-3 mono text-[11px] text-neutral-400">
-          entries are best-effort captures during DB outages. Replay/ping them once Neon is back.
-        </p>
         </SubSection>
 
         <SubSection label="Most-watched programs" hint="top 10">

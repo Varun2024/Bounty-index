@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { track } from '@vercel/analytics';
+import { track } from '@/lib/analytics';
 import { addWebhook, addWebhooksBatch, testWebhookUrl, type BatchSource } from '@/app/actions/discord';
 
 interface PrefillProgram {

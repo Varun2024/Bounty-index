@@ -41,7 +41,7 @@ const STAGES: Stage[] = [
     key: 'deliver',
     eyebrow: '04 · deliver',
     title: 'Render',
-    body: 'Next.js 16 App Router. Read-only pages are ISR-cached and served from the CDN; per-route loading.tsx skeletons cover the rest. Vercel Analytics for real-user metrics.',
+    body: 'Next.js 16 App Router on Cloudflare Workers (OpenNext). Read-only pages are ISR-cached in R2 and served from the edge; per-route loading.tsx skeletons cover the rest.',
     detail: 'ttfb · sub-100ms',
   },
 ];
@@ -87,9 +87,9 @@ export default function HowItWorksPage() {
           ['program_snapshots', 'JSONB timeline per program'],
         ]} />
         <StackCol title="Runtime" items={[
-          ['Vercel Cron', 'daily · 0 6 * * *'],
-          ['Fluid Compute', 'reused function instances, graceful shutdown'],
-          ['@vercel/analytics', 'real-user metrics'],
+          ['Cloudflare Workers', 'OpenNext adapter · Node.js runtime'],
+          ['R2 + D1', 'ISR incremental cache + revalidation tags'],
+          ['daily ingest', '0 6 * * *'],
         ]} />
         <StackCol title="Storage" items={[
           ['Neon Postgres', 'lazy Drizzle client to survive build-time page-data collection'],
