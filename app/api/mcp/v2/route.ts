@@ -1,6 +1,7 @@
-import { createMcpHandler } from 'mcp-handler';
-import { ResourceTemplate } from '@modelcontextprotocol/server';
+import { createMcpHandler, withMcpAuth } from 'mcp-handler';
+import { ResourceTemplate, type AuthInfo } from '@modelcontextprotocol/server';
 import { z } from 'zod';
+import { and, desc, eq } from 'drizzle-orm';
 import {
   registerCoreTools,
   withMcpLogging,
@@ -22,6 +23,43 @@ import {
   getProgramBySlug,
   getDisclosedReports,
 } from '@/lib/db/queries';
+import { db } from '@/lib/db/client';
+import { discordWebhooks, programs } from '@/lib/db/schema';
+import { validateDiscordWebhookUrl } from '@/lib/discord';
+import { verifyMcpToken } from '@/lib/mcp-tokens';
+
+// Write/action tools below require a per-account MCP token (Authorization: Bearer). Reads stay public.
+const MAX_SUBS_PER_USER = 50;
+const AUTH_HELP =
+  'This action needs a bounty.index MCP token. Create one at https://bountyindex.in/settings/mcp and set it as the "Authorization: Bearer <token>" header in your MCP client config.';
+
+// The authenticated user id, if withMcpAuth attached one (clientId / extra.userId). null = anonymous.
+function userIdFrom(extra: unknown): string | null {
+  const ai = (extra as { authInfo?: { clientId?: string; extra?: { userId?: string } } } | undefined)?.authInfo;
+  return ai?.extra?.userId ?? ai?.clientId ?? null;
+}
+
+// Verify a Discord webhook is live before we persist it (and confirm the caller controls it).
+// SSRF is already closed off by validateDiscordWebhookUrl (discord.com hosts only).
+async function pingWebhook(url: string, name: string, platform: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        content: `bounty.index: subscribed to ${name} (${platform}). Scope, reward, and safe-harbor changes will post here.`,
+      }),
+      signal: AbortSignal.timeout(8000),
+    });
+    if (res.status === 401 || res.status === 403 || res.status === 404) {
+      return { ok: false, error: `Discord rejected the webhook (HTTP ${res.status}). Check the URL is a current webhook.` };
+    }
+    if (!res.ok && res.status !== 429) return { ok: false, error: `Webhook returned HTTP ${res.status}.` };
+    return { ok: true };
+  } catch {
+    return { ok: false, error: 'Could not reach the webhook (timeout or network error).' };
+  }
+}
 
 // v2 adds leaderboard + discovery tools, batch asset lookup, and three prompts
 // that bundle the common agent workflows. v1 remains at /api/mcp. Both share
@@ -230,6 +268,117 @@ const handler = createMcpHandler(
       },
     );
 
+    // --- Write/action tools (require an MCP token via Authorization: Bearer). ---
+
+    server.registerTool(
+      'subscribe_program',
+      {
+        title: 'Subscribe a Discord webhook to a program (write — needs token)',
+        description:
+          "Attach a Discord webhook so you get an alert when this program's scope, reward, or safe-harbor changes. Requires an MCP token (Authorization: Bearer). Idempotent: re-subscribing the same webhook is a no-op. Sends one confirmation message to the webhook.",
+        inputSchema: z.object({
+          platform: z.string().describe('e.g. "hackerone", "bugcrowd".'),
+          slug: z.string().describe('Program slug, e.g. "shopify".'),
+          webhookUrl: z.string().describe('A discord.com webhook URL (https://discord.com/api/webhooks/...).'),
+          label: z.string().max(80).optional().describe('Optional label for this subscription.'),
+        }),
+      },
+      async ({ platform, slug, webhookUrl, label }, extra) => {
+        const userId = userIdFrom(extra);
+        if (!userId) return json({ error: 'authentication_required', message: AUTH_HELP });
+        const v = validateDiscordWebhookUrl(webhookUrl);
+        if (!v.ok || !v.normalized) return json({ error: 'invalid_webhook', message: v.error });
+        const target = await getProgramBySlug(platform, slug);
+        if (!target) return json({ error: 'not_found', platform, slug });
+        const existing = await db
+          .select({ id: discordWebhooks.id })
+          .from(discordWebhooks)
+          .where(eq(discordWebhooks.userId, userId));
+        if (existing.length >= MAX_SUBS_PER_USER) {
+          return json({ error: 'limit_reached', message: `You have ${existing.length} subscriptions (max ${MAX_SUBS_PER_USER}). Unsubscribe some first.` });
+        }
+        const ping = await pingWebhook(v.normalized, target.program.name, platform);
+        if (!ping.ok) return json({ error: 'webhook_unreachable', message: ping.error });
+        const inserted = await db
+          .insert(discordWebhooks)
+          .values({ userId, programId: target.program.id, webhookUrl: v.normalized, label: label?.slice(0, 80) ?? null })
+          .onConflictDoNothing()
+          .returning({ id: discordWebhooks.id });
+        return json({
+          ok: true,
+          subscribed: { platform, slug, name: target.program.name },
+          alreadyExisted: inserted.length === 0,
+          bountyIndexUrl: programUrl(platform, slug),
+        });
+      },
+    );
+
+    server.registerTool(
+      'unsubscribe_program',
+      {
+        title: 'Remove Discord alert subscriptions for a program (write — needs token)',
+        description:
+          'Remove your Discord webhook subscription(s) for a program. Omit webhookUrl to remove ALL of your subscriptions for that program; pass it to remove one. Requires an MCP token.',
+        inputSchema: z.object({
+          platform: z.string(),
+          slug: z.string(),
+          webhookUrl: z.string().optional().describe('Remove only this webhook. Omit to remove all of yours for the program.'),
+        }),
+      },
+      async ({ platform, slug, webhookUrl }, extra) => {
+        const userId = userIdFrom(extra);
+        if (!userId) return json({ error: 'authentication_required', message: AUTH_HELP });
+        const target = await getProgramBySlug(platform, slug);
+        if (!target) return json({ error: 'not_found', platform, slug });
+        const conds = [eq(discordWebhooks.userId, userId), eq(discordWebhooks.programId, target.program.id)];
+        if (webhookUrl) {
+          const v = validateDiscordWebhookUrl(webhookUrl);
+          if (!v.ok || !v.normalized) return json({ error: 'invalid_webhook', message: v.error });
+          conds.push(eq(discordWebhooks.webhookUrl, v.normalized));
+        }
+        const removed = await db.delete(discordWebhooks).where(and(...conds)).returning({ id: discordWebhooks.id });
+        return json({ ok: true, removed: removed.length, platform, slug });
+      },
+    );
+
+    server.registerTool(
+      'list_my_subscriptions',
+      {
+        title: 'List your Discord alert subscriptions (needs token)',
+        description: 'List the programs you have Discord alert subscriptions for. Requires an MCP token. Webhook URLs are never returned.',
+        inputSchema: z.object({}),
+      },
+      async (_args, extra) => {
+        const userId = userIdFrom(extra);
+        if (!userId) return json({ error: 'authentication_required', message: AUTH_HELP });
+        const rows = await db
+          .select({
+            platform: programs.platform,
+            slug: programs.slug,
+            name: programs.name,
+            label: discordWebhooks.label,
+            brokenAt: discordWebhooks.brokenAt,
+            createdAt: discordWebhooks.createdAt,
+          })
+          .from(discordWebhooks)
+          .innerJoin(programs, eq(programs.id, discordWebhooks.programId))
+          .where(eq(discordWebhooks.userId, userId))
+          .orderBy(desc(discordWebhooks.createdAt));
+        return json({
+          count: rows.length,
+          subscriptions: rows.map((r) => ({
+            platform: r.platform,
+            slug: r.slug,
+            name: r.name,
+            label: r.label,
+            broken: r.brokenAt != null,
+            createdAt: r.createdAt,
+            bountyIndexUrl: programUrl(r.platform, r.slug),
+          })),
+        });
+      },
+    );
+
     // --- Prompts: templated agent workflows. ---------------------------------
 
     server.registerPrompt(
@@ -386,6 +535,15 @@ const handler = createMcpHandler(
   },
 );
 
-const logged = withMcpLogging(handler, 'v2');
+// Resolve a Bearer MCP token to its user. required:false → anonymous reads still work; only the
+// write tools check for a user. A valid token attaches the user id, which the write tools read.
+async function verifyMcpBearer(_req: Request, bearer?: string): Promise<AuthInfo | undefined> {
+  const res = await verifyMcpToken(bearer);
+  if (!res) return undefined;
+  return { token: bearer as string, clientId: res.userId, scopes: ['mcp:write'], extra: { userId: res.userId } };
+}
+
+const authed = withMcpAuth(handler, verifyMcpBearer, { required: false });
+const logged = withMcpLogging(authed, 'v2');
 
 export { logged as GET, logged as POST, logged as DELETE };

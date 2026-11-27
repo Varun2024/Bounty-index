@@ -336,6 +336,28 @@ export const discordFilterSubs = pgTable(
   }),
 );
 
+// Per-account MCP API tokens. The MCP read tools are public; WRITE/action tools (subscribe, etc.)
+// require one of these in the Authorization: Bearer header. We store only the SHA-256 hash of the
+// token (never the plaintext); the plaintext is shown to the user once at creation. revokedAt set =
+// dead. See app/api/mcp/v2/route.ts (withMcpAuth) and lib/mcp-tokens.ts.
+export const mcpTokens = pgTable(
+  'mcp_tokens',
+  {
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    tokenHash: text('token_hash').notNull().unique(),
+    label: text('label'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+  },
+  (t) => ({
+    userIdx: index('mcp_tokens_user_idx').on(t.userId),
+  }),
+);
+
 // MCP endpoint usage log. One row per POST (JSON-RPC call) to /api/mcp or /api/mcp/v2.
 // There are no MCP "users" (the endpoint is unauthenticated), so distinct ip / (ip, ua) is
 // the only honest proxy for "how many are using it". Includes the handshake/tools-list
