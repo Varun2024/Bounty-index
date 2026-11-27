@@ -67,8 +67,19 @@ Account: Varunshukla747@gmail.com (ID 57c29b6d007206182bba73484abcac98), wrangle
       wire a real sink (Cloudflare Analytics Engine) to restore the funnel, or accept no-op.**
 - [x] Removed `@vercel/blob` + `@vercel/analytics` + `@vercel/config` (32 pkgs pruned). Deleted
       `vercel.ts`. Removed dead `nullOnError`. Updated `how-it-works` copy to Cloudflare.
-- [x] `next build` + `opennextjs-cloudflare build` both green.
-- [ ] **Cron trigger** (ingest) — see separate step. Decision 2: try CF Cron Trigger first.
+- [x] **Analytics Engine wired** (Decision: restore the funnel). `ANALYTICS` dataset binding +
+      `app/api/track/route.ts` (validated public endpoint, writes one data point) + client
+      `lib/analytics.ts` sendBeacon shim. Verified: valid event → 200, junk → 400.
+- [x] **Cron trigger wired** (Decision 2: CF first). `custom-worker.ts` wraps `handler.fetch` +
+      adds `scheduled()` that self-invokes `/api/cron/ingest` via WORKER_SELF_REFERENCE with the
+      cron bearer; re-exports `DOQueueHandler`. wrangler `main` → `custom-worker.ts`,
+      `triggers.crons`. Excluded from tsconfig (wrangler bundles it). Fetch path verified in
+      preview; `scheduled()` provable only on deploy. **Fallback stays GH Action if ingest exceeds
+      Worker limits at test time.**
+- [x] cf-typegen footgun fixed: generated `cloudflare-env.d.ts` injected workerd globals that
+      clashed with the Next DOM types (broke 2 untouched files). Deleted + gitignored; the one
+      binding used is typed locally in `route.ts`.
+- [x] `next build` + `opennextjs-cloudflare build` both green with the custom worker.
 
 ### Phase 2 — blob + cron + analytics (exit: signup replay works; manual cron trigger ingests)
 - [ ] Decision 1: R2 swap in `signup-queue.ts` (or remove). Verify admin replay UI.
