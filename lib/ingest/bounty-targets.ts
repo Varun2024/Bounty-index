@@ -482,14 +482,13 @@ export async function ingestAll() {
   } catch (e) {
     results.push({ platform: 'hackenproof', error: e instanceof Error ? e.message : String(e) });
   }
-  // Standoff 365 — not in arkadiyt; first-party __NEXT_DATA__ scrape. Small Russian-market platform.
-  try {
-    const { ingestStandoff365 } = await import('./standoff365');
-    const r = await ingestStandoff365();
-    results.push({ ...r });
-  } catch (e) {
-    results.push({ platform: 'standoff365', error: e instanceof Error ? e.message : String(e) });
-  }
+  // Standoff 365 — RETIRED 2026-11-27. They re-platformed to a fully client-rendered SPA: the page
+  // now returns a JS-only shell (no __NEXT_DATA__, no data, no API host in the HTML) for every path,
+  // so there is nothing to scrape over HTTP. Reviving coverage would need a headless browser in CI,
+  // disproportionate for a small, low-value Russian-market source. Existing standoff365 rows stay in
+  // the DB (snapshots are append-only); they just stop updating. lib/ingest/standoff365.ts is kept
+  // for reference. TODO: if standoff coverage ever matters, rewrite against their runtime API
+  // (reverse-engineer the backend the SPA calls) or a Playwright render step.
   // Disclosed reports (H1 Hacktivity) — append-only real-payout/response data the upstream mirror
   // can't have. Isolated: a GraphQL shape drift here never aborts program ingest. See
   // docs/plans/PLAN_DISCLOSED_REPORTS.md (Phase 1, data-only gate).
