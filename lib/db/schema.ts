@@ -142,6 +142,8 @@ export const users = pgTable('user', {
   email: text('email').unique(),
   emailVerified: timestamp('emailVerified', { mode: 'date', withTimezone: true }),
   image: text('image'),
+  // ponytail: existing rows backfill to the push time, not their real signup time (unrecoverable). Accurate from here on.
+  createdAt: timestamp('createdAt', { mode: 'date', withTimezone: true }).notNull().defaultNow(),
 });
 
 export const accounts = pgTable(
