@@ -81,6 +81,42 @@ export function faqLd(items: FaqItem[]): Record<string, unknown> {
   };
 }
 
+interface PlatformCollectionInput {
+  platformLabel: string;
+  platformId: string;
+  total: number;
+  programs: Array<{ name: string; slug: string }>;
+}
+
+// CollectionPage + ItemList for a platform hub. Tells Google/AI engines "this page is a list of
+// N named programs" — the signal that wins "Intigriti programs list" style queries. itemListElement
+// is capped so a 2k-program platform doesn't inline a huge JSON blob; numberOfItems still carries the
+// true total. ponytail: 100 is plenty for the signal; the visible page already links every program.
+const MAX_ITEMLIST = 100;
+export function platformCollectionLd(input: PlatformCollectionInput): Record<string, unknown> {
+  const { platformLabel, platformId, total, programs } = input;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${platformLabel} bug bounty programs`,
+    description:
+      `A list of ${total.toLocaleString()} public ${platformLabel} bug bounty and vulnerability ` +
+      `disclosure programs, with scope and payout data, updated daily.`,
+    url: `${SITE_URL}/platforms/${platformId}`,
+    isPartOf: { '@type': 'WebSite', name: 'bounty.index', url: SITE_URL },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: total,
+      itemListElement: programs.slice(0, MAX_ITEMLIST).map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: p.name,
+        url: `${SITE_URL}/programs/${platformId}/${p.slug}`,
+      })),
+    },
+  };
+}
+
 export function jsonLdScript(data: Record<string, unknown>): string {
   // Escape </script> so the JSON can't break out of the script tag.
   return JSON.stringify(data).replace(/</g, '\\u003c');

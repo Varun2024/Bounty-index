@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { listPrograms, stats, platformProgramIndex } from '@/lib/db/queries';
 import { formatBounty, PLATFORM_META, platformLabel } from '@/lib/format';
 import { opportunityScore } from '@/lib/opportunity';
+import { platformCollectionLd, jsonLdScript } from '@/lib/structured-data';
 
 export const revalidate = 3600;
 
@@ -67,6 +68,18 @@ export default async function PlatformLandingPage({ params }: PageProps) {
 
   return (
     <div className="max-w-[1100px] mx-auto px-6 py-10">
+      {/* CollectionPage + ItemList: declares this hub as a list of named programs for search/AI engines.
+          Rendered only when we have the program list, numbers come from live counts. */}
+      {allPrograms.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonLdScript(
+              platformCollectionLd({ platformLabel: label, platformId: id, total: top.total, programs: allPrograms }),
+            ),
+          }}
+        />
+      )}
       <header className="reveal">
         <p className="mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
           <Link href="/programs" className="hover:text-neutral-300 transition">programs</Link>
