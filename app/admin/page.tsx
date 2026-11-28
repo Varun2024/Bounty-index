@@ -75,9 +75,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     `)),
     settle(
       db
-        .select({ id: users.id, name: users.name, email: users.email, image: users.image })
+        .select({ id: users.id, name: users.name, email: users.email, image: users.image, createdAt: users.createdAt })
         .from(users)
-        .orderBy(desc(users.id))
+        .orderBy(desc(users.createdAt))
         .limit(USERS_PER_PAGE)
         .offset((usersPage - 1) * USERS_PER_PAGE),
     ),
@@ -270,7 +270,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       <Group title="People">
         <SubSection
           label="Recent sign-ups"
-          hint={totalUsersPages ? `page ${usersPage} of ${totalUsersPages} · ${totalUsers?.toLocaleString()} total` : `page ${usersPage}`}
+          hint={totalUsersPages ? `newest first · page ${usersPage} of ${totalUsersPages} · ${totalUsers?.toLocaleString()} total` : `page ${usersPage}`}
         >
         {!recentUsers ? (
           <p className="mono text-xs text-neutral-400">unavailable (DB degraded)</p>
@@ -292,7 +292,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                   <p className="text-sm text-neutral-100 truncate">{u.name ?? u.email ?? '(no name)'}</p>
                   {u.email && u.name ? <p className="mono text-[11px] text-neutral-400 truncate">{u.email}</p> : null}
                 </div>
-                <p className="mono text-[11px] text-neutral-400 truncate max-w-[240px]">{u.id}</p>
+                <div className="text-right shrink-0">
+                  <p className="mono text-[11px] text-neutral-300 tabular-nums">{fmtSignupDate(u.createdAt)}</p>
+                  <p className="mono text-[10px] text-neutral-500 tabular-nums">{fmtSignupTime(u.createdAt)}</p>
+                </div>
               </li>
             ))}
           </ul>
@@ -337,6 +340,16 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </Group>
     </div>
   );
+}
+
+// Signup timestamp, split into date + time lines. Rendered in UTC so the admin view is stable
+// regardless of where the server runs. Existing rows were backfilled at column-add time, so they
+// all read the same day; accurate per-user from the backfill onward.
+function fmtSignupDate(d: Date): string {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+}
+function fmtSignupTime(d: Date): string {
+  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }) + ' UTC';
 }
 
 // Top-level admin area: a strong heading with an em-dash rule running to the edge, then its
