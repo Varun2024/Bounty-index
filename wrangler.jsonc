@@ -25,12 +25,6 @@
   "images": {
     "binding": "IMAGES"
   },
-  "analytics_engine_datasets": [
-    {
-      "binding": "ANALYTICS",
-      "dataset": "bounty_index_events"
-    }
-  ],
   "r2_buckets": [
     {
       "binding": "NEXT_INC_CACHE_R2_BUCKET",

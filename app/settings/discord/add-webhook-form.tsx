@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { track } from '@/lib/analytics';
+import posthog from 'posthog-js';
 import { addWebhook, addWebhooksBatch, testWebhookUrl, type BatchSource } from '@/app/actions/discord';
 
 interface PrefillProgram {
@@ -42,7 +42,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount, signedIn }: Pro
   // Funnel: mark that the form was reached (pageviews are counted separately). Then restore
   // any work stashed before a sign-in bounce, so returning signed-in finishes in one click.
   useEffect(() => {
-    track('discord_setup_view', { signedIn });
+    posthog.capture('discord_setup_view', { signedIn });
     if (!signedIn) return;
     try {
       const raw = localStorage.getItem(PENDING_KEY);
@@ -69,7 +69,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount, signedIn }: Pro
     } catch {
       // storage unavailable — proceed to sign-in without carry-over
     }
-    track('discord_signin_redirect');
+    posthog.capture('discord_signin_redirect');
     window.location.href = SIGNIN_HREF;
   }
 
@@ -107,7 +107,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount, signedIn }: Pro
       stashAndSignIn();
       return;
     }
-    track('discord_test');
+    posthog.capture('discord_test');
     startTest(async () => {
       const res = await testWebhookUrl(url);
       if (res.ok) setTestMsg({ ok: true, text: 'sent, check your Discord channel' });
@@ -127,7 +127,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount, signedIn }: Pro
       setError('pick a program first');
       return;
     }
-    track('discord_submit', { signedIn });
+    posthog.capture('discord_submit', { signedIn });
     if (!signedIn) {
       stashAndSignIn();
       return;
@@ -135,7 +135,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount, signedIn }: Pro
     startTransition(async () => {
       const res = await addWebhook({ programId, webhookUrl: url, label: label || null });
       if (res.ok) {
-        track('discord_saved');
+        posthog.capture('discord_saved');
         setSuccess(`subscribed · ${prefillProgram?.name ?? programQuery}`);
         setUrl('');
         setLabel('');
@@ -146,7 +146,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount, signedIn }: Pro
         }
         router.refresh();
       } else {
-        track('discord_error', { reason: res.error });
+        posthog.capture('discord_error', { reason: res.error });
         setError(res.error);
       }
     });
@@ -191,7 +191,7 @@ export function AddWebhookForm({ prefillProgram, watchlistCount, signedIn }: Pro
           onChange={(e) => {
             if (!urlTouched.current && e.target.value) {
               urlTouched.current = true;
-              track('discord_url_entered');
+              posthog.capture('discord_url_entered');
             }
             setUrl(e.target.value);
           }}
